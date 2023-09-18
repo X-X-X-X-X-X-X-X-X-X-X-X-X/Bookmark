@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* {
+    user-select: none;
+}
+
+:root {
+    --bg-color: white;
+    --scrollbar-thumb-bg: #cacaca;
+    --scrollbar-thumb-hover-bg: #bcbcbc;
+    --dark-border-color: #444;
+    --hover-color: #f3f4f6;
+}
+
+body {
+    background: var(--bg-color);
+    line-height: 1.4;
+    min-width: 9rem;
+}
+
+.contentMaxHeight {
+    max-height: calc(640px - 8rem);
+}
+
+*::-webkit-scrollbar {
+    background: var(--bg-color);
+    height: 8px;
+    width: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb-bg);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover-bg);
+}
+
+*::-webkit-scrollbar-track, *::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-color: #222;
+        --scrollbar-thumb-bg: #454545;
+        --scrollbar-thumb-hover-bg: #5d5d5d;
+        --hover-color: #333;
+    }
+
+    * {
+        border-color: var(--dark-border-color);
+    }
+}
+
+/*fix*/
+.n-radio-group .n-radio-button.n-radio-button--checked {
+    border-width: 1px !important;
+}
+
+.n-radio-group.n-radio-group--button-group .n-radio-group__splitor {
+    display: none;
+}
