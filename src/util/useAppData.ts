@@ -27,7 +27,12 @@ export const useAppData = (defaultData?: AppData) => {
         } else {
             //常用书签
             if (node.id === "-2") {
-                replaceTree(storageGet<TreeNode[]>(FREQUENTLY_USED_BOOKMARKS_KEY) || []);
+                if (settingStore.enableFrequentlyUsedBookmarks) {
+                    replaceTree(storageGet<TreeNode[]>(FREQUENTLY_USED_BOOKMARKS_KEY) || []);
+                } else {
+                    await clickLastNode();
+                    return;
+                }
             } else {
                 replaceTree(await chrome.bookmarks.getChildren(node.id))
             }
@@ -38,7 +43,9 @@ export const useAppData = (defaultData?: AppData) => {
         }
     }
     const clickLastNode = async () => {
-        if (data.navigator.length === 1) {
+        if (data.navigator.length === 0) {
+            return;
+        } else if (data.navigator.length === 1) {
             await clickBookmark(data.navigator[0]);
         } else {
             await clickBookmark(data.navigator.pop() as TreeNode);

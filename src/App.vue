@@ -1,10 +1,9 @@
 <template>
   <n-config-provider :theme="theme">
     <router-view v-slot="{ Component }">
-      <!--      keep-alive会导致有纵向滚动条的页面切换回来多出一个滚动条的宽度。。。。不加又会有一点闪屏-->
-      <!--      <keep-alive>-->
-      <component :is="Component"/>
-      <!--      </keep-alive>-->
+      <keep-alive>
+        <component :is="Component"/>
+      </keep-alive>
     </router-view>
   </n-config-provider>
 </template>

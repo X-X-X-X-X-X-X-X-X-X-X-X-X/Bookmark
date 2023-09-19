@@ -52,7 +52,7 @@ const widthStyle = computed(() => `width: ${settingStore.columnWidth}rem`);
         @mouseleave="hoverLeaveEvent"
         :style="widthStyle"
         :title="item.title + (item.url ? '\n' + item.url : '')"
-        v-for="item in data.bookmarkTree" @click="clickBookmark(item)" :key="item.id">
+        v-for="item in data.bookmarkTree" @click="clickBookmark(item), hoverLeaveEvent()" :key="item.id">
       <img
           :src="item.url ? faviconURL(item.url??'') : folderImg"
           alt=""

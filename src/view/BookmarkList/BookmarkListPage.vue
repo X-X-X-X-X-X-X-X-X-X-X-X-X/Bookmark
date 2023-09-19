@@ -3,7 +3,7 @@ import BookmarkNavigator from "@/view/BookmarkList/components/BookmarkNavigator.
 import BookmarkList from "@/view/BookmarkList/components/BookmarkList.vue";
 import BookmarkBottom from "@/view/BookmarkList/components/BookmarkBottom.vue";
 import DefaultLayout from "@/layout/DefaultLayout.vue";
-import {computed, onActivated, onBeforeMount, provide, reactive, ref, toRef} from "vue";
+import {computed, onActivated, onBeforeMount, provide, reactive, ref} from "vue";
 import type {AppData, Menu} from "../../../types";
 import {DEFAULT_START_KEY, PROVIDE_APP_DATA_KEY} from "@/util/constants";
 import {useAppData} from "@/util/useAppData";
@@ -20,13 +20,16 @@ let data = reactive<AppData>({
 })
 provide(PROVIDE_APP_DATA_KEY, data);
 const router = useRouter();
-let {clickBookmark, back} = useAppData(data);
+let {clickBookmark, back, clickLastNode} = useAppData(data);
 
 let {t} = useI18n({useScope: "global"});
+let mounted = ref(false);
 
 onBeforeMount(async () => {
   let all = await chrome.bookmarks.getTree();
-  all[0].title = t("rootTitle");
+  all[0] = reactive(Object.assign(all[0], {
+    title: computed(() => t("rootTitle"))
+  }))
   data.navigator.push(all[0]);
   let defaultStartNode = storageGet(DEFAULT_START_KEY);
   if (defaultStartNode !== undefined) {
@@ -36,8 +39,15 @@ onBeforeMount(async () => {
   } else {
     data.bookmarkTree.push(...all[0].children ?? []);
   }
-  // onActivated(clickLastNode);
+  mounted.value = true;
 })
+
+onActivated(() => {
+  if (mounted.value) {
+    clickLastNode();
+  }
+});
+
 let settingStore = useSettingStore();
 let disableFrequentlyUsedBookmarks = computed(() => !settingStore.enableFrequentlyUsedBookmarks);
 
@@ -58,10 +68,10 @@ const menu = reactive<Menu[]>([
     icon: ClockCircleOutlined,
     click: () => {
       if (data.navigator[data.navigator.length - 1].id !== "-2") {
-        clickBookmark({
-          title: t("frequentlyBookmark"),
+        clickBookmark(reactive({
+          title: computed(() => t("frequentlyBookmark")),
           id: "-2"
-        });
+        }));
       }
     }
   },

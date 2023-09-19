@@ -13,7 +13,7 @@ async function boot() {
     app.use(createPinia())
     app.use(i18n);
     initStore();
-    // registerMouseRightClickEvent();
+    registerMouseRightClickEvent();
     app.mount('#app');
 }
 

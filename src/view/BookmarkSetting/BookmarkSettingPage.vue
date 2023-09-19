@@ -6,7 +6,7 @@ import {NButton, NInputNumber, NRadioButton, NRadioGroup, NSlider, NSwitch} from
 import {useSettingStore} from "@/store/settingStore";
 import {FREQUENTLY_USED_BOOKMARKS_KEY, SETTING_DATA_KEY} from "@/util/constants";
 import {storageSet} from "@/util/storage";
-import {computed, reactive, ref, toRef, watch} from "vue";
+import {computed, onActivated, onMounted, reactive, ref, toRef, watch} from "vue";
 import {useI18n} from "vue-i18n";
 
 let {t} = useI18n();
@@ -16,11 +16,11 @@ let curWidth = ref(settingStore.columnWidth);
 settingStore.$subscribe((mutation, state) => {
   storageSet(SETTING_DATA_KEY, state);
 })
-// onActivated(() => {
-//   if (curWidth.value !== settingStore.columnWidth) {
-//     curWidth.value = settingStore.columnWidth
-//   }
-// })
+onActivated(() => {
+  if (curWidth.value !== settingStore.columnWidth) {
+    curWidth.value = settingStore.columnWidth
+  }
+})
 const layout = ref();
 const displayMode = reactive([
   {
@@ -61,14 +61,18 @@ const resetFrequentlyBookmark = () => {
 }
 const fontSizeStyle = computed(() => `font-size: ${settingStore.fontSize}px`);
 
-/*......只能这样强制改变了*/
-watch(toRef(settingStore, "fontSize"), value => {
-  document.querySelectorAll(".n-input__input-el").forEach(v => {
-    v.setAttribute("style", `font-size: ${value}px`)
+
+onMounted(() => {
+  /*......只能这样强制改变了*/
+  watch(toRef(settingStore, "fontSize"), value => {
+    document.querySelectorAll(".n-input__input-el").forEach(v => {
+      v.setAttribute("style", `font-size: ${value}px`)
+    })
+  }, {
+    immediate: true
   })
-}, {
-  immediate: true
 })
+
 </script>
 
 <template>
@@ -125,7 +129,7 @@ watch(toRef(settingStore, "fontSize"), value => {
       <div class="py-1">
         <div class="mb-1">{{ t("settingFrequently") }}</div>
         <div class="flex items-center">
-          <n-switch class="mr-1" size="large" v-model:value="settingStore.enableFrequentlyUsedBookmarks">
+          <n-switch class="mr-2" size="large" v-model:value="settingStore.enableFrequentlyUsedBookmarks">
             <template #checked>
               {{ t("settingFrequentlyEnable") }}
             </template>
@@ -154,7 +158,7 @@ watch(toRef(settingStore, "fontSize"), value => {
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingOther") }}</div>
-        <n-button @click="settingStore.$reset()" size="small" ghost :style="fontSizeStyle">
+        <n-button @click="settingStore.$reset()" size="small" class="mr-2" ghost :style="fontSizeStyle">
           {{ t("settingOtherReset") }}
         </n-button>
       </div>
