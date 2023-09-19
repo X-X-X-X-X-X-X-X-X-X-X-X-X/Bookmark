@@ -7,9 +7,9 @@ import {NBadge} from "naive-ui";
 import {computed, onMounted, ref} from "vue";
 
 let {data, clickBookmark} = useAppData();
-let emptyRef = computed(() => false);
+let emptyRef = ref(false);
 onMounted(() => {
-  emptyRef = computed(() => data.bookmarkTree.length === 0);
+  emptyRef.value = true;
 })
 
 function faviconURL(u: string) {
@@ -37,7 +37,7 @@ const widthStyle = computed(() => `width: ${settingStore.columnWidth}rem`);
 </script>
 <template>
   <div
-      v-if="emptyRef" class="h-32 font-bold flex justify-center items-center"
+      v-if="data.bookmarkTree.length === 0 && emptyRef" class="h-32 font-bold flex justify-center items-center"
       :style="minWidthStyle"
   >
     {{ $t("emptyMessage") }}

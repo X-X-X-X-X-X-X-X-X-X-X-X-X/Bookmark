@@ -14,7 +14,7 @@
 * 多语言支持
 
 ## 链接
-现已开源：https://github.com/X-X-X-X-X-X-X-X-X-X-X-X-X/Bookmark.git ，欢迎start与提issue
+现已开源：https://github.com/X-X-X-X-X-X-X-X-X-X-X-X-X/Bookmark.git ，欢迎star与提issue
 
 EDGE商店链接：https://microsoftedge.microsoft.com/addons/detail/gedhecaldmggohkefcllkmpnhojmabap
 （EDGE扩展审核真的太慢太慢太慢太慢太慢了）
