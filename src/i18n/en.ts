@@ -14,8 +14,8 @@ export default {
     settingLanguageEn: "english",
     settingLanguageMessage: "success, part of the content restart takes effect",
     settingFrequently: "frequently used bookmarks",
-    settingFrequentlyDisable: "disable",
-    settingFrequentlyEnable: "enable",
+    disable: "disable",
+    enable: "enable",
     settingFrequentlyEmpty: "clear",
     settingFrequentlyEmptyMessage: "frequently used bookmarks cleared",
     settingLayoutGap: "layout gap",
@@ -25,4 +25,5 @@ export default {
     settingOtherReset: "reset",
     frequentlyBookmark: "Frequently used bookmarks",
     emptyMessage: "Here is empty~",
+    settingSmoothScroll: "smooth scroll"
 }

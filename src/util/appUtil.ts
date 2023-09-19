@@ -5,10 +5,11 @@ import {toRefs, watch} from "vue";
 
 function wheelListener(event: WheelEvent) {
     if (document.documentElement.scrollHeight <= document.documentElement.clientHeight) {
+        let {enableSmoothScroll} = useSettingStore();
         window.scrollTo({
-            behavior: "smooth",
+            behavior: enableSmoothScroll ? "smooth" : "auto",
             top: window.scrollY,
-            left: window.scrollX + event.deltaY * 2
+            left: window.scrollX + event.deltaY * (+enableSmoothScroll + 1)
         });
     }
 }

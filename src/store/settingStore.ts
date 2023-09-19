@@ -10,6 +10,7 @@ export let useSettingStore = defineStore("settingStore", {
             hoverEnterFolderMs: 0,
             language: "zh",
             enableFrequentlyUsedBookmarks: true,
+            enableSmoothScroll: true,
             layoutGap: 16,
             fontSize: 14
         }

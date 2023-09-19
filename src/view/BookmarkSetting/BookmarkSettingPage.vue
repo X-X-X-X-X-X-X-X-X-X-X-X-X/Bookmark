@@ -101,6 +101,36 @@ onMounted(() => {
                         size="small"/>
       </div>
       <div class="py-1">
+        <div class="mb-1">{{ t("settingSmoothScroll") }}</div>
+        <div class="flex items-center">
+          <n-switch class="mr-2" size="large" v-model:value="settingStore.enableSmoothScroll">
+            <template #checked>
+              {{ t("enable") }}
+            </template>
+            <template #unchecked>
+              {{ t("disable") }}
+            </template>
+          </n-switch>
+        </div>
+      </div>
+      <div class="py-1">
+        <div class="mb-1">{{ t("settingFrequently") }}</div>
+        <div class="flex items-center">
+          <n-switch class="mr-2" size="large" v-model:value="settingStore.enableFrequentlyUsedBookmarks">
+            <template #checked>
+              {{ t("enable") }}
+            </template>
+            <template #unchecked>
+              {{ t("disable") }}
+            </template>
+          </n-switch>
+          <n-button @click="resetFrequentlyBookmark" type="warning" :style="fontSizeStyle"
+                    size="small" ghost>
+            {{ t("settingFrequentlyEmpty") }}
+          </n-button>
+        </div>
+      </div>
+      <div class="py-1">
         <div class="mb-1">{{ t("settingDisplayMode") }}</div>
         <n-radio-group size="small" :style="fontSizeStyle"
                        v-model:value="settingStore.displayMode">
@@ -125,23 +155,6 @@ onMounted(() => {
               :label="d.label"
           />
         </n-radio-group>
-      </div>
-      <div class="py-1">
-        <div class="mb-1">{{ t("settingFrequently") }}</div>
-        <div class="flex items-center">
-          <n-switch class="mr-2" size="large" v-model:value="settingStore.enableFrequentlyUsedBookmarks">
-            <template #checked>
-              {{ t("settingFrequentlyEnable") }}
-            </template>
-            <template #unchecked>
-              {{ t("settingFrequentlyDisable") }}
-            </template>
-          </n-switch>
-          <n-button @click="resetFrequentlyBookmark" type="warning" :style="fontSizeStyle"
-                    size="small" ghost>
-            {{ t("settingFrequentlyEmpty") }}
-          </n-button>
-        </div>
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingLanguage") }}</div>

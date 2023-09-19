@@ -14,8 +14,8 @@ export default {
     settingLanguageEn: "english",
     settingLanguageMessage: "切换成功，部分内容重启生效",
     settingFrequently: "常用书签",
-    settingFrequentlyDisable: "禁用",
-    settingFrequentlyEnable: "启用",
+    disable: "禁用",
+    enable: "启用",
     settingFrequentlyEmpty: "清空",
     settingFrequentlyEmptyMessage: "已清空常用书签",
     settingLayoutGap: "布局间隙",
@@ -25,5 +25,5 @@ export default {
     settingOtherReset: "重置",
     frequentlyBookmark: "常用书签",
     emptyMessage: "这里是空的~",
-
+    settingSmoothScroll: "平滑滚动"
 }
