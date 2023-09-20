@@ -12,7 +12,8 @@ export let useSettingStore = defineStore("settingStore", {
             enableFrequentlyUsedBookmarks: true,
             enableSmoothScroll: true,
             layoutGap: 16,
-            fontSize: 14
+            fontSize: 14,
+            fixedHeight: true
         }
     }
 });

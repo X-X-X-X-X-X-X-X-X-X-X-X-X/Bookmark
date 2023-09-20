@@ -4,7 +4,8 @@ import {useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
 import type {TreeNode} from "../../../../types";
 import {NBadge} from "naive-ui";
-import {computed, onMounted, ref} from "vue";
+import {computed, nextTick, onMounted, ref} from "vue";
+import {contentMaxHeight} from "@/util/style";
 
 let {data, clickBookmark} = useAppData();
 let emptyRef = ref(false);
@@ -33,18 +34,17 @@ const hoverLeaveEvent = () => {
 }
 const minWidthStyle = computed(() => `min-width: ${settingStore.columnWidth}rem`);
 const widthStyle = computed(() => `width: ${settingStore.columnWidth}rem`);
-
 </script>
 <template>
   <div
-      v-if="data.bookmarkTree.length === 0 && emptyRef" class="h-32 font-bold flex justify-center items-center"
+      v-if="data.bookmarkTree.length === 0 && emptyRef" class="h-32 font-bold absolute flex justify-center items-center"
       :style="minWidthStyle"
   >
     {{ $t("emptyMessage") }}
   </div>
-  <div class="flex-col flex-wrap h-full w-full contentMaxHeight"
+  <div class="flex-col flex-wrap h-full w-full"
        :class="[settingStore.displayMode === 'h' ? 'flex w-max' : 'overflow-x-hidden overflow-y-auto']"
-       :style="settingStore.displayMode === 'h' ? minWidthStyle : widthStyle"
+       :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeight]"
   >
     <div
         class="hover:bg-gray-100 dark:hover:bg-[#333] w-full flex items-center h-8 px-2 cursor-pointer whitespace-nowrap"

@@ -25,5 +25,6 @@ export default {
     settingOtherReset: "reset",
     frequentlyBookmark: "Frequently used bookmarks",
     emptyMessage: "Here is empty~",
-    settingSmoothScroll: "smooth scroll"
+    settingSmoothScroll: "smooth scroll",
+    settingFixedHeight: "fixed height"
 }

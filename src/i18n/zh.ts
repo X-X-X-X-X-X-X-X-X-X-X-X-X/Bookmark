@@ -25,5 +25,7 @@ export default {
     settingOtherReset: "重置",
     frequentlyBookmark: "常用书签",
     emptyMessage: "这里是空的~",
-    settingSmoothScroll: "平滑滚动"
+    settingSmoothScroll: "平滑滚动",
+    settingFixedHeight: "固定高度"
 }
+

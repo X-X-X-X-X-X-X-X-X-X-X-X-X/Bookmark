@@ -8,6 +8,7 @@ import {FREQUENTLY_USED_BOOKMARKS_KEY, SETTING_DATA_KEY} from "@/util/constants"
 import {storageSet} from "@/util/storage";
 import {computed, onActivated, onMounted, reactive, ref, toRef, watch} from "vue";
 import {useI18n} from "vue-i18n";
+import {contentMaxHeight} from "@/util/style";
 
 let {t} = useI18n();
 let router = useRouter();
@@ -80,7 +81,7 @@ onMounted(() => {
     <template #top>
       <div class="font-bold flex justify-center items-center h-full">{{ t('setting') }}</div>
     </template>
-    <div class="min-w-[9rem] px-2 py-1 overflow-auto w-max contentMaxHeight" :style="`width: ${curWidth}rem`">
+    <div class="min-w-[9rem] px-2 py-1 overflow-auto w-max" :style="[`width: ${curWidth}rem`,contentMaxHeight]">
       <div class="py-1">
         <div class="mb-1">{{ t("settingColumnWidth") }}</div>
         <n-slider :min="2" :max="50" v-model:value="settingStore.columnWidth"></n-slider>
@@ -104,6 +105,19 @@ onMounted(() => {
         <div class="mb-1">{{ t("settingSmoothScroll") }}</div>
         <div class="flex items-center">
           <n-switch class="mr-2" size="large" v-model:value="settingStore.enableSmoothScroll">
+            <template #checked>
+              {{ t("enable") }}
+            </template>
+            <template #unchecked>
+              {{ t("disable") }}
+            </template>
+          </n-switch>
+        </div>
+      </div>
+      <div class="py-1">
+        <div class="mb-1">{{ t("settingFixedHeight") }}</div>
+        <div class="flex items-center">
+          <n-switch class="mr-2" size="large" v-model:value="settingStore.fixedHeight">
             <template #checked>
               {{ t("enable") }}
             </template>

@@ -19,10 +19,6 @@ body {
     min-width: 9rem;
 }
 
-.contentMaxHeight {
-    max-height: calc(640px - 8rem);
-}
-
 *::-webkit-scrollbar {
     background: var(--bg-color);
     height: 8px;
