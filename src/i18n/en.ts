@@ -26,5 +26,6 @@ export default {
     frequentlyBookmark: "Frequently used bookmarks",
     emptyMessage: "Here is empty~",
     settingSmoothScroll: "smooth scroll",
-    settingFixedHeight: "fixed height"
+    settingFixedHeight: "fixed height",
+    settingEnableAnimation: "animation effects"
 }

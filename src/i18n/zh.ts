@@ -26,6 +26,7 @@ export default {
     frequentlyBookmark: "常用书签",
     emptyMessage: "这里是空的~",
     settingSmoothScroll: "平滑滚动",
-    settingFixedHeight: "固定高度"
+    settingFixedHeight: "固定高度",
+    settingEnableAnimation: "动画效果"
 }
 

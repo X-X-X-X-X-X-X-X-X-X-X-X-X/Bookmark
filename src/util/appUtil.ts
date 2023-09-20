@@ -60,3 +60,12 @@ export const initStore = () => {
         immediate: true
     })
 }
+
+export const resizeWidthContainer = (s?: string) => {
+    let {enableAnimation} = useSettingStore();
+    setTimeout(() => {
+        let widthContainer = document.getElementById("widthContainer");
+        let widthContent = document.getElementById("widthContent");
+        widthContainer!.style.width = s || widthContent!.scrollWidth + "px";
+    }, enableAnimation ? 100 : 0)
+}

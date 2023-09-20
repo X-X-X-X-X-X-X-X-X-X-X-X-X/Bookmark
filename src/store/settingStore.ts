@@ -11,6 +11,7 @@ export let useSettingStore = defineStore("settingStore", {
             language: "zh",
             enableFrequentlyUsedBookmarks: true,
             enableSmoothScroll: true,
+            enableAnimation: true,
             layoutGap: 16,
             fontSize: 14,
             fixedHeight: true

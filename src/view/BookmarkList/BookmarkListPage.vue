@@ -13,6 +13,7 @@ import BookmarkSearch from "@/view/BookmarkList/components/BookmarkSearch.vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
+import {resizeWidthContainer} from "@/util/appUtil";
 
 let data = reactive<AppData>({
   bookmarkTree: [],
@@ -77,9 +78,11 @@ const menu = reactive<Menu[]>([
   },
   {
     icon: SettingOutlined,
-    click: () => router.push({
-      path: "/setting"
-    })
+    click: () => {
+      router.push({
+        path: "/setting"
+      })
+    }
   }
 ])
 </script>

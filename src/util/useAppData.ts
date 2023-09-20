@@ -1,8 +1,9 @@
-import {inject} from "vue";
+import {inject, nextTick} from "vue";
 import {FREQUENTLY_USED_BOOKMARKS_KEY, PROVIDE_APP_DATA_KEY} from "@/util/constants";
 import type {AppData, TreeNode} from "../../types";
 import {useSettingStore} from "@/store/settingStore";
 import {storageGet, updateFrequentlyUsedBookmarks} from "@/util/storage";
+import {resizeWidthContainer} from "@/util/appUtil";
 
 export const useAppData = (defaultData?: AppData) => {
     let data = inject<AppData>(PROVIDE_APP_DATA_KEY, defaultData || {
@@ -13,6 +14,9 @@ export const useAppData = (defaultData?: AppData) => {
 
     const replaceTree = (treeNodes: TreeNode[]) => {
         data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
+        nextTick().then(value => {
+            resizeWidthContainer();
+        })
     }
     const clickBookmark = async (node: TreeNode) => {
         if (node.url) {
