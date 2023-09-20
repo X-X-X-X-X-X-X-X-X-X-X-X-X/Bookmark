@@ -30,27 +30,27 @@ let settingStore = useSettingStore();
 </script>
 
 <template>
-  <div id="widthContainer" :style="[`width: ${settingStore}rem`]"
-       :class="[settingStore.enableAnimation ? 'transition-all' : '']">
-    <div id="widthContent" class="pt-8 pb-8 dark:bg-[var(--bg-color)] dark:text-gray-50 w-max">
-      <div class="fixed border-b top-0 z-20 h-8 w-full dark:bg-[var(--bg-color)] bg-white">
-        <div
-            v-if="status.messageShow"
-            class="absolute left-0 top-0 w-full min-h-full dark:bg-green-950 bg-green-100 flex items-center justify-center">
-          <div class="p-1 font-bold whitespace-normal break-all text-center">
-            {{ status.message }}
+    <div id="widthContainer" :style="[`width: ${settingStore}rem`]"
+         :class="[settingStore.enableAnimation ? 'transition-all' : '']">
+      <div id="widthContent" class="pt-8 pb-8 dark:bg-[var(--bg-color)] dark:text-gray-50 w-max">
+        <div class="fixed border-b top-0 z-20 h-8 w-full dark:bg-[var(--bg-color)] bg-white">
+          <div
+              v-if="status.messageShow"
+              class="absolute left-0 top-0 w-full min-h-full dark:bg-green-950 bg-green-100 flex items-center justify-center">
+            <div class="p-1 font-bold whitespace-normal break-all text-center">
+              {{ status.message }}
+            </div>
           </div>
+          <slot name="top"></slot>
         </div>
-        <slot name="top"></slot>
-      </div>
-      <div class="w-full">
-        <slot></slot>
-      </div>
-      <div class="fixed bottom-0 h-8 z-10 w-full border-t dark:bg-[var(--bg-color)] bg-white">
-        <slot name="bottom"></slot>
+        <div class="w-full">
+          <slot></slot>
+        </div>
+        <div class="fixed bottom-0 h-8 z-10 w-full border-t dark:bg-[var(--bg-color)] bg-white">
+          <slot name="bottom"></slot>
+        </div>
       </div>
     </div>
-  </div>
 </template>
 
 <style scoped>

@@ -34,7 +34,7 @@ const widthStyle = computed(() => `width: ${settingStore.columnWidth}rem`);
 </script>
 <template>
   <div
-      v-if="data.bookmarkTree.length === 0 && init" class="h-32 font-bold absolute flex justify-center items-center"
+      v-if="data.bookmarkTree.length === 0 && init" class="top-1/2 -translate-y-1/2 font-bold absolute flex justify-center items-center"
       :style="minWidthStyle"
   >
     {{ $t("emptyMessage") }}

@@ -27,6 +27,10 @@ export const useAppData = (defaultData?: AppData) => {
                 url: node.url,
             })
         } else {
+            //不是根目录和搜索结果，PUSH进导航
+            if (node.id !== data.navigator[0].id && data.navigator[data.navigator.length - 1].id !== "-1") {
+                data.navigator.push(node);
+            }
             //常用书签
             if (node.id === "-2") {
                 if (settingStore.enableFrequentlyUsedBookmarks) {
@@ -37,10 +41,6 @@ export const useAppData = (defaultData?: AppData) => {
                 }
             } else {
                 replaceTree(await chrome.bookmarks.getChildren(node.id))
-            }
-            //不是根目录和搜索结果，PUSH进导航
-            if (node.id !== data.navigator[0].id && data.navigator[data.navigator.length - 1].id !== "-1") {
-                data.navigator.push(node);
             }
         }
     }

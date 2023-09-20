@@ -53,18 +53,14 @@ provide(PROVIDE_IS_INITIALIZED, mounted);
 provide(PROVIDE_APP_DATA_KEY, data);
 
 onBeforeMount(async () => {
-  let {clickBookmark} = useAppData(data);
   let all = await chrome.bookmarks.getTree();
   all[0] = reactive(Object.assign(all[0], {
     title: computed(() => t("rootTitle"))
   }))
   data.navigator.push(all[0]);
   let defaultStartNode = storageGet(DEFAULT_START_KEY);
-  if (defaultStartNode !== undefined) {
-    await clickBookmark(defaultStartNode);
-    Object.assign(defaultStartNode, (await chrome.bookmarks.get(defaultStartNode.id))[0]);
-  } else {
-    data.bookmarkTree.push(...all[0].children ?? []);
+  if (defaultStartNode) {
+    data.navigator.push(defaultStartNode);
   }
   mounted.value = true;
 })
