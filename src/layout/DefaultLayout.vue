@@ -32,9 +32,7 @@ let settingStore = useSettingStore();
 <template>
   <div id="widthContainer" :style="[`width: ${settingStore}rem`]"
        :class="[settingStore.enableAnimation ? 'transition-all' : '']">
-    <div id="widthContent" class="pt-8 pb-8 dark:bg-[var(--bg-color)] dark:text-gray-50"
-         :class="settingStore.displayMode === 'h' ? 'w-max' : 'w-full'"
-    >
+    <div id="widthContent" class="pt-8 pb-8 dark:bg-[var(--bg-color)] dark:text-gray-50 w-max">
       <div class="fixed border-b top-0 z-20 h-8 w-full dark:bg-[var(--bg-color)] bg-white">
         <div
             v-if="status.messageShow"

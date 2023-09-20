@@ -3,15 +3,12 @@ import folderImg from "@/assets/folder.png";
 import {useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
 import type {TreeNode} from "../../../../types";
-import {NBadge} from "naive-ui";
-import {computed, nextTick, onMounted, ref} from "vue";
+import {computed, inject} from "vue";
 import {contentMaxHeight} from "@/util/style";
+import {PROVIDE_IS_INITIALIZED} from "@/util/constants";
 
 let {data, clickBookmark} = useAppData();
-let emptyRef = ref(false);
-onMounted(() => {
-  emptyRef.value = true;
-})
+let init = inject(PROVIDE_IS_INITIALIZED);
 
 function faviconURL(u: string) {
   const url = new URL(chrome.runtime.getURL('/_favicon/'));
@@ -37,15 +34,14 @@ const widthStyle = computed(() => `width: ${settingStore.columnWidth}rem`);
 </script>
 <template>
   <div
-      v-if="data.bookmarkTree.length === 0 && emptyRef" class="h-32 font-bold absolute flex justify-center items-center"
+      v-if="data.bookmarkTree.length === 0 && init" class="h-32 font-bold absolute flex justify-center items-center"
       :style="minWidthStyle"
   >
     {{ $t("emptyMessage") }}
   </div>
-  <div class="flex-col flex-wrap h-full w-full"
-       :class="[settingStore.displayMode === 'h' ? 'flex w-max' : 'overflow-x-hidden overflow-y-auto']"
-       :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeight]"
-  >
+  <div class="flex-col flex-wrap h-full  w-max"
+       :class="[settingStore.displayMode === 'h' ? 'flex' : 'overflow-x-hidden overflow-y-auto']"
+       :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeight]">
     <div
         class="hover:bg-gray-100 dark:hover:bg-[#333] w-full flex items-center h-8 px-2 cursor-pointer whitespace-nowrap"
         @mouseenter="hoverEnterEvent(item)"

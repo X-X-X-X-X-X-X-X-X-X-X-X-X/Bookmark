@@ -14,9 +14,7 @@ export const useAppData = (defaultData?: AppData) => {
 
     const replaceTree = (treeNodes: TreeNode[]) => {
         data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
-        nextTick().then(value => {
-            resizeWidthContainer();
-        })
+        resizeWidthContainer();
     }
     const clickBookmark = async (node: TreeNode) => {
         if (node.url) {

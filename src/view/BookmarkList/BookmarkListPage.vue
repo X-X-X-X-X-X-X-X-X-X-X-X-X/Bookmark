@@ -3,55 +3,30 @@ import BookmarkNavigator from "@/view/BookmarkList/components/BookmarkNavigator.
 import BookmarkList from "@/view/BookmarkList/components/BookmarkList.vue";
 import BookmarkBottom from "@/view/BookmarkList/components/BookmarkBottom.vue";
 import DefaultLayout from "@/layout/DefaultLayout.vue";
-import {computed, onActivated, onBeforeMount, provide, reactive, ref} from "vue";
-import type {AppData, Menu} from "../../../types";
-import {DEFAULT_START_KEY, PROVIDE_APP_DATA_KEY} from "@/util/constants";
+import {computed, inject, onActivated, onBeforeMount, onMounted, reactive, type Ref} from "vue";
+import type {Menu} from "../../../types";
+import {PROVIDE_IS_INITIALIZED} from "@/util/constants";
 import {useAppData} from "@/util/useAppData";
-import {storageGet} from "@/util/storage";
 import {ClockCircleOutlined, LeftOutlined, SearchOutlined, SettingOutlined} from "@ant-design/icons-vue";
 import BookmarkSearch from "@/view/BookmarkList/components/BookmarkSearch.vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
-import {resizeWidthContainer} from "@/util/appUtil";
 
-let data = reactive<AppData>({
-  bookmarkTree: [],
-  navigator: [],
-})
-provide(PROVIDE_APP_DATA_KEY, data);
 const router = useRouter();
-let {clickBookmark, back, clickLastNode} = useAppData(data);
+let {clickBookmark, back, clickLastNode, data} = useAppData();
+let {t} = useI18n();
 
-let {t} = useI18n({useScope: "global"});
-let mounted = ref(false);
-
-onBeforeMount(async () => {
-  let all = await chrome.bookmarks.getTree();
-  all[0] = reactive(Object.assign(all[0], {
-    title: computed(() => t("rootTitle"))
-  }))
-  data.navigator.push(all[0]);
-  let defaultStartNode = storageGet(DEFAULT_START_KEY);
-  if (defaultStartNode !== undefined) {
-    //优化渲染割裂感
-    await clickBookmark(defaultStartNode);
-    Object.assign(defaultStartNode, (await chrome.bookmarks.get(defaultStartNode.id))[0]);
-  } else {
-    data.bookmarkTree.push(...all[0].children ?? []);
-  }
-  mounted.value = true;
-})
-
+let init = inject<Ref<boolean>>(PROVIDE_IS_INITIALIZED);
 onActivated(() => {
-  if (mounted.value) {
-    clickLastNode();
-  }
+  setTimeout(() => {
+    if (init!.value) {
+      clickLastNode();
+    }
+  })
 });
 
 let settingStore = useSettingStore();
-let disableFrequentlyUsedBookmarks = computed(() => !settingStore.enableFrequentlyUsedBookmarks);
-
 const menu = reactive<Menu[]>([
   {
     icon: LeftOutlined,
@@ -65,7 +40,7 @@ const menu = reactive<Menu[]>([
     }
   },
   {
-    disable: disableFrequentlyUsedBookmarks,
+    disable: computed(() => !settingStore.enableFrequentlyUsedBookmarks),
     icon: ClockCircleOutlined,
     click: () => {
       if (data.navigator[data.navigator.length - 1].id !== "-2") {

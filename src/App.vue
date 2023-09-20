@@ -24,18 +24,49 @@
 </style>
 <script setup lang="ts">
 import {darkTheme, NConfigProvider, useOsTheme} from "naive-ui";
-import {computed, toRefs, watch} from "vue";
+import {computed, onBeforeMount, onMounted, provide, reactive, ref, toRefs, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
+import {DEFAULT_START_KEY, PROVIDE_APP_DATA_KEY, PROVIDE_IS_INITIALIZED} from "@/util/constants";
+import type {AppData} from "../types";
+import {storageGet} from "@/util/storage";
+import {useAppData} from "@/util/useAppData";
 
 let osTheme = useOsTheme();
 let theme = computed(() => osTheme.value === "dark" ? darkTheme : null);
 let settingStore = useSettingStore();
-let {locale} = useI18n({useScope: "global"});
+/*i18n*/
+let {locale, t} = useI18n({useScope: "global"});
 let {language} = toRefs(settingStore);
 watch(language, (i: any) => {
   locale.value = i;
 }, {
   immediate: true
 });
+/*提供应用数据*/
+let data = reactive<AppData>({
+  bookmarkTree: [],
+  navigator: [],
+})
+let mounted = ref(false);
+provide(PROVIDE_IS_INITIALIZED, mounted);
+provide(PROVIDE_APP_DATA_KEY, data);
+
+onBeforeMount(async () => {
+  let {clickBookmark} = useAppData(data);
+  let all = await chrome.bookmarks.getTree();
+  all[0] = reactive(Object.assign(all[0], {
+    title: computed(() => t("rootTitle"))
+  }))
+  data.navigator.push(all[0]);
+  let defaultStartNode = storageGet(DEFAULT_START_KEY);
+  if (defaultStartNode !== undefined) {
+    await clickBookmark(defaultStartNode);
+    Object.assign(defaultStartNode, (await chrome.bookmarks.get(defaultStartNode.id))[0]);
+  } else {
+    data.bookmarkTree.push(...all[0].children ?? []);
+  }
+  mounted.value = true;
+})
+
 </script>
