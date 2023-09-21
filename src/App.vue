@@ -12,9 +12,8 @@
 
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.1s ease;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 150ms ease;
 }
 
 .fade-enter-from,

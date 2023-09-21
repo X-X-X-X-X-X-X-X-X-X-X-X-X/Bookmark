@@ -13,6 +13,7 @@ import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
 import {storageGet, storageSet} from "@/util/storage";
+import {resizeWidthContainer} from "@/util/appUtil";
 
 const router = useRouter();
 let {clickBookmark, back, clickLastNode, data} = useAppData();
@@ -30,7 +31,7 @@ onMounted(() => {
 
 onActivated(() => {
   if (init!.value) {
-    setTimeout(clickLastNode, 10);
+    setTimeout(clickLastNode, 150);
   }
 });
 
@@ -61,8 +62,10 @@ const menu = reactive<Menu[]>([
   {
     icon: SettingOutlined,
     click: () => {
-      router.push({
-        path: "/setting"
+      resizeWidthContainer(settingStore.columnWidth + "rem").then(() => {
+        router.push({
+          path: "/setting"
+        })
       })
     }
   }
