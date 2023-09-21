@@ -4,7 +4,6 @@ import {SETTING_DATA_KEY} from "@/util/constants";
 import {toRefs, watch} from "vue";
 
 function wheelListener(event: WheelEvent) {
-    console.log("wheel")
     if (document.documentElement.scrollHeight <= document.documentElement.clientHeight) {
         let {enableSmoothScroll} = useSettingStore();
         window.scrollTo({
