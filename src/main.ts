@@ -13,8 +13,10 @@ async function boot() {
     app.use(createPinia())
     app.use(i18n);
     initStore();
-    registerMouseRightClickEvent();
+    // registerMouseRightClickEvent();
     app.mount('#app');
 }
 
 boot();
+
+window.onresize = () => console.log(window.innerWidth, Date.now());

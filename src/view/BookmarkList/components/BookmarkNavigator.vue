@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {storageSet} from "@/util/storage";
-import {DEFAULT_START_KEY} from "@/util/constants";
+import {DEFAULT_START_KEY, DEFAULT_START_WIDTH_KEY} from "@/util/constants";
 import type {TreeNode} from "../../../../types";
 import {useAppData} from "@/util/useAppData";
 import {useMessage} from "@/util/useMessage";

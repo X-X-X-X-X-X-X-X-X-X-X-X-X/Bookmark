@@ -24,13 +24,19 @@
 </style>
 <script setup lang="ts">
 import {darkTheme, NConfigProvider, useOsTheme} from "naive-ui";
-import {computed, onBeforeMount, onMounted, provide, reactive, ref, toRefs, watch} from "vue";
+import {computed, provide, reactive, ref, toRefs, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
-import {DEFAULT_START_KEY, PROVIDE_APP_DATA_KEY, PROVIDE_IS_INITIALIZED} from "@/util/constants";
+import {
+  DEFAULT_START_KEY,
+  DEFAULT_START_WIDTH_KEY,
+  PROVIDE_APP_DATA_KEY,
+  PROVIDE_IS_INITIALIZED
+} from "@/util/constants";
 import type {AppData} from "../types";
 import {storageGet} from "@/util/storage";
 import {useAppData} from "@/util/useAppData";
+import {resizeWidthContainer} from "@/util/appUtil";
 
 let osTheme = useOsTheme();
 let theme = computed(() => osTheme.value === "dark" ? darkTheme : null);
@@ -51,9 +57,7 @@ let data = reactive<AppData>({
 let mounted = ref(false);
 provide(PROVIDE_IS_INITIALIZED, mounted);
 provide(PROVIDE_APP_DATA_KEY, data);
-
-onBeforeMount(async () => {
-  let all = await chrome.bookmarks.getTree();
+chrome.bookmarks.getTree(all => {
   all[0] = reactive(Object.assign(all[0], {
     title: computed(() => t("rootTitle"))
   }))
@@ -62,7 +66,7 @@ onBeforeMount(async () => {
   if (defaultStartNode) {
     data.navigator.push(defaultStartNode);
   }
+  useAppData(data).clickLastNode();
   mounted.value = true;
 })
-
 </script>

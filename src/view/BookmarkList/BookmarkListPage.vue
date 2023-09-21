@@ -3,7 +3,7 @@ import BookmarkNavigator from "@/view/BookmarkList/components/BookmarkNavigator.
 import BookmarkList from "@/view/BookmarkList/components/BookmarkList.vue";
 import BookmarkBottom from "@/view/BookmarkList/components/BookmarkBottom.vue";
 import DefaultLayout from "@/layout/DefaultLayout.vue";
-import {computed, inject, onActivated, onBeforeMount, onMounted, reactive, type Ref} from "vue";
+import {computed, inject, onActivated, reactive, type Ref} from "vue";
 import type {Menu} from "../../../types";
 import {PROVIDE_IS_INITIALIZED} from "@/util/constants";
 import {useAppData} from "@/util/useAppData";
@@ -16,14 +16,12 @@ import {useSettingStore} from "@/store/settingStore";
 const router = useRouter();
 let {clickBookmark, back, clickLastNode, data} = useAppData();
 let {t} = useI18n();
-
 let init = inject<Ref<boolean>>(PROVIDE_IS_INITIALIZED);
+
 onActivated(() => {
-  setTimeout(() => {
-    if (init!.value) {
-      clickLastNode();
-    }
-  })
+  if (init!.value) {
+    clickLastNode();
+  }
 });
 
 let settingStore = useSettingStore();
@@ -67,7 +65,7 @@ const menu = reactive<Menu[]>([
     <template #top>
       <BookmarkNavigator/>
     </template>
-    <BookmarkList/>
+    <BookmarkList v-if="init"/>
     <template #bottom>
       <BookmarkBottom :menu="menu"></BookmarkBottom>
     </template>

@@ -6,12 +6,11 @@ import {storageGet, updateFrequentlyUsedBookmarks} from "@/util/storage";
 import {resizeWidthContainer} from "@/util/appUtil";
 
 export const useAppData = (defaultData?: AppData) => {
-    let data = inject<AppData>(PROVIDE_APP_DATA_KEY, defaultData || {
+    let data = defaultData || inject<AppData>(PROVIDE_APP_DATA_KEY, {
         bookmarkTree: [],
         navigator: []
     });
     let settingStore = useSettingStore();
-
     const replaceTree = (treeNodes: TreeNode[]) => {
         data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
         resizeWidthContainer();
