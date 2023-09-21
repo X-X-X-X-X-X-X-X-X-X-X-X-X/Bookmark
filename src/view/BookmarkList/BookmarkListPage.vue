@@ -3,28 +3,37 @@ import BookmarkNavigator from "@/view/BookmarkList/components/BookmarkNavigator.
 import BookmarkList from "@/view/BookmarkList/components/BookmarkList.vue";
 import BookmarkBottom from "@/view/BookmarkList/components/BookmarkBottom.vue";
 import DefaultLayout from "@/layout/DefaultLayout.vue";
-import {computed, inject, onActivated, reactive, type Ref} from "vue";
+import {computed, inject, onActivated, onMounted, reactive, type Ref} from "vue";
 import type {Menu} from "../../../types";
-import {PROVIDE_IS_INITIALIZED} from "@/util/constants";
+import {DEFAULT_START_DATA_KEY, PROVIDE_IS_INITIALIZED} from "@/util/constants";
 import {useAppData} from "@/util/useAppData";
 import {ClockCircleOutlined, LeftOutlined, SearchOutlined, SettingOutlined} from "@ant-design/icons-vue";
 import BookmarkSearch from "@/view/BookmarkList/components/BookmarkSearch.vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
+import {storageGet, storageSet} from "@/util/storage";
 
 const router = useRouter();
 let {clickBookmark, back, clickLastNode, data} = useAppData();
 let {t} = useI18n();
 let init = inject<Ref<boolean>>(PROVIDE_IS_INITIALIZED);
+let settingStore = useSettingStore();
+onMounted(() => {
+  /*防止闪烁*/
+  data.bookmarkTree.length = 0;
+  data.bookmarkTree.push(...(storageGet(DEFAULT_START_DATA_KEY) || []))
+  setTimeout(() => {
+    storageSet(DEFAULT_START_DATA_KEY, data.bookmarkTree);
+  }, 150)
+})
 
 onActivated(() => {
   if (init!.value) {
-    clickLastNode();
+    setTimeout(clickLastNode, 10);
   }
 });
 
-let settingStore = useSettingStore();
 const menu = reactive<Menu[]>([
   {
     icon: LeftOutlined,

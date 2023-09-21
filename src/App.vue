@@ -27,16 +27,10 @@ import {darkTheme, NConfigProvider, useOsTheme} from "naive-ui";
 import {computed, provide, reactive, ref, toRefs, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
-import {
-  DEFAULT_START_KEY,
-  DEFAULT_START_WIDTH_KEY,
-  PROVIDE_APP_DATA_KEY,
-  PROVIDE_IS_INITIALIZED
-} from "@/util/constants";
+import {DEFAULT_START_KEY, PROVIDE_APP_DATA_KEY, PROVIDE_IS_INITIALIZED} from "@/util/constants";
 import type {AppData} from "../types";
 import {storageGet} from "@/util/storage";
 import {useAppData} from "@/util/useAppData";
-import {resizeWidthContainer} from "@/util/appUtil";
 
 let osTheme = useOsTheme();
 let theme = computed(() => osTheme.value === "dark" ? darkTheme : null);

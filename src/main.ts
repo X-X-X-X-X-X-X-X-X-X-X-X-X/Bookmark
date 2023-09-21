@@ -7,16 +7,15 @@ import {createPinia} from 'pinia'
 import {initStore, registerMouseRightClickEvent} from "@/util/appUtil";
 import {i18n} from "@/i18n/i18n";
 
+
 async function boot() {
     const app = createApp(App);
     app.use(router)
     app.use(createPinia())
     app.use(i18n);
     initStore();
-    // registerMouseRightClickEvent();
+    registerMouseRightClickEvent();
     app.mount('#app');
 }
 
 boot();
-
-window.onresize = () => console.log(window.innerWidth, Date.now());

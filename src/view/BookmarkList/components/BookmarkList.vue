@@ -2,10 +2,10 @@
 import folderImg from "@/assets/folder.png";
 import {useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
-import type {TreeNode} from "../../../../types";
 import {computed, onMounted} from "vue";
 import {contentMaxHeight} from "@/util/style";
 import Sortable, {type SortableEvent} from "sortablejs";
+import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 
 let {data, clickBookmark} = useAppData();
 
@@ -17,50 +17,40 @@ function faviconURL(u: string) {
 }
 
 let settingStore = useSettingStore();
-let hoverTimer: number;
-const hoverEnterEvent = (item: TreeNode) => {
-  if (!item.url && settingStore.hoverEnterFolderMs > 0) {
-    hoverTimer = setTimeout(() => {
-      clickBookmark(item);
-    }, settingStore.hoverEnterFolderMs);
-  }
-}
-const hoverLeaveEvent = () => {
-  clearTimeout(hoverTimer);
-}
+
+let {
+  hoverEnterEvent,
+  hoverLeaveEvent
+} = useTreeNodeHover();
+
 const minWidthStyle = computed(() => `min-width: ${settingStore.columnWidth}rem`);
 const widthStyle = computed(() => `width: ${settingStore.columnWidth}rem`);
 
-
 onMounted(() => {
   let list = document.getElementById("sortList");
+  let tempHoverTime = 0;
   Sortable.create(list!, {
     animation: 150,
-    // Element dragging ended
+    draggable: ".drag",
+    onStart() {
+      tempHoverTime = settingStore.hoverEnterFolderMs;
+      settingStore.hoverEnterFolderMs = 0;
+    },
     onEnd: async function (/**Event*/evt: SortableEvent) {
-      if (evt.oldDraggableIndex !== undefined && evt.newDraggableIndex !== undefined) {
+      if (evt.oldDraggableIndex !== undefined && evt.newDraggableIndex !== undefined && evt.newDraggableIndex !== evt.oldDraggableIndex) {
         let treeNode = data.bookmarkTree[evt.oldDraggableIndex];
+        let offsetIdx = 0;
+        let old = data.bookmarkTree.splice(evt.oldDraggableIndex, 1);
+        data.bookmarkTree.splice(evt.newDraggableIndex, 0, ...old);
+        if (evt.oldDraggableIndex < evt.newDraggableIndex) {
+          ++offsetIdx;
+        }
         await chrome.bookmarks.move(treeNode.id, {
-          index: evt.newDraggableIndex + 1,
+          index: evt.newDraggableIndex + offsetIdx,
           parentId: treeNode.parentId
         })
-
-        if (evt.oldDraggableIndex > evt.newDraggableIndex) {
-          let old = data.bookmarkTree.splice(evt.oldDraggableIndex, 1);
-          data.bookmarkTree.splice(evt.newDraggableIndex - 1, 0, ...old);
-        } else {
-
-        }
       }
-      // var itemEl = evt.item;  // dragged HTMLElement
-      // evt.to;    // target list
-      // evt.from;  // previous list
-      // evt.oldIndex;  // element's old index within old parent
-      // evt.newIndex;  // element's new index within new parent
-      // evt.oldDraggableIndex; // element's old index within old parent, only counting draggable elements
-      // evt.newDraggableIndex; // element's new index within new parent, only counting draggable elements
-      // evt.clone // the clone element
-      // evt.pullMode;  // when item is in another sortable: `"clone"` if cloning, `true` if moving
+      settingStore.hoverEnterFolderMs = tempHoverTime;
     },
   });
 })
@@ -82,6 +72,7 @@ onMounted(() => {
         class="hover:bg-gray-100 dark:hover:bg-[#333] w-full flex items-center h-8 px-2 cursor-pointer whitespace-nowrap"
         @mouseenter="hoverEnterEvent(item)"
         @mouseleave="hoverLeaveEvent"
+        :class="[data.navigator[data.navigator.length - 1].id !== '0' ? 'drag' : '']"
         :style="widthStyle"
         :title="item.title + (item.url ? '\n' + item.url : '')"
         v-for="item in data.bookmarkTree" @click="clickBookmark(item), hoverLeaveEvent()" :key="item.id">

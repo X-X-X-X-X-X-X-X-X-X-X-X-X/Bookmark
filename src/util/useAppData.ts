@@ -44,6 +44,7 @@ export const useAppData = (defaultData?: AppData) => {
         }
     }
     const clickLastNode = async () => {
+        //。。。。忘记是哪里的东西会触发了
         if (data.navigator.length === 0) {
             return;
         } else if (data.navigator.length === 1) {
@@ -52,18 +53,25 @@ export const useAppData = (defaultData?: AppData) => {
             await clickBookmark(data.navigator.pop() as TreeNode);
         }
     }
-
     const back = async () => {
         if (data.navigator.length > 1) {
             data.navigator.pop();
         }
         await clickLastNode();
     }
+    const navigatorTo = async (item: TreeNode) => {
+        let idx = data.navigator.findIndex(value => value.id === item.id);
+        if (idx !== -1) {
+            data.navigator.splice(idx + 1);
+            await clickLastNode();
+        }
+    }
 
     return {
         data,
         clickBookmark,
         back,
+        navigatorTo,
         replaceTree,
         clickLastNode
     }

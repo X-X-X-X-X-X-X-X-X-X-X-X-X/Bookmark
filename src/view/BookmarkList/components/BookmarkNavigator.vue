@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import {storageSet} from "@/util/storage";
-import {DEFAULT_START_KEY, DEFAULT_START_WIDTH_KEY} from "@/util/constants";
+import {DEFAULT_START_DATA_KEY, DEFAULT_START_KEY} from "@/util/constants";
 import type {TreeNode} from "../../../../types";
 import {useAppData} from "@/util/useAppData";
 import {useMessage} from "@/util/useMessage";
 import {useI18n} from "vue-i18n";
+import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 
 let {data, clickBookmark} = useAppData();
 let message = useMessage();
@@ -16,6 +17,7 @@ const navigatorTo = (node: TreeNode) => {
     //不是搜索结果页
     if (node.id !== "-1") {
       storageSet(DEFAULT_START_KEY, node);
+      storageSet(DEFAULT_START_DATA_KEY, data.bookmarkTree);
       message?.(t("setDefaultStartMessage", {
         msg: node.title
       }))
@@ -28,6 +30,11 @@ const navigatorTo = (node: TreeNode) => {
   }
 }
 
+let {
+  hoverEnterEvent,
+  hoverLeaveEvent
+} = useTreeNodeHover();
+
 </script>
 
 <template>
@@ -36,6 +43,8 @@ const navigatorTo = (node: TreeNode) => {
     <div
         class="flex cursor-pointer justify-center px-2 h-full items-center flex-1 border-r last:border-r-0 hover:bg-gray-100 dark:hover:bg-[#333]"
         v-for="item in data.navigator"
+        @mouseenter="hoverEnterEvent(item, true)"
+        @mouseleave="hoverLeaveEvent"
         @click="navigatorTo(item)">
       {{ item.title }}
     </div>
