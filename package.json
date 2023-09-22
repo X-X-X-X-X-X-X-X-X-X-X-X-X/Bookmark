@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.1.0",
-    "@types/sortablejs": "^1.15.2",
     "pinia": "^2.1.6",
     "sortablejs": "^1.15.0",
     "vue": "^3.3.4",
@@ -19,6 +18,7 @@
     "vue-router": "^4.2.4"
   },
   "devDependencies": {
+    "@types/sortablejs": "^1.15.2",
     "@tsconfig/node18": "^18.2.0",
     "@types/chrome": "*",
     "@types/node": "^18.17.5",
