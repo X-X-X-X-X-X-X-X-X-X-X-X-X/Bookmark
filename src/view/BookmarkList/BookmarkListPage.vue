@@ -7,13 +7,13 @@ import {computed, inject, onActivated, onMounted, reactive, type Ref} from "vue"
 import type {Menu} from "../../../types";
 import {DEFAULT_START_DATA_KEY, PROVIDE_IS_INITIALIZED} from "@/util/constants";
 import {useAppData} from "@/util/useAppData";
-import {ClockCircleOutlined, LeftOutlined, SearchOutlined, SettingOutlined} from "@ant-design/icons-vue";
+import {ClockCircleOutlined, LeftOutlined, SearchOutlined, SettingOutlined, StarOutlined} from "@ant-design/icons-vue";
 import BookmarkSearch from "@/view/BookmarkList/components/BookmarkSearch.vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
 import {storageGet, storageSet} from "@/util/storage";
-import {resizeWidthContainer} from "@/util/appUtil";
+import {createTab, resizeWidthContainer} from "@/util/appUtil";
 
 const router = useRouter();
 let {clickBookmark, back, clickLastNode, data} = useAppData();
@@ -37,10 +37,12 @@ onActivated(() => {
 
 const menu = reactive<Menu[]>([
   {
+    name: "返回",
     icon: LeftOutlined,
     click: back
   },
   {
+    name: "搜索",
     icon: SearchOutlined,
     click: (contentShow) => {
       contentShow.value = true;
@@ -48,6 +50,7 @@ const menu = reactive<Menu[]>([
     }
   },
   {
+    name: "常用书签",
     disable: computed(() => !settingStore.enableFrequentlyUsedBookmarks),
     icon: ClockCircleOutlined,
     click: () => {
@@ -60,6 +63,7 @@ const menu = reactive<Menu[]>([
     }
   },
   {
+    name: "设置",
     icon: SettingOutlined,
     click: () => {
       resizeWidthContainer(settingStore.columnWidth + "rem").then(() => {
@@ -67,6 +71,13 @@ const menu = reactive<Menu[]>([
           path: "/setting"
         })
       })
+    }
+  },
+  {
+    name: "书签管理器",
+    icon: StarOutlined,
+    click: () => {
+      createTab("edge://favorites")
     }
   }
 ])

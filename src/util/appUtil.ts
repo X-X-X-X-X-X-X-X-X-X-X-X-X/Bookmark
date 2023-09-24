@@ -73,3 +73,12 @@ export const resizeWidthContainer = (s?: string) => {
         }, useDuration ? 100 : 0)
     })
 }
+
+
+export const createTab = async (url: string, active?: boolean) => {
+    let settingStore = useSettingStore();
+    await chrome.tabs.create({
+        active: active ?? settingStore.openUrlMode === "front",
+        url,
+    })
+}

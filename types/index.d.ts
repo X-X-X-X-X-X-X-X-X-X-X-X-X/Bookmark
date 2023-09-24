@@ -6,6 +6,7 @@ type TreeNode = chrome.bookmarks.BookmarkTreeNode & {
 };
 
 interface Menu {
+    name?:string
     disable?: boolean | Ref<boolean>
     icon?: FunctionalComponent,
     click?: (contentShow: Ref<boolean>) => FunctionalComponent | DefineComponent | Component | void,

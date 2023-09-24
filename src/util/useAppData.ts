@@ -3,7 +3,7 @@ import {FREQUENTLY_USED_BOOKMARKS_KEY, PROVIDE_APP_DATA_KEY} from "@/util/consta
 import type {AppData, TreeNode} from "../../types";
 import {useSettingStore} from "@/store/settingStore";
 import {storageGet, updateFrequentlyUsedBookmarks} from "@/util/storage";
-import {resizeWidthContainer} from "@/util/appUtil";
+import {createTab, resizeWidthContainer} from "@/util/appUtil";
 
 export const useAppData = (defaultData?: AppData) => {
     let data = defaultData || inject<AppData>(PROVIDE_APP_DATA_KEY, {
@@ -21,10 +21,7 @@ export const useAppData = (defaultData?: AppData) => {
             if (settingStore.enableFrequentlyUsedBookmarks) {
                 updateFrequentlyUsedBookmarks(node);
             }
-            await chrome.tabs.create({
-                active: settingStore.openUrlMode === "front",
-                url: node.url,
-            })
+            await createTab(node.url);
         } else {
             //不是根目录和搜索结果，PUSH进导航
             if (node.id !== data.navigator[0].id && data.navigator[data.navigator.length - 1].id !== "-1") {

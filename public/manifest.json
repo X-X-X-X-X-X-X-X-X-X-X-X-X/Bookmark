@@ -2,7 +2,7 @@
   "name": "Bookmark",
   "version": "1.2",
   "manifest_version": 3,
-  "description": "让书签再次变得好用",
+  "description": "支持横向显示更多书签，让书签再次变得好用",
   "action": {
     "default_popup": "index.html"
   },

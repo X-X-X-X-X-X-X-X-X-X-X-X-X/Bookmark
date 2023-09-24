@@ -29,12 +29,14 @@ const iconClick = (f: Menu['click']) => {
         <Component :is="contentComponent"></Component>
       </div>
       <div @click="status.contentShow = false, contentComponent = undefined"
+           title="关闭"
            class="flex-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer ">
         <CloseOutlined/>
       </div>
     </div>
     <div
         class="h-8 w-8 flex justify-center items-center hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer"
+        :title="m.name ?? ''"
         @click="iconClick(m.click)" v-for="m in menu" v-show="!m.disable">
       <component :is="m.icon"></component>
     </div>
