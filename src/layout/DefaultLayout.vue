@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, provide, reactive} from "vue";
+import {provide, reactive} from "vue";
 import {PROVIDE_USE_MESSAGE_KEY} from "@/util/constants";
 import {useSettingStore} from "@/store/settingStore";
 
@@ -32,8 +32,8 @@ let settingStore = useSettingStore();
 <template>
   <div id="widthContainer"
        :class="[settingStore.enableAnimation ? 'transition-all' : '']">
-    <div id="widthContent" class="pt-8 pb-8 dark:bg-[var(--bg-color)] dark:text-gray-50 w-max">
-      <div class="fixed border-b top-0 z-20 h-8 w-full dark:bg-[var(--bg-color)] bg-white">
+    <div id="widthContent" class="pt-8 pb-8 text-color w-max">
+      <div class="fixed border-b top-0 z-20 h-8 w-full bg-color">
         <div
             v-if="status.messageShow"
             class="absolute left-0 top-0 w-full min-h-full dark:bg-green-950 bg-green-100 flex items-center justify-center">
@@ -46,7 +46,7 @@ let settingStore = useSettingStore();
       <div class="w-full">
         <slot></slot>
       </div>
-      <div class="fixed bottom-0 h-8 z-10 w-full border-t dark:bg-[var(--bg-color)] bg-white">
+      <div class="fixed bottom-0 h-8 z-10 w-full border-t bg-color">
         <slot name="bottom"></slot>
       </div>
     </div>

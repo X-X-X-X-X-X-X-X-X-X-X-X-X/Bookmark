@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import {onUnmounted, reactive} from "vue";
+import {onMounted, onUnmounted, reactive} from "vue";
 import {useAppData} from "@/util/useAppData";
 
 const status = reactive({
   searchInput: ""
 })
-let {data, clickBookmark, replaceTree} = useAppData();
+let {data, clickBookmark, replaceTree, specialTreeNode} = useAppData();
 const search = (() => {
   let queue: number[] = [];
   return async function (this: HTMLInputElement) {
@@ -13,11 +13,8 @@ const search = (() => {
       if (data) {
         if (this.value !== '') {
           replaceTree(await chrome.bookmarks.search(this.value));
-          if (data.navigator[data.navigator.length - 1].id !== "-1") {
-            data.navigator.push({
-              id: "-1",
-              title: "搜索结果"
-            })
+          if (data.navigator[data.navigator.length - 1].id !== specialTreeNode.search.id) {
+            data.navigator.push(specialTreeNode.search)
           }
         }
       }
@@ -34,7 +31,7 @@ const search = (() => {
 onUnmounted(async () => {
   status.searchInput = '';
   if (data) {
-    let idx = data.navigator.findIndex(v => v.id === "-1");
+    let idx = data.navigator.findIndex(v => v.id === specialTreeNode.search.id);
     if (idx !== -1) {
       let lastNode = data.navigator[idx - 1];
       if (idx > 1) {
@@ -45,10 +42,15 @@ onUnmounted(async () => {
     }
   }
 })
+
+onMounted(() => {
+  document.getElementById("search")?.focus();
+})
+
 </script>
 
 <template>
-  <input v-model="status.searchInput"
+  <input id="search" v-model="status.searchInput"
          :onkeyup="search"
          class="box-border bg-transparent outline-0 px-1 h-full w-full" type="text">
 </template>

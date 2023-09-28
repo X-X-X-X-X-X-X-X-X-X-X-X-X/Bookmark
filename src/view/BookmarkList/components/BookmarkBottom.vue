@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {type Component, reactive, toRefs} from "vue";
+import {type Component, reactive, toRefs, unref} from "vue";
 import {CloseOutlined} from '@ant-design/icons-vue';
 import type {Menu} from "../../../../types";
 
@@ -24,19 +24,19 @@ const iconClick = (f: Menu['click']) => {
 
 <template>
   <div class="h-full w-full flex">
-    <div class="flex absolute w-full h-full left-0 top-0 dark:bg-[var(--bg-color)] bg-white" v-if="status.contentShow">
+    <div class="flex absolute w-full h-full left-0 top-0 bg-color" v-if="status.contentShow">
       <div class="flex-1">
         <Component :is="contentComponent"></Component>
       </div>
       <div @click="status.contentShow = false, contentComponent = undefined"
            title="关闭"
-           class="flex-none w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer ">
+           class="flex-none w-8 h-8 flex items-center justify-center hover-color cursor-pointer ">
         <CloseOutlined/>
       </div>
     </div>
     <div
-        class="h-8 w-8 flex justify-center items-center hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer"
-        :title="m.name ?? ''"
+        class="h-8 w-8 flex justify-center items-center hover-color cursor-pointer"
+        :title="unref(m.name) ?? ''"
         @click="iconClick(m.click)" v-for="m in menu" v-show="!m.disable">
       <component :is="m.icon"></component>
     </div>

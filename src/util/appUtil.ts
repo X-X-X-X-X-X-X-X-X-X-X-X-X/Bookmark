@@ -1,9 +1,11 @@
 import {useSettingStore} from "@/store/settingStore";
-import {storageGet} from "@/util/storage";
+import {storageGet, storageSet} from "@/util/storage";
 import {SETTING_DATA_KEY} from "@/util/constants";
 import {toRefs, watch} from "vue";
+import {useI18n} from "vue-i18n";
 
 function wheelListener(event: WheelEvent) {
+    /*防止两个滚动条互相争抢*/
     if (document.documentElement.scrollHeight <= document.documentElement.clientHeight) {
         let {enableSmoothScroll} = useSettingStore();
         window.scrollTo({
@@ -36,6 +38,10 @@ export const initStore = () => {
     if (localSetting) {
         Object.assign(settingStore.$state, localSetting);
     }
+    //如果状态变更，存储到LocalStorage
+    settingStore.$subscribe((mutation, state) => {
+        storageSet(SETTING_DATA_KEY, state);
+    })
     let {displayMode, layoutGap, fontSize} = toRefs(settingStore);
     watch(displayMode, (v: string) => {
         if (v === "h") {
@@ -56,6 +62,7 @@ export const initStore = () => {
     })
     watch(fontSize, value => {
         document.body.style.fontSize = value + "px";
+        document.body.style.fontFamily = "initial";
     }, {
         immediate: true
     })
@@ -81,4 +88,14 @@ export const createTab = async (url: string, active?: boolean) => {
         active: active ?? settingStore.openUrlMode === "front",
         url,
     })
+}
+export const initI18n = () => {
+    let settingStore = useSettingStore();
+    let {locale} = useI18n({useScope: "global"});
+    let {language} = toRefs(settingStore);
+    watch(language, (i: any) => {
+        locale.value = i;
+    }, {
+        immediate: true
+    });
 }

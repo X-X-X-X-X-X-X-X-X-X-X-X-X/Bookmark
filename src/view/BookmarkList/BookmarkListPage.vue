@@ -3,9 +3,9 @@ import BookmarkNavigator from "@/view/BookmarkList/components/BookmarkNavigator.
 import BookmarkList from "@/view/BookmarkList/components/BookmarkList.vue";
 import BookmarkBottom from "@/view/BookmarkList/components/BookmarkBottom.vue";
 import DefaultLayout from "@/layout/DefaultLayout.vue";
-import {computed, inject, onActivated, onMounted, reactive, type Ref} from "vue";
+import {computed, inject, onActivated, onMounted, provide, reactive, ref, type Ref} from "vue";
 import type {Menu} from "../../../types";
-import {DEFAULT_START_DATA_KEY, PROVIDE_IS_INITIALIZED} from "@/util/constants";
+import {DEFAULT_START_DATA_KEY, PROVIDE_CONTEXT_MENU, PROVIDE_IS_INITIALIZED} from "@/util/constants";
 import {useAppData} from "@/util/useAppData";
 import {ClockCircleOutlined, LeftOutlined, SearchOutlined, SettingOutlined, StarOutlined} from "@ant-design/icons-vue";
 import BookmarkSearch from "@/view/BookmarkList/components/BookmarkSearch.vue";
@@ -16,8 +16,8 @@ import {storageGet, storageSet} from "@/util/storage";
 import {createTab, resizeWidthContainer} from "@/util/appUtil";
 
 const router = useRouter();
-let {clickBookmark, back, clickLastNode, data} = useAppData();
 let {t} = useI18n();
+let {clickBookmark, back, clickLastNode, data, specialTreeNode} = useAppData();
 let init = inject<Ref<boolean>>(PROVIDE_IS_INITIALIZED);
 let settingStore = useSettingStore();
 onMounted(() => {
@@ -37,12 +37,12 @@ onActivated(() => {
 
 const menu = reactive<Menu[]>([
   {
-    name: "返回",
+    name: computed(() => t("back")),
     icon: LeftOutlined,
     click: back
   },
   {
-    name: "搜索",
+    name: computed(() => t("search")),
     icon: SearchOutlined,
     click: (contentShow) => {
       contentShow.value = true;
@@ -50,20 +50,17 @@ const menu = reactive<Menu[]>([
     }
   },
   {
-    name: "常用书签",
+    name: computed(() => t("frequentlyBookmark")),
     disable: computed(() => !settingStore.enableFrequentlyUsedBookmarks),
     icon: ClockCircleOutlined,
     click: () => {
-      if (data.navigator[data.navigator.length - 1].id !== "-2") {
-        clickBookmark(reactive({
-          title: computed(() => t("frequentlyBookmark")),
-          id: "-2"
-        }));
+      if (data.navigator[data.navigator.length - 1].id !== specialTreeNode.frequently.id) {
+        clickBookmark(specialTreeNode.frequently);
       }
     }
   },
   {
-    name: "设置",
+    name: computed(() => t("setting")),
     icon: SettingOutlined,
     click: () => {
       resizeWidthContainer(settingStore.columnWidth + "rem").then(() => {
@@ -74,13 +71,22 @@ const menu = reactive<Menu[]>([
     }
   },
   {
-    name: "书签管理器",
+    name: computed(() => t("bookmarkManager")),
     icon: StarOutlined,
     click: () => {
       createTab("edge://favorites")
     }
   }
 ])
+
+const contextMenuShow = ref(false);
+const menuComp = ref<any>(null);
+
+provide(PROVIDE_CONTEXT_MENU, {
+  show: contextMenuShow,
+  comp: menuComp
+})
+
 </script>
 
 <template>
@@ -92,6 +98,7 @@ const menu = reactive<Menu[]>([
     <template #bottom>
       <BookmarkBottom :menu="menu"></BookmarkBottom>
     </template>
+    <component @remove="contextMenuShow = false" v-if="contextMenuShow" :is="menuComp"></component>
   </DefaultLayout>
 </template>
 

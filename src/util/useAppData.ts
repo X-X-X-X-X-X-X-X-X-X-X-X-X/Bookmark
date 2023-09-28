@@ -1,16 +1,39 @@
-import {inject, nextTick} from "vue";
+import {computed, inject, nextTick, reactive, ref} from "vue";
 import {FREQUENTLY_USED_BOOKMARKS_KEY, PROVIDE_APP_DATA_KEY} from "@/util/constants";
 import type {AppData, TreeNode} from "../../types";
 import {useSettingStore} from "@/store/settingStore";
 import {storageGet, updateFrequentlyUsedBookmarks} from "@/util/storage";
 import {createTab, resizeWidthContainer} from "@/util/appUtil";
+import {useI18n} from "vue-i18n";
 
-export const useAppData = (defaultData?: AppData) => {
+const cutNode = ref<TreeNode | null>(null);
+
+/*
+* 这破i18n首次加载不进来会报错，giao!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+* */
+export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof useI18n>) => {
     let data = defaultData || inject<AppData>(PROVIDE_APP_DATA_KEY, {
         bookmarkTree: [],
         navigator: []
     });
     let settingStore = useSettingStore();
+    let {t} = initI18n || useI18n();
+    /*特殊节点*/
+    const specialTreeNode = reactive({
+        search: {
+            id: "-1",
+            title: computed(() => t("searchResult")),
+        },
+        frequently: {
+            id: "-2",
+            title: computed(() => t("frequentlyBookmark")),
+        }
+    })
+
+    const isSpecialTreeNode = (node: TreeNode) => {
+        return Object.values(specialTreeNode).some(v => v.id === node.id);
+    }
+
     const replaceTree = (treeNodes: TreeNode[]) => {
         data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
         resizeWidthContainer();
@@ -24,11 +47,11 @@ export const useAppData = (defaultData?: AppData) => {
             await createTab(node.url);
         } else {
             //不是根目录和搜索结果，PUSH进导航
-            if (node.id !== data.navigator[0].id && data.navigator[data.navigator.length - 1].id !== "-1") {
+            if (node.id !== data.navigator[0].id && data.navigator[data.navigator.length - 1].id !== specialTreeNode.search.id) {
                 data.navigator.push(node);
             }
             //常用书签
-            if (node.id === "-2") {
+            if (node.id === specialTreeNode.frequently.id) {
                 if (settingStore.enableFrequentlyUsedBookmarks) {
                     replaceTree(storageGet<TreeNode[]>(FREQUENTLY_USED_BOOKMARKS_KEY) || []);
                 } else {
@@ -64,12 +87,41 @@ export const useAppData = (defaultData?: AppData) => {
         }
     }
 
+    const cut = (node: TreeNode) => {
+        if (node.id === cutNode.value?.id) {
+            cutNode.value = null;
+        } else {
+            cutNode.value = node;
+        }
+    }
+    const paste = async (node: TreeNode) => {
+        //链接
+        if (node.url) {
+            let idx = data.bookmarkTree.findIndex(value => value.id === node.id);
+            await chrome.bookmarks.move(cutNode.value!.id, {
+                parentId: node.parentId,
+                index: idx
+            })
+        }
+        //文件夹
+        else {
+            await chrome.bookmarks.move(cutNode.value!.id, {
+                parentId: node.id
+            })
+        }
+        cutNode.value = null;
+    }
     return {
         data,
         clickBookmark,
+        specialTreeNode,
+        isSpecialTreeNode,
         back,
         navigatorTo,
         replaceTree,
-        clickLastNode
+        clickLastNode,
+        cutNode,
+        cut,
+        paste
     }
 }

@@ -6,6 +6,7 @@ import {useAppData} from "@/util/useAppData";
 import {useMessage} from "@/util/useMessage";
 import {useI18n} from "vue-i18n";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
+import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
 
 let {data, clickBookmark} = useAppData();
 let message = useMessage();
@@ -35,16 +36,18 @@ let {
   hoverLeaveEvent
 } = useTreeNodeHover();
 
+let contextMenu = useContextMenu();
 </script>
 
 <template>
   <div
       class="font-bold justify-end flex whitespace-nowrap w-full h-full">
     <div
-        class="flex cursor-pointer justify-center px-2 h-full items-center flex-1 border-r last:border-r-0 hover:bg-gray-100 dark:hover:bg-[#333]"
+        class="flex cursor-pointer justify-center px-2 h-full items-center flex-1 border-r last:border-r-0 hover-color"
         v-for="item in data.navigator"
         @mouseenter="hoverEnterEvent(item, true)"
         @mouseleave="hoverLeaveEvent"
+        @contextmenu="contextMenu.createContextMenu($event, item)"
         @click="navigatorTo(item)">
       {{ item.title }}
     </div>

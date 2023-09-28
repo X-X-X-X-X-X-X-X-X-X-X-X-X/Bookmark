@@ -6,8 +6,9 @@ import {computed, onMounted} from "vue";
 import {contentMaxHeight} from "@/util/style";
 import Sortable, {type SortableEvent} from "sortablejs";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
+import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
 
-let {data, clickBookmark} = useAppData();
+let {data, clickBookmark, cutNode} = useAppData();
 
 function faviconURL(u: string) {
   const url = new URL(chrome.runtime.getURL('/_favicon/'));
@@ -54,11 +55,15 @@ onMounted(() => {
     },
   });
 })
+
+
+let contextMenu = useContextMenu();
 </script>
 <template>
   <div
       v-if="data.bookmarkTree.length === 0"
-      class="top-1/2 -translate-y-1/2 font-bold absolute flex justify-center items-center"
+      class=" font-bold flex justify-center items-center"
+      :class="[settingStore.fixedHeight ? 'top-1/2 -translate-y-1/2 absolute' : 'py-8']"
       :style="minWidthStyle"
   >
     {{ $t("emptyMessage") }}
@@ -69,10 +74,15 @@ onMounted(() => {
       :class="[settingStore.displayMode === 'h' ? 'flex' : 'overflow-x-hidden overflow-y-auto']"
       :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeight]">
     <div
-        class="hover:bg-gray-100 dark:hover:bg-[#333] w-full flex items-center h-8 px-2 cursor-pointer whitespace-nowrap"
+        class="hover-color w-full flex items-center border h-8 px-2 cursor-pointer whitespace-nowrap"
         @mouseenter="hoverEnterEvent(item)"
         @mouseleave="hoverLeaveEvent"
-        :class="[data.navigator[data.navigator.length - 1].id !== '0' ? 'drag' : '']"
+        @contextmenu="contextMenu.createContextMenu($event, item)"
+        :class="[
+            data.navigator[data.navigator.length - 1].id !== '0' ? 'drag' : '',
+            item.active ? 'hover-active' : '',
+            cutNode?.id === item.id ? 'border-dashed' : 'border-transparent'
+        ]"
         :style="widthStyle"
         :title="item.title + (item.url ? '\n' + item.url : '')"
         v-for="item in data.bookmarkTree" @click="clickBookmark(item), hoverLeaveEvent()" :key="item.id">

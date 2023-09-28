@@ -6,7 +6,7 @@ import {NButton, NInputNumber, NRadioButton, NRadioGroup, NSlider, NSwitch} from
 import {useSettingStore} from "@/store/settingStore";
 import {FREQUENTLY_USED_BOOKMARKS_KEY, SETTING_DATA_KEY} from "@/util/constants";
 import {storageSet} from "@/util/storage";
-import {computed, onActivated, onMounted, reactive, ref, toRef, watch} from "vue";
+import {computed, onActivated, reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {contentMaxHeight} from "@/util/style";
 
@@ -14,9 +14,6 @@ let {t} = useI18n();
 let router = useRouter();
 let settingStore = useSettingStore();
 let curWidth = ref(settingStore.columnWidth);
-settingStore.$subscribe((mutation, state) => {
-  storageSet(SETTING_DATA_KEY, state);
-})
 onActivated(() => {
   if (curWidth.value !== settingStore.columnWidth) {
     curWidth.value = settingStore.columnWidth
@@ -60,20 +57,6 @@ const resetFrequentlyBookmark = () => {
   storageSet(FREQUENTLY_USED_BOOKMARKS_KEY, []);
   layout.value.popMessage(t("settingFrequentlyEmptyMessage"));
 }
-const fontSizeStyle = computed(() => `font-size: ${settingStore.fontSize}px`);
-
-
-onMounted(() => {
-  /*......只能这样强制改变了*/
-  watch(toRef(settingStore, "fontSize"), value => {
-    document.querySelectorAll(".n-input__input-el").forEach(v => {
-      v.setAttribute("style", `font-size: ${value}px`)
-    })
-  }, {
-    immediate: true
-  })
-})
-
 </script>
 
 <template>
@@ -93,12 +76,12 @@ onMounted(() => {
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingLayoutGap") }}</div>
-        <n-input-number :style="fontSizeStyle" v-model:value="settingStore.layoutGap" :step="2" :min="10" :max="30"
+        <n-input-number v-model:value="settingStore.layoutGap" :step="2" :min="10" :max="30"
                         size="small"/>
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingFontSize") }}</div>
-        <n-input-number :style="fontSizeStyle" v-model:value="settingStore.fontSize" :step="2" :min="12" :max="30"
+        <n-input-number v-model:value="settingStore.fontSize" :step="2" :min="12" :max="30"
                         size="small"/>
       </div>
       <div class="py-1">
@@ -151,7 +134,7 @@ onMounted(() => {
               {{ t("disable") }}
             </template>
           </n-switch>
-          <n-button @click="resetFrequentlyBookmark" type="warning" :style="fontSizeStyle"
+          <n-button @click="resetFrequentlyBookmark" type="warning"
                     size="small" ghost>
             {{ t("settingFrequentlyEmpty") }}
           </n-button>
@@ -159,7 +142,7 @@ onMounted(() => {
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingDisplayMode") }}</div>
-        <n-radio-group size="small" :style="fontSizeStyle"
+        <n-radio-group size="small"
                        v-model:value="settingStore.displayMode">
           <n-radio-button
               size="small"
@@ -172,7 +155,7 @@ onMounted(() => {
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingLinkOpenMode") }}</div>
-        <n-radio-group size="small" :style="fontSizeStyle"
+        <n-radio-group size="small"
                        v-model:value="settingStore.openUrlMode">
           <n-radio-button
               size="small"
@@ -186,7 +169,7 @@ onMounted(() => {
       <div class="py-1">
         <div class="mb-1">{{ t("settingLanguage") }}</div>
         <n-radio-group size="small" v-model:value="settingStore.language"
-                       :style="fontSizeStyle">
+        >
           <n-radio-button
               size="small"
               v-for="d in language"
@@ -198,14 +181,14 @@ onMounted(() => {
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingOther") }}</div>
-        <n-button @click="settingStore.$reset()" size="small" class="mr-2" ghost :style="fontSizeStyle">
+        <n-button @click="settingStore.$reset()" size="small" class="mr-2" ghost>
           {{ t("settingOtherReset") }}
         </n-button>
       </div>
     </div>
     <template #bottom>
       <div class="flex">
-        <div class="h-8 w-8 flex justify-center items-center hover:bg-gray-100 dark:hover:bg-[#333] cursor-pointer"
+        <div class="h-8 w-8 flex justify-center items-center bg-color hover-color cursor-pointer"
              @click="router.back()">
           <Component :is="LeftOutlined"></Component>
         </div>

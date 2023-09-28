@@ -3,6 +3,7 @@
 @tailwind utilities;
 * {
     user-select: none;
+    outline: none;
 }
 
 :root {
@@ -47,6 +48,24 @@ body {
 
     * {
         border-color: var(--dark-border-color);
+    }
+}
+
+@layer components {
+    .bg-color {
+        @apply dark:bg-[var(--bg-color)] bg-white;
+    }
+
+    .text-color {
+        @apply dark:text-gray-50;
+    }
+
+    .hover-color {
+        @apply hover:bg-gray-100 dark:hover:bg-[#333];
+    }
+
+    .hover-active {
+        @apply bg-gray-100 dark:bg-[#333];
     }
 }
 

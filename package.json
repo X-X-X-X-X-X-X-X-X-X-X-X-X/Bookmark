@@ -18,10 +18,10 @@
     "vue-router": "^4.2.4"
   },
   "devDependencies": {
-    "@types/sortablejs": "^1.15.2",
     "@tsconfig/node18": "^18.2.0",
     "@types/chrome": "*",
     "@types/node": "^18.17.5",
+    "@types/sortablejs": "^1.15.2",
     "@vitejs/plugin-vue": "^4.3.1",
     "@vue/tsconfig": "^0.4.0",
     "autoprefixer": "^10.4.15",
