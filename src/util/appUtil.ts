@@ -99,3 +99,6 @@ export const initI18n = () => {
         immediate: true
     });
 }
+
+export const some = (...args: boolean[]) => args.some(v => v);
+export const every = (...args: boolean[]) => args.every(v => v);

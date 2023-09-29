@@ -1,24 +1,21 @@
 <script setup lang="ts">
-import {computed, h, onMounted, onUnmounted, reactive, type Ref, type StyleValue} from "vue";
+import {h, onMounted, onUnmounted, reactive, ref, type Ref, type StyleValue} from "vue";
 import type {TreeNode} from "../../../../../types";
-import {createTab} from "@/util/appUtil";
+import {createTab, some} from "@/util/appUtil";
 import {useMessage} from "@/util/useMessage";
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
 import {useAppData} from "@/util/useAppData";
-import {NInput} from "naive-ui";
 import {useI18n} from "vue-i18n";
+import MyInput from "@/view/BookmarkList/components/dialog/MyInput.vue";
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   x: number,
   y: number,
-  item: TreeNode
-}>(), {
-  x: 0,
-  y: 0,
-  item: null as any
-})
+  item: TreeNode,
+  isBlank?: boolean
+}>()
 
-let item = props.item as TreeNode;
+let {item, isBlank} = props;
 
 let {clickLastNode, cut, cutNode, paste, data, isSpecialTreeNode} = useAppData();
 const updatePosition = () => {
@@ -57,16 +54,15 @@ onUnmounted(() => {
 type ContextMenuType = {
   name: string | Ref<string>,
   style?: StyleValue
-  belong: "link" | "folder" | "both" | "none"
-  click?: () => void
+  belong: "link" | "folder" | "both" | "none" | "blank"
+  click?: () => void | Promise<void>
 }
 
 let message = useMessage()!;
 let dialog = useConfirmDialog();
 let {t} = useI18n();
 
-let isTop = !props.item.parentId || props.item.parentId === "0";
-let isSpecial = isSpecialTreeNode(props.item);
+let isTop = props.item.parentId === "0";
 //剪切node的父节点在导航栏中的索引
 let cutNodeParentNavigatorIdx = data.navigator.findIndex(v => v.id === cutNode.value?.parentId);
 //粘贴到的节点的父节点在导航栏中的索引
@@ -76,13 +72,12 @@ let isPasteParentToChild = !cutNode?.value?.url && [
   //且自己复制进自己
   cutNode?.value?.id === item.id,
   //或者自己的父节点复制进子节点
-  cutNodeParentNavigatorIdx < pasteNodeParentNavigatorIdx
+  cutNodeParentNavigatorIdx !== -1 && cutNodeParentNavigatorIdx < pasteNodeParentNavigatorIdx
 ].some(v => v);
-
 const menu: ContextMenuType[] = reactive([
   {
     name: t("menuAllOpen"),
-    belong: isSpecial ? "none" : "folder",
+    belong: "folder",
     click: () => {
       chrome.bookmarks.getChildren(props.item.id).then(value => {
         value.forEach(v => {
@@ -92,6 +87,72 @@ const menu: ContextMenuType[] = reactive([
         })
       })
     }
+  },
+  {
+    belong: "blank",
+    name: t("menuNewFolder"),
+    click() {
+      let v = ref("");
+      dialog.create({
+        title: t("newFolderTitle"),
+        content: () => h("div", {
+          class: "text-left"
+        }, [
+          h(MyInput, {
+            v,
+            prefix: t("name")
+          })
+        ]),
+        onOk() {
+          chrome.bookmarks.create({
+            title: v.value,
+            parentId: props.item.id
+          }).then(value => {
+            message(t("successfullyCreated"));
+            clickLastNode();
+          }, reason => {
+            message(t("failedToCreate"));
+          })
+        }
+      })
+    },
+  },
+  {
+    belong: "blank",
+    name: t("menuNewBookmark"),
+    async click() {
+      let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+      let v = ref(tab.title!);
+      let link = ref(tab.url!);
+      dialog.create({
+        title: t("newBookmarkTitle"),
+        content: () => h("div", {
+          class: "text-left"
+        }, [
+          h(MyInput, {
+            class: "mb-2",
+            v,
+            prefix: t("name")
+          }),
+          h(MyInput, {
+            v: link,
+            prefix: t("link")
+          }),
+        ]),
+        onOk() {
+          chrome.bookmarks.create({
+            title: v.value,
+            url: link.value,
+            parentId: props.item.id
+          }).then(v => {
+            message(t("successfullyCreated"));
+            clickLastNode();
+          }, reason => {
+            message(t("failedToCreate"));
+          })
+        }
+      })
+    },
   },
   {
     name: t("menuFrontDeskOpen"),
@@ -118,7 +179,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuCopyName"),
-    belong: "both",
+    belong: isBlank ? "none" : "both",
     click: () => {
       navigator.clipboard.writeText(props.item.title!).then(() => {
         message(t("copySuccess"));
@@ -127,23 +188,19 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuShear"),
-    belong: isTop ? 'none' : "both",
+    belong: some(isBlank, isTop) ? 'none' : "both",
     click() {
       cut(props.item);
     }
   },
   {
     name: t("menuPaste"),
-    belong: [
-      //不能粘贴到根目录
-      item.id === "0",
-      //不能粘贴到特殊目录
-      isSpecial,
-      //没有剪切内容
-      cutNode.value === null,
-      //不能将父文件夹粘贴到子文件夹，会死循环
-      isPasteParentToChild
-    ].some(v => v) ? 'none' : "both",
+    belong: some(
+        //没有剪切内容
+        cutNode.value === null,
+        //不能将父文件夹粘贴到子文件夹，会死循环
+        isPasteParentToChild
+    ) ? 'none' : "both",
     style: {},
     click() {
       paste(props.item).then(() => {
@@ -159,51 +216,37 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuEditor"),
-    belong: isTop ? 'none' : "both",
+    belong: some(isBlank, isTop) ? 'none' : "both",
     click() {
-      let title = props.item.title;
-      let url = props.item.url;
+      let title = ref(props.item.title);
+      let url = ref(props.item.url!);
       dialog.create({
         title: t("editBookmark"),
         content: () => {
           return h("div", {
             class: "text-left"
           }, [
-            h(NInput, {
+            h(MyInput, {
               class: "mb-2",
-              size: "small",
-              defaultValue: title,
-              onUpdateValue: (v: string) => {
-                title = v;
-              }
-            }, {
-              prefix: () => h("span", {
-                class: "font-bold"
-              }, t("name"))
+              v: title,
+              prefix: t("name"),
             }),
-            props.item.url && h(NInput, {
-              size: "small",
-              defaultValue: url,
-              onUpdateValue: (v: string) => {
-                url = v;
-              },
-            }, {
-              prefix: () => h("span", {
-                class: "font-bold"
-              }, t("link"))
+            url.value && h(MyInput, {
+              v: url,
+              prefix: t("link"),
             }),
           ])
         },
         onOk() {
           chrome.bookmarks.update(props.item.id, {
-            title,
-            url,
+            title: title.value,
+            url: url.value,
           }).then(() => {
             message(t("modificationSucceeded"));
             clickLastNode();
             /*导航栏修改后实时刷新*/
-            item.title = title;
-            item.url = url;
+            item.title = title.value;
+            item.url = url.value;
           }, reason => {
             message(t("modificationFailed"));
           })
@@ -213,7 +256,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuDelete"),
-    belong: isTop ? 'none' : "both",
+    belong: some(isBlank, isTop) ? 'none' : "both",
     style: {
       color: "#cc0000"
     },
@@ -245,7 +288,6 @@ const close = () => {
   document.getElementById("contextMenu")!.blur();
 }
 
-
 let emits = defineEmits();
 const removeContextMenu = () => {
   emits("remove");
@@ -254,20 +296,16 @@ const removeContextMenu = () => {
 </script>
 
 <template>
-  <div id="contextMenu" class="text-color border min-w-[100px] p-1 !bg-color"
+  <div id="contextMenu" class="fixed z-50 text-color border min-w-[100px] p-1 !bg-color"
        tabindex="-1"
        @blur="removeContextMenu">
     <div :style="m.style" v-for="m in menu"
          @click="m.click?.(), close()"
-         v-show="m.belong === 'both' || item.url && m.belong === 'link' || !item.url && m.belong === 'folder'"
+         v-show="m.belong === 'both' || item.url && m.belong === 'link' || !item.url && m.belong === 'folder' || isBlank && m.belong === 'blank'"
          class="py-1 hover-color px-2">{{ m.name }}
     </div>
   </div>
 </template>
 
 <style scoped>
-#contextMenu {
-  position: fixed;
-  z-index: 49;
-}
 </style>

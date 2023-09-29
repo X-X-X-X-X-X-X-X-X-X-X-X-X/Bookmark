@@ -54,6 +54,12 @@ export default {
     deletedSuccessfully: "删除成功",
     deleteFailed: "删除失败",
     deleteBookmark: "删除书签",
-    deletePrompt: "确定要删除 {msg} 吗？"
+    deletePrompt: "确定要删除 {msg} 吗？",
+    menuNewFolder: "新建文件夹",
+    newFolderTitle: "新建文件夹",
+    successfullyCreated: "创建成功",
+    failedToCreate: "创建失败",
+    menuNewBookmark: "新建书签",
+    newBookmarkTitle: "新建书签",
 }
 

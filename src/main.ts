@@ -14,7 +14,7 @@ async function boot() {
     app.use(createPinia())
     app.use(i18n);
     initStore();
-    // registerMouseRightClickEvent();
+    registerMouseRightClickEvent();
     const meta = document.createElement('meta')
     meta.name = 'naive-ui-style'
     document.head.appendChild(meta)

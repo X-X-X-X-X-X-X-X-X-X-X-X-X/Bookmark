@@ -10,6 +10,7 @@
     "128": "bookmark.png"
   },
   "permissions": [
+    "activeTab",
     "bookmarks",
     "favicon"
   ]

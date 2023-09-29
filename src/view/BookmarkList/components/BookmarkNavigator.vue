@@ -47,7 +47,7 @@ let contextMenu = useContextMenu();
         v-for="item in data.navigator"
         @mouseenter="hoverEnterEvent(item, true)"
         @mouseleave="hoverLeaveEvent"
-        @contextmenu="contextMenu.createContextMenu($event, item)"
+        @contextmenu="contextMenu.createContextMenu($event, item, true)"
         @click="navigatorTo(item)">
       {{ item.title }}
     </div>

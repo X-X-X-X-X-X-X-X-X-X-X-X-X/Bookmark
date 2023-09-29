@@ -30,8 +30,8 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
         }
     })
 
-    const isSpecialTreeNode = (node: TreeNode) => {
-        return Object.values(specialTreeNode).some(v => v.id === node.id);
+    const isSpecialTreeNode = (id: string) => {
+        return Object.values(specialTreeNode).some(v => v.id === id);
     }
 
     const replaceTree = (treeNodes: TreeNode[]) => {
@@ -64,10 +64,7 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
         }
     }
     const clickLastNode = async () => {
-        //。。。。忘记是哪里的东西会触发了
-        if (data.navigator.length === 0) {
-            return;
-        } else if (data.navigator.length === 1) {
+        if (data.navigator.length === 1) {
             await clickBookmark(data.navigator[0]);
         } else {
             await clickBookmark(data.navigator.pop() as TreeNode);
@@ -111,8 +108,10 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
         }
         cutNode.value = null;
     }
+    const getLastNode = () => data.navigator[data.navigator.length - 1];
     return {
         data,
+        getLastNode,
         clickBookmark,
         specialTreeNode,
         isSpecialTreeNode,

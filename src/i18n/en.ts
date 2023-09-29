@@ -40,7 +40,7 @@ export default {
     menuCopyLink: "copy link",
     copySuccess: "copy success",
     menuCopyName: "copy name",
-    menuShear: "shear",
+    menuShear: "cut",
     menuPaste: "paste",
     pasteSuccessfully: "paste successfully",
     pasteFailed: "paste failed",
@@ -54,5 +54,11 @@ export default {
     deletedSuccessfully: "deleted successfully",
     deleteFailed: "delete failed",
     deleteBookmark: "Delete Bookmark",
-    deletePrompt: "Are you sure you want to delete {msg}?"
+    deletePrompt: "Are you sure you want to delete {msg}?",
+    menuNewFolder: "new folder",
+    newFolderTitle: "New Folder",
+    successfullyCreated: "successfully created",
+    failedToCreate: "failed to create",
+    menuNewBookmark: "new bookmark",
+    newBookmarkTitle: "New Bookmark",
 }

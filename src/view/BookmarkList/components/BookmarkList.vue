@@ -7,8 +7,9 @@ import {contentMaxHeight} from "@/util/style";
 import Sortable, {type SortableEvent} from "sortablejs";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
+import {every} from "@/util/appUtil";
 
-let {data, clickBookmark, cutNode} = useAppData();
+let {data, clickBookmark, cutNode, getLastNode, isSpecialTreeNode} = useAppData();
 
 function faviconURL(u: string) {
   const url = new URL(chrome.runtime.getURL('/_favicon/'));
@@ -72,14 +73,22 @@ let contextMenu = useContextMenu();
       id="sortList"
       class="flex-col flex-wrap h-full  w-max"
       :class="[settingStore.displayMode === 'h' ? 'flex' : 'overflow-x-hidden overflow-y-auto']"
-      :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeight]">
-    <div
+      :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeight]"
+      @contextmenu="contextMenu.createContextMenu($event, data.navigator[data.navigator.length - 1], true)"
+  >
+    <TransitionGroup
+        name="list" tag="div"
         class="hover-color w-full flex items-center border h-8 px-2 cursor-pointer whitespace-nowrap"
         @mouseenter="hoverEnterEvent(item)"
         @mouseleave="hoverLeaveEvent"
         @contextmenu="contextMenu.createContextMenu($event, item)"
         :class="[
-            data.navigator[data.navigator.length - 1].id !== '0' ? 'drag' : '',
+            every(
+              //不是根节点
+              getLastNode().id !== '0',
+              //不是特殊节点
+              !isSpecialTreeNode(getLastNode().id)
+            ) ? 'drag' : '',
             item.active ? 'hover-active' : '',
             cutNode?.id === item.id ? 'border-dashed' : 'border-transparent'
         ]"
@@ -97,11 +106,26 @@ let contextMenu = useContextMenu();
         </span>
         {{ item.title }}
       </div>
-    </div>
+    </TransitionGroup>
   </div>
-
 </template>
 
 <style scoped>
+.list-move, /* 对移动中的元素应用的过渡 */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
 
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+
+/* 确保将离开的元素从布局流中删除
+  以便能够正确地计算移动的动画。 */
+.list-leave-active {
+  position: absolute;
+}
 </style>
