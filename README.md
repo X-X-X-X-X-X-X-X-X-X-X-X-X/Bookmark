@@ -4,6 +4,7 @@
 ## 截图
 ![](screenshot/1.png)
 ![](screenshot/2.png)
+![](screenshot/3.png)
 
 ## 功能描述：
 * 点击顶部当前导航可以设置默认启动目录。
