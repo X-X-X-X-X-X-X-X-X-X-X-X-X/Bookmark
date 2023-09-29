@@ -101,7 +101,7 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
             await chrome.bookmarks.move(cutNode.value!.id, {
                 parentId: node.parentId,
                 index: idx
-            })
+            });
         }
         //文件夹
         else {

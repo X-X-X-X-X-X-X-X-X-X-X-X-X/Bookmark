@@ -222,7 +222,7 @@ const menu: ContextMenuType[] = reactive([
         type: "warning",
         onOk() {
           chrome.bookmarks.removeTree(props.item.id).then(() => {
-            message(t("deleteSuccessfully"));
+            message(t("deletedSuccessfully"));
             let idx = data.navigator.findIndex(v => v.id === props.item.id);
             if (idx !== -1) {
               data.navigator.splice(idx);
