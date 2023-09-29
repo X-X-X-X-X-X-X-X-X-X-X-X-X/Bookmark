@@ -21,3 +21,10 @@
 
 EDGE商店链接：https://microsoftedge.microsoft.com/addons/detail/gedhecaldmggohkefcllkmpnhojmabap
 （EDGE扩展审核真的太慢太慢太慢太慢太慢了）
+
+
+## 打赏
+
+用爱发电，打赏支持一下？
+
+![](screenshot/pay.png)
