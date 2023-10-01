@@ -35,12 +35,8 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
     }
 
     const replaceTree = (treeNodes: TreeNode[]) => {
-        data.bookmarkTree.length = 0;
-        //强制刷新书签列表
-        setTimeout(() => {
-            data.bookmarkTree.push(...treeNodes)
-            resizeWidthContainer();
-        })
+        data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
+        resizeWidthContainer();
     }
     const clickBookmark = async (node: TreeNode) => {
         if (node.url) {

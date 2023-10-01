@@ -94,7 +94,7 @@ let contextMenu = useContextMenu();
         ]"
         :style="widthStyle"
         :title="item.title + (item.url ? '\n' + item.url : '')"
-        v-for="item in data.bookmarkTree" @click="clickBookmark(item), hoverLeaveEvent()" :key="item.id">
+        v-for="item in data.bookmarkTree" @click="clickBookmark(item), hoverLeaveEvent()" :key="Math.random()">
       <img
           :src="item.url ? faviconURL(item.url??'') : folderImg"
           alt=""
