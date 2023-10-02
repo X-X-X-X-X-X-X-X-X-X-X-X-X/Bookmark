@@ -59,6 +59,7 @@ onMounted(() => {
 })
 const backOpen = (e: MouseEvent, item: TreeNode) => {
   if (e.button === 1) {
+    e.preventDefault();
     clickBookmark(item, false);
   }
 }
