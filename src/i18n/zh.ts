@@ -23,6 +23,8 @@ export default {
     setDefaultStartMessage: "{msg} 已设为默认目录",
     settingOther: "其他",
     settingOtherReset: "重置",
+    settingMiddleMouse: "鼠标中键",
+    settingNo: "默认行为",
     frequentlyBookmark: "常用书签",
     emptyMessage: "这里是空的~",
     settingSmoothScroll: "平滑滚动",

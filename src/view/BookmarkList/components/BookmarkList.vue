@@ -58,7 +58,7 @@ onMounted(() => {
   });
 })
 const backOpen = (e: MouseEvent, item: TreeNode) => {
-  if (e.button === 1) {
+  if (e.button === 1 && settingStore.middleMouseBackgroundOpen) {
     e.preventDefault();
     clickBookmark(item, false);
   }

@@ -141,6 +141,20 @@ const resetFrequentlyBookmark = () => {
         </div>
       </div>
       <div class="py-1">
+        <div class="mb-1">{{ t("settingMiddleMouse") }}</div>
+        <div class="flex items-center">
+          <n-switch class="mr-2" size="large" v-model:value="settingStore.middleMouseBackgroundOpen">
+            <template #checked>
+              {{ t("menuBackgroundOpen") }}
+            </template>
+            <template #unchecked>
+              {{ t("settingNo") }}
+            </template>
+          </n-switch>
+        </div>
+      </div>
+
+      <div class="py-1">
         <div class="mb-1">{{ t("settingDisplayMode") }}</div>
         <n-radio-group size="small"
                        v-model:value="settingStore.displayMode">

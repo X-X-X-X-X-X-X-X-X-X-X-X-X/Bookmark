@@ -14,7 +14,8 @@ export let useSettingStore = defineStore("settingStore", {
             enableAnimation: true,
             layoutGap: 16,
             fontSize: 14,
-            fixedHeight: true
+            fixedHeight: true,
+            middleMouseBackgroundOpen: false,
         }
     }
 });

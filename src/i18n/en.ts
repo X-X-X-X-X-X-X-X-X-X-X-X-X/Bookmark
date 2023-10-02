@@ -23,6 +23,8 @@ export default {
     setDefaultStartMessage: "{msg} set as default directory",
     settingOther: "other",
     settingOtherReset: "reset",
+    settingMiddleMouse: "middle mouse",
+    settingNo: "default",
     frequentlyBookmark: "Frequently used bookmarks",
     emptyMessage: "Here is empty~",
     settingSmoothScroll: "smooth scroll",
