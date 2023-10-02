@@ -4,10 +4,11 @@ import {useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
 import {computed, onMounted} from "vue";
 import {contentMaxHeight} from "@/util/style";
-import Sortable, {type SortableEvent} from "sortablejs";
+import Sortable, {type MoveEvent, type SortableEvent} from "sortablejs";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
 import {every} from "@/util/appUtil";
+import type {TreeNode} from "../../../../types";
 
 let {data, clickBookmark, cutNode, getLastNode, isSpecialTreeNode} = useAppData();
 
@@ -53,12 +54,17 @@ onMounted(() => {
         })
       }
       settingStore.hoverEnterFolderMs = tempHoverTime;
-    },
+    }
   });
 })
-
+const backOpen = (e: MouseEvent, item: TreeNode) => {
+  if (e.button === 1) {
+    clickBookmark(item, false);
+  }
+}
 
 let contextMenu = useContextMenu();
+
 </script>
 <template>
   <div
@@ -81,6 +87,7 @@ let contextMenu = useContextMenu();
         class="hover-color w-full flex items-center border h-8 px-2 cursor-pointer whitespace-nowrap"
         @mouseenter="hoverEnterEvent(item)"
         @mouseleave="hoverLeaveEvent"
+        @mousedown="backOpen($event, item)"
         @contextmenu="contextMenu.createContextMenu($event, item)"
         :class="[
             every(
@@ -127,5 +134,9 @@ let contextMenu = useContextMenu();
   以便能够正确地计算移动的动画。 */
 .list-leave-active {
   position: absolute;
+}
+
+.red {
+  background: red;
 }
 </style>

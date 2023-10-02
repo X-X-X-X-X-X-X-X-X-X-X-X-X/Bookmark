@@ -38,13 +38,13 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
         data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
         resizeWidthContainer();
     }
-    const clickBookmark = async (node: TreeNode) => {
+    const clickBookmark = async (node: TreeNode, active?: boolean) => {
         if (node.url) {
             //如果启用常用书签，进行记录
             if (settingStore.enableFrequentlyUsedBookmarks) {
                 updateFrequentlyUsedBookmarks(node);
             }
-            await createTab(node.url);
+            await createTab(node.url, active);
         } else {
             //不是根目录和搜索结果，PUSH进导航
             if (node.id !== data.navigator[0].id && data.navigator[data.navigator.length - 1].id !== specialTreeNode.search.id) {
