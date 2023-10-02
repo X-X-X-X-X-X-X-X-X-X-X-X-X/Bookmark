@@ -135,8 +135,4 @@ let contextMenu = useContextMenu();
 .list-leave-active {
   position: absolute;
 }
-
-.red {
-  background: red;
-}
 </style>
