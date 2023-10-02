@@ -12,7 +12,7 @@ const search = (() => {
     const toSearch = async () => {
       if (data) {
         if (this.value !== '') {
-          replaceTree(await chrome.bookmarks.search(this.value));
+          replaceTree(await chrome.bookmarks.search(this.value), "search");
           if (data.navigator[data.navigator.length - 1].id !== specialTreeNode.search.id) {
             data.navigator.push(specialTreeNode.search)
           }

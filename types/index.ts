@@ -4,7 +4,7 @@ import type {Component, DefineComponent, Ref} from "vue";
 export type TreeNode = chrome.bookmarks.BookmarkTreeNode & {
     count?: number,
     active?: boolean,
-    isNavigator?: boolean,
+    type?: string
 };
 
 

@@ -34,7 +34,8 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
         return Object.values(specialTreeNode).some(v => v.id === id);
     }
 
-    const replaceTree = (treeNodes: TreeNode[]) => {
+    const replaceTree = (treeNodes: TreeNode[], type?: string) => {
+        treeNodes.forEach(v => v.type = type ?? "");
         data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
         resizeWidthContainer();
     }
@@ -53,7 +54,7 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
             //常用书签
             if (node.id === specialTreeNode.frequently.id) {
                 if (settingStore.enableFrequentlyUsedBookmarks) {
-                    replaceTree(storageGet<TreeNode[]>(FREQUENTLY_USED_BOOKMARKS_KEY) || []);
+                    replaceTree(storageGet<TreeNode[]>(FREQUENTLY_USED_BOOKMARKS_KEY) || [], "frequently");
                 } else {
                     await clickLastNode();
                     return;
