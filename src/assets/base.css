@@ -16,7 +16,7 @@
 
 body {
     background: var(--bg-color);
-    line-height: 1.4;
+    line-height: 1.6 !important;
     min-width: 9rem;
 }
 
