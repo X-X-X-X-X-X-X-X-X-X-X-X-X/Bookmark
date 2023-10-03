@@ -77,3 +77,9 @@ body {
 .n-radio-group.n-radio-group--button-group .n-radio-group__splitor {
     display: none;
 }
+
+.n-radio-group .n-radio-button .n-radio-button__state-border {
+    bottom: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+}
