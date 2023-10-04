@@ -4,7 +4,7 @@ import type {TreeNode} from "../../../../../types";
 import {createTab, some} from "@/util/appUtil";
 import {useMessage} from "@/util/useMessage";
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
-import {useAppData} from "@/util/useAppData";
+import {setAsStart, useAppData} from "@/util/useAppData";
 import {useI18n} from "vue-i18n";
 import MyInput from "@/view/BookmarkList/components/dialog/MyInput.vue";
 
@@ -17,7 +17,7 @@ const props = defineProps<{
 
 let {item, isBlank} = props;
 
-let {clickLastNode, cut, cutNode, paste, data, isSpecialTreeNode} = useAppData();
+let {clickLastNode, cut, cutNode, paste, data} = useAppData();
 const updatePosition = () => {
   let contextMenu = document.getElementById("contextMenu")!;
   let {clientWidth, clientHeight} = document.body;
@@ -75,6 +75,16 @@ let isPasteParentToChild = !cutNode?.value?.url && [
   cutNodeParentNavigatorIdx !== -1 && cutNodeParentNavigatorIdx < pasteNodeParentNavigatorIdx
 ].some(v => v);
 const menu: ContextMenuType[] = reactive([
+  {
+    name: t("menuSetAsStart"),
+    belong: "folder",
+    click: async () => {
+      await setAsStart(props.item, await chrome.bookmarks.getChildren(props.item.id));
+      message?.(t("setDefaultStartMessage", {
+        msg: props.item.title
+      }))
+    }
+  },
   {
     name: t("menuAllOpen"),
     belong: "folder",

@@ -63,5 +63,6 @@ export default {
     failedToCreate: "创建失败",
     menuNewBookmark: "新建书签",
     newBookmarkTitle: "新建书签",
+    menuSetAsStart: "设为启动目录"
 }
 

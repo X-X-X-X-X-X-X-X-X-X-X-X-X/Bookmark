@@ -1,16 +1,18 @@
-import {computed, inject, nextTick, reactive, ref} from "vue";
-import {FREQUENTLY_USED_BOOKMARKS_KEY, PROVIDE_APP_DATA_KEY} from "@/util/constants";
+import {computed, inject, reactive, ref} from "vue";
+import {
+    DEFAULT_START_DATA_KEY,
+    DEFAULT_START_KEY,
+    FREQUENTLY_USED_BOOKMARKS_KEY,
+    PROVIDE_APP_DATA_KEY
+} from "@/util/constants";
 import type {AppData, TreeNode} from "../../types";
 import {useSettingStore} from "@/store/settingStore";
-import {storageGet, updateFrequentlyUsedBookmarks} from "@/util/storage";
+import {storageGet, storageSet, updateFrequentlyUsedBookmarks} from "@/util/storage";
 import {createTab, resizeWidthContainer} from "@/util/appUtil";
 import {useI18n} from "vue-i18n";
+import {useMessage} from "@/util/useMessage";
 
 const cutNode = ref<TreeNode | null>(null);
-
-/*
-* 这破i18n首次加载不进来会报错，giao!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-* */
 export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof useI18n>) => {
     let data = defaultData || inject<AppData>(PROVIDE_APP_DATA_KEY, {
         bookmarkTree: [],
@@ -123,5 +125,14 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
         cutNode,
         cut,
         paste
+    }
+}
+
+
+export const setAsStart = async (node: TreeNode, data: TreeNode[] = []) => {
+    //不是搜索结果
+    if (node.id !== "-1") {
+        storageSet(DEFAULT_START_KEY, node);
+        storageSet(DEFAULT_START_DATA_KEY, data);
     }
 }

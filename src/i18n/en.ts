@@ -34,8 +34,8 @@ export default {
     search: "search",
     searchResult: "search result",
     bookmarkManager: "bookmark manager",
-    confirm: "confirm",
-    cancel: "cancel",
+    confirm: "YES",
+    cancel: "NO",
     menuAllOpen: "open all",
     menuFrontDeskOpen: "foreground open",
     menuBackgroundOpen: "background open",
@@ -55,7 +55,7 @@ export default {
     menuDelete: "delete",
     deletedSuccessfully: "deleted successfully",
     deleteFailed: "delete failed",
-    deleteBookmark: "Delete Bookmark",
+    deleteBookmark: "Delete",
     deletePrompt: "Are you sure you want to delete {msg}?",
     menuNewFolder: "new folder",
     newFolderTitle: "New Folder",
@@ -63,4 +63,5 @@ export default {
     failedToCreate: "failed to create",
     menuNewBookmark: "new bookmark",
     newBookmarkTitle: "New Bookmark",
+    menuSetAsStart: "set as start"
 }

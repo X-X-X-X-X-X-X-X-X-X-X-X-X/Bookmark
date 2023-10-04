@@ -2,7 +2,7 @@
 import {storageSet} from "@/util/storage";
 import {DEFAULT_START_DATA_KEY, DEFAULT_START_KEY} from "@/util/constants";
 import type {TreeNode} from "../../../../types";
-import {useAppData} from "@/util/useAppData";
+import {setAsStart, useAppData} from "@/util/useAppData";
 import {useMessage} from "@/util/useMessage";
 import {useI18n} from "vue-i18n";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
@@ -15,14 +15,10 @@ let {t} = useI18n();
 const navigatorTo = (node: TreeNode) => {
   //设为默认目录
   if (node.id === data.navigator[data.navigator.length - 1].id) {
-    //不是搜索结果页
-    if (node.id !== "-1") {
-      storageSet(DEFAULT_START_KEY, node);
-      storageSet(DEFAULT_START_DATA_KEY, data.bookmarkTree);
-      message?.(t("setDefaultStartMessage", {
-        msg: node.title
-      }))
-    }
+    setAsStart(node, data.bookmarkTree);
+    message?.(t("setDefaultStartMessage", {
+      msg: node.title
+    }))
   } else {
     let index = data.navigator.findIndex(v => v.id === node.id);
     index === 0 ? index = 1 : null;
