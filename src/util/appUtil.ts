@@ -68,14 +68,15 @@ export const initStore = () => {
     })
 }
 
-export const resizeWidthContainer = (s?: string) => {
+export const resizeWidthContainer = (w?: string, h?: string) => {
     return new Promise((resolve, reject) => {
         let {enableAnimation, displayMode} = useSettingStore();
         let useDuration = enableAnimation && displayMode === "h";
         setTimeout(() => {
             let widthContainer = document.getElementById("widthContainer");
             let widthContent = document.getElementById("widthContent");
-            widthContainer!.style.width = s || widthContent!.scrollWidth + "px";
+            widthContainer!.style.width = w || widthContent!.scrollWidth + "px";
+            widthContainer!.style.height = h || widthContent!.scrollHeight + "px";
             setTimeout(resolve, useDuration ? 150 : 0);
         }, useDuration ? 100 : 0)
     })

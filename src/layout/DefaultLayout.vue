@@ -31,6 +31,7 @@ let settingStore = useSettingStore();
 
 <template>
   <div id="widthContainer"
+       class="overflow-hidden"
        :class="[settingStore.enableAnimation ? 'transition-all' : '']">
     <div id="widthContent" class="pt-8 pb-8 text-color w-max">
       <div class="fixed border-b top-0 z-20 h-8 w-full bg-color">
