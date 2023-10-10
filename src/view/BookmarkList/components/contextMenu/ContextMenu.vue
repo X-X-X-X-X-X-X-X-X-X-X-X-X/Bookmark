@@ -306,7 +306,7 @@ const removeContextMenu = () => {
 </script>
 
 <template>
-  <div id="contextMenu" class="fixed z-50 text-color border min-w-[100px] p-1 !bg-color"
+  <div id="contextMenu" class="fixed max-h-screen overflow-y-auto z-50 text-color border min-w-[100px] p-1 !bg-color"
        tabindex="-1"
        @blur="removeContextMenu">
     <div :style="m.style" v-for="m in menu"

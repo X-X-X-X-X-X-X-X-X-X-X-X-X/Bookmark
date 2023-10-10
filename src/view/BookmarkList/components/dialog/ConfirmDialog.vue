@@ -30,7 +30,7 @@ let {t} = useI18n();
 
 <template>
   <Dialog ref="dialog">
-    <div class="bg-color border w-[90vw] max-w-[20rem] text-center">
+    <div class="bg-color border w-[90vw] max-w-[20rem] text-center max-h-screen overflow-y-auto">
       <div class="pt-2 pb-1 px-2 font-bold text-[1.2em] ">
         <span class="relative">
           <component :is="titleIcon" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[130%]" :class="[
