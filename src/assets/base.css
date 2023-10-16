@@ -82,4 +82,9 @@ body {
     bottom: 0 !important;
     top: 0 !important;
     right: 0 !important;
+    left: 0 !important;
+}
+.n-radio-group.n-radio-group--button-group .n-radio-button {
+    height: auto!important;
+    line-height: 26px!important;
 }

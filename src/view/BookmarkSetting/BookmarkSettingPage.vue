@@ -2,11 +2,11 @@
 import DefaultLayout from "@/layout/DefaultLayout.vue";
 import {LeftOutlined} from "@ant-design/icons-vue";
 import {useRouter} from "vue-router";
-import {NButton, NInputNumber, NRadioButton, NRadioGroup, NSlider, NSwitch} from "naive-ui";
+import {NButton, NInputNumber, NRadioButton, NRadioGroup, NSelect, NSlider, NSwitch} from "naive-ui";
 import {useSettingStore} from "@/store/settingStore";
 import {FREQUENTLY_USED_BOOKMARKS_KEY, SETTING_DATA_KEY} from "@/util/constants";
 import {storageSet} from "@/util/storage";
-import {computed, onActivated, reactive, ref} from "vue";
+import {computed, onActivated, onMounted, reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {contentMaxHeight} from "@/util/style";
 
@@ -57,6 +57,29 @@ const resetFrequentlyBookmark = () => {
   storageSet(FREQUENTLY_USED_BOOKMARKS_KEY, []);
   layout.value.popMessage(t("settingFrequentlyEmptyMessage"));
 }
+
+const fontList = ref([
+  {
+    label: computed(() => t('defaultFont')),
+    value: "initial",
+    style: {
+      fontFamily: "initial"
+    }
+  }
+]);
+
+onMounted(() => {
+  chrome.fontSettings.getFontList((list) => {
+    fontList.value.push(...list.map(v => ({
+      label: v.displayName + " - " + v.fontId,
+      value: v.fontId,
+      style: {
+        fontFamily: v.fontId
+      }
+    })))
+  })
+})
+
 </script>
 
 <template>
@@ -83,6 +106,10 @@ const resetFrequentlyBookmark = () => {
         <div class="mb-1">{{ t("settingFontSize") }}</div>
         <n-input-number v-model:value="settingStore.fontSize" :step="2" :min="12" :max="30"
                         size="small"/>
+      </div>
+      <div class="py-1">
+        <div class="mb-1">{{ t("customFont") }}</div>
+        <n-select :options="fontList" size="small" v-model:value="settingStore.fontFamily"></n-select>
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingSmoothScroll") }}</div>

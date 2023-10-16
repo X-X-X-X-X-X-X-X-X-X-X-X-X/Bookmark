@@ -16,10 +16,14 @@ export const useNaiveUI = () => {
             fontSizeHuge: fontSize,
             fontSizeMedium: fontSize,
             fontSizeTiny: fontSize,
-            fontSizeMini: fontSize
+            fontSizeMini: fontSize,
+        },
+        InternalSelectMenu: {
+            optionHeightMedium: "28px",
         }
     })
     let osTheme = useOsTheme();
+    darkTheme.common.popoverColor = "var(--bg-color)";
     let theme = computed(() => osTheme.value === "dark" ? darkTheme : null);
     return {
         naiveLocale,

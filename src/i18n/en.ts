@@ -63,5 +63,7 @@ export default {
     failedToCreate: "failed to create",
     menuNewBookmark: "new bookmark",
     newBookmarkTitle: "New Bookmark",
-    menuSetAsStart: "set as start"
+    menuSetAsStart: "set as start",
+    customFont: "custom font",
+    defaultFont: "default",
 }

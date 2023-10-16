@@ -42,7 +42,7 @@ export const initStore = () => {
     settingStore.$subscribe((mutation, state) => {
         storageSet(SETTING_DATA_KEY, state);
     })
-    let {displayMode, layoutGap, fontSize} = toRefs(settingStore);
+    let {displayMode, layoutGap, fontSize, fontFamily} = toRefs(settingStore);
     watch(displayMode, (v: string) => {
         if (v === "h") {
             registerHorizontalScrollEvent();
@@ -54,18 +54,15 @@ export const initStore = () => {
     });
     watch(layoutGap, value => {
         let html = document.querySelector("html");
-        if (html) {
-            html.style.fontSize = value + "px";
-        }
-    }, {
-        immediate: true
-    })
+        html!.style.fontSize = value + "px";
+    }, {immediate: true})
     watch(fontSize, value => {
         document.body.style.fontSize = value + "px";
-        document.body.style.fontFamily = "initial";
-    }, {
-        immediate: true
-    })
+    }, {immediate: true})
+
+    watch(fontFamily, value => {
+        document.body.style.fontFamily = value || "initial";
+    }, {immediate: true})
 }
 
 export const resizeWidthContainer = (w?: string, h?: string) => {
