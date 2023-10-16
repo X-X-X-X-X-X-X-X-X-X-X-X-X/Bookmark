@@ -79,7 +79,7 @@ const menu: ContextMenuType[] = reactive([
     name: t("menuSetAsStart"),
     belong: "folder",
     click: async () => {
-      await setAsStart(props.item, await chrome.bookmarks.getChildren(props.item.id));
+      await setAsStart([...data.navigator, props.item], await chrome.bookmarks.getChildren(props.item.id));
       message?.(t("setDefaultStartMessage", {
         msg: props.item.title
       }))

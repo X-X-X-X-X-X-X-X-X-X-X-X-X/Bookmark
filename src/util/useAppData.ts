@@ -10,7 +10,6 @@ import {useSettingStore} from "@/store/settingStore";
 import {storageGet, storageSet, updateFrequentlyUsedBookmarks} from "@/util/storage";
 import {createTab, resizeWidthContainer} from "@/util/appUtil";
 import {useI18n} from "vue-i18n";
-import {useMessage} from "@/util/useMessage";
 
 const cutNode = ref<TreeNode | null>(null);
 export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof useI18n>) => {
@@ -67,10 +66,16 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
         }
     }
     const clickLastNode = async () => {
-        if (data.navigator.length === 1) {
-            await clickBookmark(data.navigator[0]);
-        } else {
-            await clickBookmark(data.navigator.pop() as TreeNode);
+        try {
+            if (data.navigator.length === 1) {
+                await clickBookmark(data.navigator[0]);
+            } else {
+                await clickBookmark(data.navigator.pop() as TreeNode);
+            }
+        } catch (e) {
+            //一般来讲为启动目录已被删除会触发
+            data.navigator.splice(1);
+            clickLastNode();
         }
     }
     const back = async () => {
@@ -129,10 +134,17 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
 }
 
 
-export const setAsStart = async (node: TreeNode, data: TreeNode[] = []) => {
+export const setAsStart = async (node: TreeNode | TreeNode[], data: TreeNode[] = []) => {
+    let lastNode: TreeNode;
+    if (Array.isArray(node)) {
+        lastNode = node[node.length - 1];
+    } else {
+        lastNode = node;
+    }
     //不是搜索结果
-    if (node.id !== "-1") {
+    if (lastNode.id !== "-1") {
         storageSet(DEFAULT_START_KEY, node);
         storageSet(DEFAULT_START_DATA_KEY, data);
+        return true;
     }
 }

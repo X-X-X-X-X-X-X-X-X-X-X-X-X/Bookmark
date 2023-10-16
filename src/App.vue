@@ -53,7 +53,13 @@ chrome.bookmarks.getTree(all => {
   data.navigator.push(all[0]);
   let defaultStartNode = storageGet(DEFAULT_START_KEY);
   if (defaultStartNode) {
-    data.navigator.push(defaultStartNode);
+    //兼容老版本。。。。。
+    if (Array.isArray(defaultStartNode)) {
+      data.navigator.length = 0;
+      data.navigator.push(...defaultStartNode);
+    } else {
+      data.navigator.push(defaultStartNode);
+    }
   }
   //首次点击。确定宽度
   useAppData(data, i18n).clickLastNode();
