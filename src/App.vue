@@ -63,8 +63,7 @@ chrome.bookmarks.getTree(all => {
       });
       data.navigator.push(...defaultStartNode);
     } else {
-      updateNode(defaultStartNode);
-      data.navigator.push(defaultStartNode);
+      data.navigator.push(updateNode(defaultStartNode));
     }
   }
   //首次点击。确定宽度
