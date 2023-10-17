@@ -10,7 +10,7 @@ import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useCont
 import {every} from "@/util/appUtil";
 import type {TreeNode} from "../../../../types";
 
-let {data, clickBookmark, cutNode, getLastNode, isSpecialTreeNode} = useAppData();
+let {data, clickBookmark, cutNode, getLastNode, isSpecialTreeNode, specialTreeNode} = useAppData();
 
 function faviconURL(u: string) {
   const url = new URL(chrome.runtime.getURL('/_favicon/'));
@@ -66,6 +66,14 @@ const backOpen = (e: MouseEvent, item: TreeNode) => {
 
 let contextMenu = useContextMenu();
 
+const createContextMenu = (e: MouseEvent, item: TreeNode) => {
+  if (getLastNode().id === specialTreeNode.frequently.id) {
+    contextMenu.createSpecialContextMenu(e, item, 'frequent')
+  } else {
+    contextMenu.createContextMenu(e, item)
+  }
+}
+
 </script>
 <template>
   <div
@@ -89,8 +97,9 @@ let contextMenu = useContextMenu();
         @mouseenter="hoverEnterEvent(item)"
         @mouseleave="hoverLeaveEvent"
         @mousedown="backOpen($event, item)"
-        @contextmenu="contextMenu.createContextMenu($event, item)"
+        @contextmenu="createContextMenu($event, item)"
         :class="[
+            /*因为所有节点公用一个SortAble，所以只能以这种动态类名形式控制*/
             every(
               //不是根节点
               getLastNode().id !== '0',
@@ -122,7 +131,7 @@ let contextMenu = useContextMenu();
 .list-move, /* 对移动中的元素应用的过渡 */
 .list-enter-active,
 .list-leave-active {
-  transition: all 0.5s ease;
+  transition: all 0.05s ease;
 }
 
 .list-enter-from,

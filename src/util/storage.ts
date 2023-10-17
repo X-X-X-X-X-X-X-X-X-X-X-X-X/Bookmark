@@ -13,18 +13,25 @@ export const storageSet = (key: string, data: any) => {
 };
 
 
-export const updateFrequentlyUsedBookmarks = (node: TreeNode) => {
+export const updateFrequentlyUsedBookmarks = (node: TreeNode, act: "add" | "del" = "add") => {
     let frequentlyUsedBookmarks = storageGet<TreeNode[]>(FREQUENTLY_USED_BOOKMARKS_KEY) || [];
-    let findBookmark = frequentlyUsedBookmarks.find(v => node.id === v.id);
-    if (!findBookmark) {
-        findBookmark = {
-            ...node,
-            count: 0
-        };
-        frequentlyUsedBookmarks.unshift(findBookmark);
-    }
-    if (findBookmark.count !== undefined) {
-        ++findBookmark.count;
+    let findBookmarkIdx = frequentlyUsedBookmarks.findIndex(v => node.id === v.id);
+    let findBookmark = frequentlyUsedBookmarks[findBookmarkIdx];
+    if (act === "del") {
+        if (findBookmark) {
+            frequentlyUsedBookmarks.splice(findBookmarkIdx, 1);
+        }
+    } else if (act === "add") {
+        if (!findBookmark) {
+            findBookmark = {
+                ...node,
+                count: 0
+            };
+            frequentlyUsedBookmarks.unshift(findBookmark);
+        }
+        if (findBookmark.count !== undefined) {
+            ++findBookmark.count;
+        }
     }
     storageSet(FREQUENTLY_USED_BOOKMARKS_KEY, frequentlyUsedBookmarks.sort((a, b) => (b.count ?? 0) - (a.count ?? 0)));
 }

@@ -1,4 +1,4 @@
-import {computed, inject, reactive, ref} from "vue";
+import {computed, inject, nextTick, reactive, ref} from "vue";
 import {
     DEFAULT_START_DATA_KEY,
     DEFAULT_START_KEY,
@@ -116,8 +116,23 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
         }
         cutNode.value = null;
     }
+    const updateNode = (node: TreeNode) => {
+        for (let [k, v] of Object.entries(specialTreeNode)) {
+            if (v.id === node.id) {
+                return specialTreeNode[k as keyof typeof specialTreeNode];
+            }
+        }
+        chrome.bookmarks.get(node.id).then((bookmarkNodes) => {
+            let bookmarkTreeNode = bookmarkNodes[0];
+            Object.assign(node, bookmarkTreeNode);
+        }).catch(reason => {
+        });
+        return node;
+    }
+
     const getLastNode = () => data.navigator[data.navigator.length - 1];
     return {
+        updateNode,
         data,
         getLastNode,
         clickBookmark,

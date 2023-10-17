@@ -7,7 +7,6 @@ export type TreeNode = chrome.bookmarks.BookmarkTreeNode & {
     type?: string
 };
 
-
 export type ConfirmDialogOptions = Partial<{
     title: string | Ref<string>,
     content: Component,

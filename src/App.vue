@@ -52,17 +52,23 @@ chrome.bookmarks.getTree(all => {
   }))
   data.navigator.push(all[0]);
   let defaultStartNode = storageGet(DEFAULT_START_KEY);
+  let {clickLastNode, updateNode} = useAppData(data, i18n);
   if (defaultStartNode) {
     //兼容老版本。。。。。
     if (Array.isArray(defaultStartNode)) {
-      data.navigator.length = 0;
+      data.navigator.splice(1);
+      defaultStartNode.splice(0, 1);
+      defaultStartNode.forEach((v, k) => {
+        defaultStartNode[k] = updateNode(v);
+      });
       data.navigator.push(...defaultStartNode);
     } else {
+      updateNode(defaultStartNode);
       data.navigator.push(defaultStartNode);
     }
   }
   //首次点击。确定宽度
-  useAppData(data, i18n).clickLastNode();
+  clickLastNode();
   mounted.value = true;
 })
 

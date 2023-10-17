@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {h, onMounted, onUnmounted, reactive, ref, type Ref, type StyleValue} from "vue";
+import {h, nextTick, onMounted, onUnmounted, reactive, ref, type Ref, type StyleValue} from "vue";
 import type {TreeNode} from "../../../../../types";
 import {createTab, some} from "@/util/appUtil";
 import {useMessage} from "@/util/useMessage";
@@ -7,15 +7,18 @@ import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog"
 import {setAsStart, useAppData} from "@/util/useAppData";
 import {useI18n} from "vue-i18n";
 import MyInput from "@/view/BookmarkList/components/dialog/MyInput.vue";
+import type {SpecialMenuType} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
+import {updateFrequentlyUsedBookmarks} from "@/util/storage";
 
 const props = defineProps<{
   x: number,
   y: number,
   item: TreeNode,
-  isBlank?: boolean
+  isBlank?: boolean,
+  specialType?: SpecialMenuType
 }>()
 
-let {item, isBlank} = props;
+let {item, isBlank, specialType} = props;
 
 let {clickLastNode, cut, cutNode, paste, data} = useAppData();
 const updatePosition = () => {
@@ -40,7 +43,14 @@ const updatePosition = () => {
   contextMenu.style.top = y + "px";
 }
 
-onMounted(() => {
+onMounted(async () => {
+  //特殊节点菜单
+  if (specialType) {
+    let specialMenu = menu.filter(v => v.belong === specialType);
+    menu.length = 0;
+    menu.push(...specialMenu);
+  }
+  await nextTick();
   props.item.active = true;
   updatePosition();
   document.getElementById("contextMenu")!.focus();
@@ -54,7 +64,7 @@ onUnmounted(() => {
 type ContextMenuType = {
   name: string | Ref<string>,
   style?: StyleValue
-  belong: "link" | "folder" | "both" | "none" | "blank"
+  belong: "link" | "folder" | "both" | "none" | "blank" | SpecialMenuType,
   click?: () => void | Promise<void>
 }
 
@@ -292,6 +302,15 @@ const menu: ContextMenuType[] = reactive([
       })
     }
   },
+  {
+    name: t("menuDelete"),
+    belong: "frequent",
+    click: () => {
+      updateFrequentlyUsedBookmarks(props.item, "del");
+      message(t("deletedSuccessfully"));
+      clickLastNode();
+    }
+  }
 ])
 
 const close = () => {
@@ -311,7 +330,7 @@ const removeContextMenu = () => {
        @blur="removeContextMenu">
     <div :style="m.style" v-for="m in menu"
          @click="m.click?.(), close()"
-         v-show="m.belong === 'both' || item.url && m.belong === 'link' || !item.url && m.belong === 'folder' || isBlank && m.belong === 'blank'"
+         v-show="m.belong === 'both' || item.url && m.belong === 'link' || !item.url && m.belong === 'folder' || isBlank && m.belong === 'blank' || m.belong === specialType"
          class="py-1 hover-color px-2">{{ m.name }}
     </div>
   </div>
