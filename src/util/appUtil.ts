@@ -5,8 +5,12 @@ import {toRefs, watch} from "vue";
 import {useI18n} from "vue-i18n";
 
 function wheelListener(event: WheelEvent) {
-    /*防止两个滚动条互相争抢*/
-    if (document.documentElement.scrollHeight <= document.documentElement.clientHeight) {
+    // /*防止两个滚动条互相争抢*/
+    if (
+        document.documentElement.scrollHeight <= document.documentElement.clientHeight ||
+        // 误差为1可能为系统缩放导致字体大小出现精度问题，当然这个解决办法并不是很好
+        document.documentElement.scrollHeight - document.documentElement.clientHeight <= 1
+    ) {
         let {enableSmoothScroll} = useSettingStore();
         window.scrollTo({
             behavior: enableSmoothScroll ? "smooth" : "auto",
@@ -15,6 +19,7 @@ function wheelListener(event: WheelEvent) {
         });
     }
 }
+
 
 export const registerHorizontalScrollEvent = () => {
     window.addEventListener('wheel', wheelListener, {

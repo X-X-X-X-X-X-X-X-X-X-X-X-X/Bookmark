@@ -2,24 +2,61 @@
 import DefaultLayout from "@/layout/DefaultLayout.vue";
 import {LeftOutlined} from "@ant-design/icons-vue";
 import {useRouter} from "vue-router";
-import {NButton, NInputNumber, NRadioButton, NRadioGroup, NSelect, NSlider, NSwitch} from "naive-ui";
+import {NButton, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect, NSlider, NSwitch} from "naive-ui";
 import {useSettingStore} from "@/store/settingStore";
 import {FREQUENTLY_USED_BOOKMARKS_KEY, SETTING_DATA_KEY} from "@/util/constants";
 import {storageSet} from "@/util/storage";
-import {computed, onActivated, onMounted, reactive, ref} from "vue";
+import {computed, h, onActivated, onMounted, reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {contentMaxHeight} from "@/util/style";
+//@ts-ignore
+import fmt from "json-format"
+import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
+import {useMessage} from "@/util/useMessage";
 
 let {t} = useI18n();
 let router = useRouter();
 let settingStore = useSettingStore();
-let curWidth = ref(settingStore.columnWidth);
-onActivated(() => {
-  if (curWidth.value !== settingStore.columnWidth) {
-    curWidth.value = settingStore.columnWidth
-  }
-})
+let dialog = useConfirmDialog();
+
+let settingJson = computed(() => fmt(settingStore.$state, {
+  type: 'space',
+  size: 2
+}))
+// let curWidth = ref(settingStore.columnWidth);
+// onActivated(() => {
+//   if (curWidth.value !== settingStore.columnWidth) {
+//     curWidth.value = settingStore.columnWidth
+//   }
+// })
 const layout = ref();
+
+const importSetting = () => {
+  let v = ref('');
+  dialog.create({
+    title: t("importSetting"),
+    content() {
+      return h(NInput, {
+        type: "textarea",
+        value: v.value,
+        class: "text-left",
+        rows: 5,
+        onUpdateValue(val) {
+          v.value = val;
+        }
+      })
+    },
+    onOk() {
+      try {
+        Object.assign(settingStore.$state, JSON.parse(v.value));
+        layout.value.popMessage(t("importSettingSuccess"))
+      } catch (e: any) {
+        layout.value.popMessage(t("importSettingFail"))
+      }
+    }
+  })
+}
+
 const displayMode = reactive([
   {
     value: "h",
@@ -87,10 +124,12 @@ onMounted(() => {
     <template #top>
       <div class="font-bold flex justify-center items-center h-full">{{ t('setting') }}</div>
     </template>
-    <div class="min-w-[9rem] px-2 py-1 overflow-auto w-max" :style="[`width: ${curWidth}rem`,contentMaxHeight]">
+    <div class="min-w-[9rem] px-2 py-1 overflow-auto w-max" :style="[`width: ${settingStore.columnWidth}rem`,contentMaxHeight]">
       <div class="py-1">
         <div class="mb-1">{{ t("settingColumnWidth") }}</div>
-        <n-slider :min="2" :max="50" v-model:value="settingStore.columnWidth"></n-slider>
+        <n-input-number v-model:value="settingStore.columnWidth" :min="2" :max="50"
+                        size="small"/>
+<!--        <n-slider :min="2" :max="50" v-model:value="settingStore.columnWidth"></n-slider>-->
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingHoverEnter") }}</div>
@@ -220,11 +259,23 @@ onMounted(() => {
           />
         </n-radio-group>
       </div>
-      <div class="py-1">
+      <div class="py-1 whitespace-nowrap">
         <div class="mb-1">{{ t("settingOther") }}</div>
-        <n-button @click="settingStore.$reset()" size="small" class="mr-2" ghost>
+        <n-button @click="settingStore.$reset()" size="small" class="!mr-2" ghost>
           {{ t("settingOtherReset") }}
         </n-button>
+        <n-button @click="importSetting" size="small" class="mr-2" ghost>
+          {{ t("importSetting") }}
+        </n-button>
+      </div>
+      <div class="py-1">
+        <div class="mb-1">{{ t("currentSettingJson") }}</div>
+        <n-input
+            readonly
+            :value="settingJson"
+            type="textarea"
+            rows="5"
+        />
       </div>
     </div>
     <template #bottom>
@@ -238,5 +289,8 @@ onMounted(() => {
   </DefaultLayout>
 </template>
 
-<style scoped>
+<style>
+.n-input.n-input--textarea .n-input__textarea-el, .n-input.n-input--textarea .n-input__textarea-mirror, .n-input.n-input--textarea .n-input__placeholder {
+  word-break: break-all !important;
+}
 </style>

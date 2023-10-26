@@ -1,8 +1,8 @@
 {
   "name": "Bookmark-疯子的天空",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "manifest_version": 3,
-  "description": "支持横向显示更多书签，让书签再次变得好用！make bookmarks great again!",
+  "description": "支持横向显示更多书签(收藏夹)，让书签再次变得好用！make bookmarks great again!",
   "action": {
     "default_popup": "index.html"
   },

@@ -66,5 +66,9 @@ export default {
     menuSetAsStart: "设为启动目录",
     customFont: "自定义字体",
     defaultFont: "默认",
+    currentSettingJson: "当前配置",
+    importSetting: "导入配置",
+    importSettingSuccess: "导入成功",
+    importSettingFail: "导入失败",
 }
 

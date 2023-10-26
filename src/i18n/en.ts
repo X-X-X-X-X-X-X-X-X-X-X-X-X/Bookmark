@@ -66,4 +66,8 @@ export default {
     menuSetAsStart: "set as start",
     customFont: "custom font",
     defaultFont: "default",
+    currentSettingJson: "setting json",
+    importSetting: "import setting",
+    importSettingSuccess: "import success",
+    importSettingFail: "import fail",
 }
