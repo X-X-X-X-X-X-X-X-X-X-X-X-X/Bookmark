@@ -70,4 +70,5 @@ export default {
     importSetting: "import setting",
     importSettingSuccess: "import success",
     importSettingFail: "import fail",
+    hiddenScrollbar: "hide scroll bar"
 }

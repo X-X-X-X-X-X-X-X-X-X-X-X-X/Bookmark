@@ -47,7 +47,7 @@ export const initStore = () => {
     settingStore.$subscribe((mutation, state) => {
         storageSet(SETTING_DATA_KEY, state);
     })
-    let {displayMode, layoutGap, fontSize, fontFamily} = toRefs(settingStore);
+    let {displayMode, layoutGap, fontSize, fontFamily, hiddenScrollBar} = toRefs(settingStore);
     watch(displayMode, (v: string) => {
         if (v === "h") {
             registerHorizontalScrollEvent();
@@ -57,9 +57,9 @@ export const initStore = () => {
     }, {
         immediate: true
     });
+    let html = document.querySelector("html")!;
     watch(layoutGap, value => {
-        let html = document.querySelector("html");
-        html!.style.fontSize = value + "px";
+        html.style.fontSize = value + "px";
     }, {immediate: true})
     watch(fontSize, value => {
         document.body.style.fontSize = value + "px";
@@ -68,6 +68,13 @@ export const initStore = () => {
     watch(fontFamily, value => {
         document.body.style.fontFamily = value || "initial";
     }, {immediate: true})
+    watch(hiddenScrollBar, value => {
+        if (value) {
+            html.classList.add("noScrollBar");
+        } else {
+            html.classList.remove("noScrollBar");
+        }
+    }, {immediate: true});
 }
 
 export const resizeWidthContainer = (w?: string, h?: string) => {

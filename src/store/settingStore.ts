@@ -17,6 +17,7 @@ export let useSettingStore = defineStore("settingStore", {
             fontFamily: "initial",
             fixedHeight: true,
             middleMouseBackgroundOpen: false,
+            hiddenScrollBar: false,
         }
     }
 });

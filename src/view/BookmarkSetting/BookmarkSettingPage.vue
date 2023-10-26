@@ -124,12 +124,13 @@ onMounted(() => {
     <template #top>
       <div class="font-bold flex justify-center items-center h-full">{{ t('setting') }}</div>
     </template>
-    <div class="min-w-[9rem] px-2 py-1 overflow-auto w-max" :style="[`width: ${settingStore.columnWidth}rem`,contentMaxHeight]">
+    <div class="min-w-[9rem] px-2 py-1 overflow-auto w-max"
+         :style="[`width: ${settingStore.columnWidth}rem`,contentMaxHeight]">
       <div class="py-1">
         <div class="mb-1">{{ t("settingColumnWidth") }}</div>
         <n-input-number v-model:value="settingStore.columnWidth" :min="2" :max="50"
                         size="small"/>
-<!--        <n-slider :min="2" :max="50" v-model:value="settingStore.columnWidth"></n-slider>-->
+        <!--        <n-slider :min="2" :max="50" v-model:value="settingStore.columnWidth"></n-slider>-->
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingHoverEnter") }}</div>
@@ -138,7 +139,7 @@ onMounted(() => {
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingLayoutGap") }}</div>
-        <n-input-number v-model:value="settingStore.layoutGap" :step="2" :min="10" :max="30"
+        <n-input-number v-model:value="settingStore.layoutGap" :step="2" :min="12" :max="30"
                         size="small"/>
       </div>
       <div class="py-1">
@@ -180,6 +181,19 @@ onMounted(() => {
         <div class="mb-1">{{ t("settingFixedHeight") }}</div>
         <div class="flex items-center">
           <n-switch class="mr-2" size="large" v-model:value="settingStore.fixedHeight">
+            <template #checked>
+              {{ t("enable") }}
+            </template>
+            <template #unchecked>
+              {{ t("disable") }}
+            </template>
+          </n-switch>
+        </div>
+      </div>
+      <div class="py-1">
+        <div class="mb-1">{{ t("hiddenScrollbar") }}</div>
+        <div class="flex items-center">
+          <n-switch class="mr-2" size="large" v-model:value="settingStore.hiddenScrollBar">
             <template #checked>
               {{ t("enable") }}
             </template>
