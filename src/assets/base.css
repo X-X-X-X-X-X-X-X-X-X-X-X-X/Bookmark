@@ -95,6 +95,6 @@ body {
     line-height: 26px !important;
 }
 
-.n-input .n-input__input-el {
+.n-input .n-input__suffix, .n-input .n-input__prefix, .n-input .n-input__input-el {
     line-height: inherit!important;
 }
