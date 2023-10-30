@@ -175,6 +175,17 @@ const menu: ContextMenuType[] = reactive([
     },
   },
   {
+    name: t("currentPageOpen"),
+    belong: "link",
+    click: async () => {
+      let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+      await chrome.tabs.update(tab.id!, {
+        active: true,
+        url: props.item.url
+      })
+    }
+  },
+  {
     name: t("menuFrontDeskOpen"),
     belong: "link",
     click: () => {

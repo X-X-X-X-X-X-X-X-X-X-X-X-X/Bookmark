@@ -70,6 +70,7 @@ export default {
     importSetting: "导入配置",
     importSettingSuccess: "导入成功",
     importSettingFail: "导入失败",
-    hiddenScrollbar: "隐藏滚动条"
+    hiddenScrollbar: "隐藏滚动条",
+    currentPageOpen: "当前页打开",
 }
 
