@@ -16,7 +16,7 @@
 
 body {
     background: var(--bg-color);
-    line-height: 1.6 !important;
+    line-height: inherit !important;
     min-width: 9rem;
 }
 
@@ -93,4 +93,8 @@ body {
 .n-radio-group.n-radio-group--button-group .n-radio-button {
     height: auto !important;
     line-height: 26px !important;
+}
+
+.n-input .n-input__input-el {
+    line-height: inherit!important;
 }
