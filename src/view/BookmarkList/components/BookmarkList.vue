@@ -10,7 +10,7 @@ import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useCont
 import {every} from "@/util/appUtil";
 import type {TreeNode} from "../../../../types";
 
-let {data, clickBookmark, cutNode, getLastNode, isSpecialTreeNode, specialTreeNode} = useAppData();
+let {data, clickBookmark, cutNode, getLastNode, isSpecialTreeNode, getSpecialTreeNodeKey, specialTreeNode} = useAppData();
 
 function faviconURL(u: string) {
   const url = new URL(chrome.runtime.getURL('/_favicon/'));
@@ -67,8 +67,10 @@ const backOpen = (e: MouseEvent, item: TreeNode) => {
 let contextMenu = useContextMenu();
 
 const createContextMenu = (e: MouseEvent, item: TreeNode) => {
-  if (getLastNode().id === specialTreeNode.frequently.id) {
-    contextMenu.createSpecialContextMenu(e, item, 'frequent')
+  let lastNode = getLastNode();
+  let specialTreeNodeKey = getSpecialTreeNodeKey(lastNode.id);
+  if (specialTreeNodeKey) {
+    contextMenu.createSpecialContextMenu(e, item, specialTreeNodeKey!)
   } else {
     contextMenu.createContextMenu(e, item)
   }

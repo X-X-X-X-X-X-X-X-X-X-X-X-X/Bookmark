@@ -4,10 +4,9 @@ import type {TreeNode} from "../../../../../types";
 import {createTab, some} from "@/util/appUtil";
 import {useMessage} from "@/util/useMessage";
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
-import {setAsStart, useAppData} from "@/util/useAppData";
+import {setAsStart, type SpecialTreeNodeKey, useAppData} from "@/util/useAppData";
 import {useI18n} from "vue-i18n";
 import MyInput from "@/view/BookmarkList/components/dialog/MyInput.vue";
-import type {SpecialMenuType} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
 import {updateFrequentlyUsedBookmarks} from "@/util/storage";
 
 const props = defineProps<{
@@ -15,7 +14,7 @@ const props = defineProps<{
   y: number,
   item: TreeNode,
   isBlank?: boolean,
-  specialType?: SpecialMenuType
+  specialType?: SpecialTreeNodeKey
 }>()
 
 let {item, isBlank, specialType} = props;
@@ -64,7 +63,7 @@ onUnmounted(() => {
 type ContextMenuType = {
   name: string | Ref<string>,
   style?: StyleValue
-  belong: "link" | "folder" | "both" | "none" | "blank" | SpecialMenuType,
+  belong: "link" | "folder" | "both" | "none" | "blank" | SpecialTreeNodeKey,
   click?: () => void | Promise<void>
 }
 
@@ -176,7 +175,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("currentPageOpen"),
-    belong: "link",
+    belong: specialType ?? "link",
     click: async () => {
       let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
       await chrome.tabs.update(tab.id!, {
@@ -187,21 +186,21 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuFrontDeskOpen"),
-    belong: "link",
+    belong: specialType ?? "link",
     click: () => {
       createTab(props.item.url!, true);
     }
   },
   {
     name: t("menuBackgroundOpen"),
-    belong: "link",
+    belong: specialType ?? "link",
     click: () => {
       createTab(props.item.url!, false);
     }
   },
   {
     name: t("menuCopyLink"),
-    belong: "link",
+    belong: specialType ?? "link",
     click: () => {
       navigator.clipboard.writeText(props.item.url!).then(() => {
         message(t("copySuccess"));
@@ -210,7 +209,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuCopyName"),
-    belong: isBlank ? "none" : "both",
+    belong: specialType ?? (isBlank ? "none" : "both"),
     click: () => {
       navigator.clipboard.writeText(props.item.title!).then(() => {
         message(t("copySuccess"));
@@ -315,7 +314,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuDelete"),
-    belong: "frequent",
+    belong: "frequently",
     click: () => {
       updateFrequentlyUsedBookmarks(props.item, "del");
       message(t("deletedSuccessfully"));

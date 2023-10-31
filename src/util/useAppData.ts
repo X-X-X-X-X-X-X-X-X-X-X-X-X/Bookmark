@@ -12,6 +12,13 @@ import {createTab, resizeWidthContainer} from "@/util/appUtil";
 import {useI18n} from "vue-i18n";
 
 const cutNode = ref<TreeNode | null>(null);
+
+export type SpecialTreeNodeKey = "search" | "frequently";
+
+export type SpecialTreeNode = {
+    [k in SpecialTreeNodeKey]: TreeNode
+}
+
 export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof useI18n>) => {
     let data = defaultData || inject<AppData>(PROVIDE_APP_DATA_KEY, {
         bookmarkTree: [],
@@ -20,7 +27,7 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
     let settingStore = useSettingStore();
     let {t} = initI18n || useI18n();
     /*特殊节点*/
-    const specialTreeNode = reactive({
+    const specialTreeNode: SpecialTreeNode = reactive({
         search: {
             id: "-1",
             title: computed(() => t("searchResult")),
@@ -33,6 +40,10 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
 
     const isSpecialTreeNode = (id: string) => {
         return Object.values(specialTreeNode).some(v => v.id === id);
+    }
+
+    const getSpecialTreeNodeKey = (id: string) => {
+        return Object.keys(specialTreeNode).find((v) => specialTreeNode[v as SpecialTreeNodeKey].id === id) as SpecialTreeNodeKey;
     }
 
     const replaceTree = (treeNodes: TreeNode[], type?: string) => {
@@ -136,6 +147,7 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
         data,
         getLastNode,
         clickBookmark,
+        getSpecialTreeNodeKey,
         specialTreeNode,
         isSpecialTreeNode,
         back,

@@ -2,9 +2,8 @@ import {inject, h} from "vue";
 import {PROVIDE_CONTEXT_MENU} from "@/util/constants";
 import type {ContextMenuInject, TreeNode} from "../../../../../types";
 import ContextMenu from "@/view/BookmarkList/components/contextMenu/ContextMenu.vue";
-import {useAppData} from "@/util/useAppData";
+import {type SpecialTreeNodeKey, useAppData} from "@/util/useAppData";
 
-export type SpecialMenuType = "frequent";
 export const useContextMenu = () => {
     let contextMenuInject = inject<ContextMenuInject>(PROVIDE_CONTEXT_MENU)!;
     let {isSpecialTreeNode, getLastNode} = useAppData();
@@ -24,7 +23,7 @@ export const useContextMenu = () => {
         })
     }
 
-    const createSpecialContextMenu = (e: MouseEvent, item: TreeNode, specialType: SpecialMenuType) => {
+    const createSpecialContextMenu = (e: MouseEvent, item: TreeNode, specialType: SpecialTreeNodeKey) => {
         e.preventDefault();
         e.stopPropagation();
         contextMenuInject.show.value = true;
