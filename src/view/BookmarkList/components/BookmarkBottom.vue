@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import {type Component, reactive, toRefs, unref} from "vue";
+import {type Component, h, reactive, toRef, toRefs, unref} from "vue";
 import {CloseOutlined} from '@ant-design/icons-vue';
 import type {Menu} from "../../../../types";
+import {useI18n} from "vue-i18n";
+import BookmarkSearch from "@/view/BookmarkList/components/BookmarkSearch.vue";
 
-defineProps<{
+let props = defineProps<{
   menu: Menu[]
-}>()
+}>();
 
 const status = reactive({
   contentShow: false
 });
+
+let contextShowRef = toRef(status, "contentShow");
 
 let contentComponent: Component | undefined;
 
@@ -20,6 +24,21 @@ const iconClick = (f: Menu['click']) => {
     contentComponent = comp;
   }
 }
+let {t} = useI18n();
+window.onkeyup = (e: KeyboardEvent) => {
+  if (e.target === document.body) {
+    let searchMenu = props.menu.find(v => v.name === t("search"))!;
+    const search = (...args: Parameters<NonNullable<Menu['click']>>) => {
+      let comp = searchMenu.click!(...args) as typeof BookmarkSearch;
+      return h(comp, {
+        input: e.key
+      })
+    }
+    iconClick(search);
+  }
+
+}
+
 </script>
 
 <template>

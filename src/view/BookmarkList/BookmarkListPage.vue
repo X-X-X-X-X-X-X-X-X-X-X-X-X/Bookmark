@@ -3,7 +3,7 @@ import BookmarkNavigator from "@/view/BookmarkList/components/BookmarkNavigator.
 import BookmarkList from "@/view/BookmarkList/components/BookmarkList.vue";
 import BookmarkBottom from "@/view/BookmarkList/components/BookmarkBottom.vue";
 import DefaultLayout from "@/layout/DefaultLayout.vue";
-import {computed, inject, onActivated, onMounted, provide, reactive, ref, type Ref} from "vue";
+import {computed, h, inject, onActivated, onMounted, provide, reactive, ref, type Ref} from "vue";
 import type {Menu} from "../../../types";
 import {DEFAULT_START_DATA_KEY, PROVIDE_CONTEXT_MENU, PROVIDE_IS_INITIALIZED} from "@/util/constants";
 import {useAppData} from "@/util/useAppData";
