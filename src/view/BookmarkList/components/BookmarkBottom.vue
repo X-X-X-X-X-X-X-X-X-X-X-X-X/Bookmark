@@ -12,9 +12,6 @@ let props = defineProps<{
 const status = reactive({
   contentShow: false
 });
-
-let contextShowRef = toRef(status, "contentShow");
-
 let contentComponent: Component | undefined;
 
 const iconClick = (f: Menu['click']) => {

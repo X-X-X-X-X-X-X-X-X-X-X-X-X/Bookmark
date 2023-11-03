@@ -7,8 +7,10 @@ const status = reactive({
 })
 
 let {data, clickBookmark, replaceTree, getLastNode, specialTreeNode} = useAppData();
+
+let queue: number[] = [];
+
 const search = (() => {
-  let queue: number[] = [];
   return async function (this: HTMLInputElement) {
     const toSearch = async () => {
       if (data) {
@@ -42,6 +44,7 @@ onUnmounted(async () => {
       await clickBookmark(lastNode);
     }
   }
+  queue.forEach(clearTimeout);
 })
 
 onMounted(() => {
