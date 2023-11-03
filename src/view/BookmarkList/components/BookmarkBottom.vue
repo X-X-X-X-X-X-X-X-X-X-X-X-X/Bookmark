@@ -28,13 +28,7 @@ let {t} = useI18n();
 window.onkeyup = (e: KeyboardEvent) => {
   if (e.target === document.body) {
     let searchMenu = props.menu.find(v => v.name === t("search"))!;
-    const search = (...args: Parameters<NonNullable<Menu['click']>>) => {
-      let comp = searchMenu.click!(...args) as typeof BookmarkSearch;
-      return h(comp, {
-        input: e.key
-      })
-    }
-    iconClick(search);
+    iconClick(searchMenu.click);
   }
 
 }

@@ -2,12 +2,8 @@
 import {onMounted, onUnmounted, reactive} from "vue";
 import {useAppData} from "@/util/useAppData";
 
-let props = defineProps<{
-  input?: string
-}>();
-
 const status = reactive({
-  searchInput: props.input ?? ""
+  searchInput: ""
 })
 
 let {data, clickBookmark, replaceTree, getLastNode, specialTreeNode} = useAppData();
@@ -51,9 +47,6 @@ onUnmounted(async () => {
 onMounted(() => {
   let searchEl = document.getElementById("search")! as HTMLInputElement;
   searchEl.focus();
-  if (props.input) {
-    search.call(searchEl);
-  }
 })
 
 </script>
