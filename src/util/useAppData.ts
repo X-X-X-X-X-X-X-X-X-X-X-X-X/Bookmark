@@ -12,6 +12,27 @@ import {createTab, resizeWidthContainer} from "@/util/appUtil";
 import {useI18n} from "vue-i18n";
 
 const cutNode = ref<TreeNode | null>(null);
+export let allBookmark: {
+    [k: string]: TreeNode
+} = {};
+
+export const setAllBookmark = (bookmarks: TreeNode[]) => {
+    const getBookmark = (findBookmarks: TreeNode[]) => {
+        findBookmarks.forEach(b => {
+            if (b.children) {
+                getBookmark(b.children)
+            } else {
+                allBookmark[b.id] = b;
+            }
+        })
+    }
+    allBookmark = {};
+    getBookmark(bookmarks);
+}
+
+export const updateAllBookmark = async () => {
+    setAllBookmark(await chrome.bookmarks.getTree());
+}
 
 export type SpecialTreeNodeKey = "search" | "frequently";
 
@@ -66,7 +87,17 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
             //常用书签
             if (node.id === specialTreeNode.frequently.id) {
                 if (settingStore.enableFrequentlyUsedBookmarks) {
-                    replaceTree(storageGet<TreeNode[]>(FREQUENTLY_USED_BOOKMARKS_KEY) || [], "frequently");
+                    /*每次刷新已变更、已删除的书签*/
+                    await updateAllBookmark();
+                    let frequentlyUsedBookmarks = storageGet<TreeNode[]>(FREQUENTLY_USED_BOOKMARKS_KEY) || [];
+                    let refreshFrequentlyUsedBookmarks: TreeNode[] = [];
+                    frequentlyUsedBookmarks.forEach(v => {
+                        if (allBookmark[v.id]) {
+                            refreshFrequentlyUsedBookmarks.push(Object.assign(v, allBookmark[v.id] ?? {}));
+                        }
+                    })
+                    storageSet(FREQUENTLY_USED_BOOKMARKS_KEY, refreshFrequentlyUsedBookmarks);
+                    replaceTree(refreshFrequentlyUsedBookmarks, "frequently");
                 } else {
                     await clickLastNode();
                     return;

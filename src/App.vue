@@ -31,7 +31,7 @@ import {useI18n} from "vue-i18n";
 import {DEFAULT_START_KEY, PROVIDE_APP_DATA_KEY, PROVIDE_IS_INITIALIZED} from "@/util/constants";
 import type {AppData} from "../types";
 import {storageGet} from "@/util/storage";
-import {useAppData} from "@/util/useAppData";
+import {setAllBookmark, useAppData} from "@/util/useAppData";
 import {useNaiveUI} from "@/util/useNaiveUI";
 import {initI18n} from "@/util/appUtil";
 
@@ -47,6 +47,7 @@ let mounted = ref(false);
 provide(PROVIDE_IS_INITIALIZED, mounted);
 provide(PROVIDE_APP_DATA_KEY, data);
 chrome.bookmarks.getTree(all => {
+  setAllBookmark(all);
   all[0] = reactive(Object.assign(all[0], {
     title: computed(() => i18n.t("rootTitle"))
   }))

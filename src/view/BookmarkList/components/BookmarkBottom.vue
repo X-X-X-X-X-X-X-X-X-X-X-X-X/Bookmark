@@ -27,7 +27,6 @@ window.onkeyup = (e: KeyboardEvent) => {
     let searchMenu = props.menu.find(v => v.name === t("search"))!;
     iconClick(searchMenu.click);
   }
-
 }
 
 </script>
