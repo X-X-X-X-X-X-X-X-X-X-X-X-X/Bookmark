@@ -164,11 +164,7 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
                 return specialTreeNode[k as keyof typeof specialTreeNode];
             }
         }
-        chrome.bookmarks.get(node.id).then((bookmarkNodes) => {
-            let bookmarkTreeNode = bookmarkNodes[0];
-            Object.assign(node, bookmarkTreeNode);
-        }).catch(reason => {
-        });
+        Object.assign(node, allBookmark[node.id] ?? {});
         return node;
     }
 

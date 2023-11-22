@@ -13,6 +13,7 @@ import {contentMaxHeight} from "@/util/style";
 import fmt from "json-format"
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
 import {useMessage} from "@/util/useMessage";
+import pay from "../../../screenshot/pay.png";
 
 let {t} = useI18n();
 let router = useRouter();
@@ -204,6 +205,19 @@ onMounted(() => {
         </div>
       </div>
       <div class="py-1">
+        <div class="mb-1">{{ t("rightClickMenu") }}</div>
+        <div class="flex items-center">
+          <n-switch class="mr-2" size="large" v-model:value="settingStore.rightClickMenu">
+            <template #checked>
+              {{ t("enable") }}
+            </template>
+            <template #unchecked>
+              {{ t("disable") }}
+            </template>
+          </n-switch>
+        </div>
+      </div>
+      <div class="py-1">
         <div class="mb-1">{{ t("settingFrequently") }}</div>
         <div class="flex items-center">
           <n-switch class="mr-2" size="large" v-model:value="settingStore.enableFrequentlyUsedBookmarks">
@@ -290,6 +304,10 @@ onMounted(() => {
             type="textarea"
             rows="5"
         />
+      </div>
+      <div class="py-1">
+        <div class="mb-1">{{ t("donate") }}</div>
+        <img :src="pay" alt="" class="max-w-[200px] w-full">
       </div>
     </div>
     <template #bottom>

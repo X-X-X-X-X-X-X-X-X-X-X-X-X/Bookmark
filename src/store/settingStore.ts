@@ -18,6 +18,8 @@ export let useSettingStore = defineStore("settingStore", {
             fixedHeight: true,
             middleMouseBackgroundOpen: false,
             hiddenScrollBar: false,
+            rightClickMenu: true,
+            delaySearch: true
         }
     }
 });

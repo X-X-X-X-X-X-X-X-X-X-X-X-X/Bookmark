@@ -72,4 +72,6 @@ export default {
     importSettingFail: "import fail",
     hiddenScrollbar: "hide scroll bar",
     currentPageOpen: "current page open",
+    rightClickMenu: "right click menu",
+    donate: "donate"
 }

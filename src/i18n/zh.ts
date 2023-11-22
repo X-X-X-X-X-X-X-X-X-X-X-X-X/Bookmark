@@ -72,5 +72,7 @@ export default {
     importSettingFail: "导入失败",
     hiddenScrollbar: "隐藏滚动条",
     currentPageOpen: "当前页打开",
+    rightClickMenu: "右键菜单",
+    donate: "捐赠支持"
 }
 
