@@ -1,5 +1,4 @@
 import {defineStore} from "pinia";
-import {useI18n} from "vue-i18n";
 
 export let useSettingStore = defineStore("settingStore", {
     state() {
@@ -19,7 +18,6 @@ export let useSettingStore = defineStore("settingStore", {
             middleMouseBackgroundOpen: false,
             hiddenScrollBar: false,
             rightClickMenu: true,
-            delaySearch: true
         }
     }
 });

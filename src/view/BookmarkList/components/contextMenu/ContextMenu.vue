@@ -19,7 +19,7 @@ const props = defineProps<{
 
 let {item, isBlank, specialType} = props;
 
-let {clickLastNode, cut, cutNode, paste, data} = useAppData();
+let {clickLastNode, cut, cutNode, paste, data, getLastNode} = useAppData();
 const updatePosition = () => {
   let contextMenu = document.getElementById("contextMenu")!;
   let {clientWidth, clientHeight} = document.body;
@@ -88,7 +88,12 @@ const menu: ContextMenuType[] = reactive([
     name: t("menuSetAsStart"),
     belong: "folder",
     click: async () => {
-      await setAsStart([...data.navigator, props.item], await chrome.bookmarks.getChildren(props.item.id));
+      let startMenu = [...data.navigator];
+      //fix 空白处右键菜单设置启动页会出现双层导航
+      if (getLastNode().id !== props.item.id) {
+        startMenu.push(props.item);
+      }
+      await setAsStart(startMenu, await chrome.bookmarks.getChildren(props.item.id));
       message?.(t("setDefaultStartMessage", {
         msg: props.item.title
       }))
