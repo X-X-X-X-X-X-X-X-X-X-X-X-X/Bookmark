@@ -13,7 +13,7 @@ import {contentMaxHeight} from "@/util/style";
 import fmt from "json-format"
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
 import {useMessage} from "@/util/useMessage";
-import pay from "../../../screenshot/pay.png";
+import pay from "../../../screenshot/pay1.png";
 
 let {t} = useI18n();
 let router = useRouter();
