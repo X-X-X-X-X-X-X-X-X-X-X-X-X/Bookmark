@@ -73,6 +73,7 @@ export default {
     hiddenScrollbar: "隐藏滚动条",
     currentPageOpen: "当前页打开",
     rightClickMenu: "右键菜单",
-    donate: "捐赠支持"
+    donate: "捐赠支持",
+    delaySearch: "搜索延迟"
 }
 

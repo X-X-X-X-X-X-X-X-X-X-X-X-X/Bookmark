@@ -73,5 +73,6 @@ export default {
     hiddenScrollbar: "hide scroll bar",
     currentPageOpen: "current page open",
     rightClickMenu: "right click menu",
-    donate: "donate"
+    donate: "donate",
+    delaySearch: "search delay"
 }

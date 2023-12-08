@@ -21,7 +21,7 @@
 ## 开发日程
 * [ ] 换个图标？（恕我审美不行）
 * [ ] 右键替换当前网址（日益庞大的右键菜单。。。）
-* [ ] 搜索延迟抉择问题
+* [x] 搜索延迟抉择问题
 
 ## 链接
 现已开源：https://github.com/X-X-X-X-X-X-X-X-X-X-X-X-X/Bookmark.git ，欢迎star与提issue
@@ -34,4 +34,4 @@ EDGE商店链接：https://microsoftedge.microsoft.com/addons/detail/gedhecaldmg
 
 用爱发电，打赏支持一下？
 
-![](screenshot/pay.png)
+![](screenshot/pay1.png)

@@ -139,6 +139,11 @@ onMounted(() => {
                   v-model:value="settingStore.hoverEnterFolderMs"></n-slider>
       </div>
       <div class="py-1">
+        <div class="mb-1">{{ t("delaySearch") }}</div>
+        <n-slider :min="0" :max="2000" :format-tooltip="value => value + 'ms'"
+                  v-model:value="settingStore.delaySearch"></n-slider>
+      </div>
+      <div class="py-1">
         <div class="mb-1">{{ t("settingLayoutGap") }}</div>
         <n-input-number v-model:value="settingStore.layoutGap" :step="2" :min="12" :max="30"
                         size="small"/>
