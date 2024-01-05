@@ -14,7 +14,7 @@ export let useSettingStore = defineStore("settingStore", {
             layoutGap: 16,
             fontSize: 14,
             fontFamily: "initial",
-            fixedHeight: true,
+            fixedHeight: false,
             middleMouseBackgroundOpen: false,
             hiddenScrollBar: false,
             rightClickMenu: true,

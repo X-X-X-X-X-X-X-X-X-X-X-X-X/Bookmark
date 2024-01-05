@@ -40,7 +40,7 @@ let contextMenu = useContextMenu();
   <div
       class="font-bold justify-end flex whitespace-nowrap w-full h-full">
     <div
-        class="flex cursor-pointer justify-center px-2 h-full items-center flex-1 border-r last:border-r-0 hover-color"
+        class="cursor-pointer px-2 h-full flex-1 border-r last:border-r-0 hover-color leading-8 text-center"
         v-for="item in data.navigator"
         @mouseenter="hoverEnterEvent(item, true)"
         @mouseleave="hoverLeaveEvent"

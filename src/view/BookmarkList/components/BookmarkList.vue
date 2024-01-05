@@ -10,7 +10,15 @@ import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useCont
 import {every} from "@/util/appUtil";
 import type {TreeNode} from "../../../../types";
 
-let {data, clickBookmark, cutNode, getLastNode, isSpecialTreeNode, getSpecialTreeNodeKey, specialTreeNode} = useAppData();
+let {
+  data,
+  clickBookmark,
+  cutNode,
+  getLastNode,
+  isSpecialTreeNode,
+  getSpecialTreeNodeKey,
+  specialTreeNode
+} = useAppData();
 
 function faviconURL(u: string) {
   const url = new URL(chrome.runtime.getURL('/_favicon/'));
@@ -119,7 +127,7 @@ const createContextMenu = (e: MouseEvent, item: TreeNode) => {
           alt=""
           class="w-4 h-4 mr-1"
       >
-      <div class="overflow-hidden w-full overflow-ellipsis">
+      <div class="overflow-hidden w-full leading-none py-1 overflow-ellipsis">
         <span class="font-bold" v-if="item.count !== undefined">
           {{ item.count }}
         </span>
