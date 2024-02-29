@@ -117,7 +117,7 @@ const createContextMenu = (e: MouseEvent, item: TreeNode) => {
               !isSpecialTreeNode(getLastNode().id)
             ) ? 'drag' : '',
             item.active ? 'hover-active' : '',
-            cutNode?.id === item.id ? 'border-dashed' : 'border-transparent'
+            cutNode?.id === item.id ? 'border-dashed' : '!border-transparent'
         ]"
         :style="widthStyle"
         :title="item.title + (item.url ? '\n' + item.url : '')"

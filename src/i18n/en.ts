@@ -74,5 +74,9 @@ export default {
     currentPageOpen: "current page open",
     rightClickMenu: "right click menu",
     donate: "donate",
-    delaySearch: "search delay"
+    delaySearch: "search delay",
+    themeMode: "theme mode",
+    auto: "auto",
+    dark: "dark",
+    light: "light"
 }

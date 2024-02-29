@@ -74,6 +74,10 @@ export default {
     currentPageOpen: "当前页打开",
     rightClickMenu: "右键菜单",
     donate: "捐赠支持",
-    delaySearch: "搜索延迟"
+    delaySearch: "搜索延迟",
+    themeMode: "主题模式",
+    auto: "自动",
+    dark: "深色",
+    light: "浅色"
 }
 

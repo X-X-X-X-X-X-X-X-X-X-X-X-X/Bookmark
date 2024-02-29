@@ -1,6 +1,8 @@
 import {computed, reactive} from "vue";
 import {darkTheme, enUS, type GlobalThemeOverrides, useOsTheme, zhCN} from "naive-ui";
 import {useSettingStore} from "@/store/settingStore";
+import theme from "tailwindcss/defaultTheme";
+import {getSystemTheme} from "@/util/appUtil";
 
 export const useNaiveUI = () => {
     let settingStore = useSettingStore();
@@ -22,9 +24,8 @@ export const useNaiveUI = () => {
             optionHeightMedium: "28px",
         }
     })
-    let osTheme = useOsTheme();
     darkTheme.common.popoverColor = "var(--bg-color)";
-    let theme = computed(() => osTheme.value === "dark" ? darkTheme : null);
+    let theme = computed(() => getSystemTheme() === "dark" ? darkTheme : null);
     return {
         naiveLocale,
         themeOverrides,

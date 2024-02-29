@@ -12,7 +12,6 @@ import {contentMaxHeight} from "@/util/style";
 //@ts-ignore
 import fmt from "json-format"
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
-import {useMessage} from "@/util/useMessage";
 import pay from "../../../screenshot/pay1.png";
 
 let {t} = useI18n();
@@ -24,12 +23,6 @@ let settingJson = computed(() => fmt(settingStore.$state, {
   type: 'space',
   size: 2
 }))
-// let curWidth = ref(settingStore.columnWidth);
-// onActivated(() => {
-//   if (curWidth.value !== settingStore.columnWidth) {
-//     curWidth.value = settingStore.columnWidth
-//   }
-// })
 const layout = ref();
 
 const importSetting = () => {
@@ -80,6 +73,23 @@ const openUrlMode = reactive([
   }
 ])
 
+
+const themeMode = reactive([
+  {
+    value: "auto",
+    label: computed(() => t("auto"))
+  },
+  {
+    value: "light",
+    label: computed(() => t("light"))
+  },
+  {
+    value: "dark",
+    label: computed(() => t("dark"))
+  },
+])
+
+
 const language = reactive([
   {
     value: "zh",
@@ -123,7 +133,7 @@ onMounted(() => {
 <template>
   <DefaultLayout ref="layout">
     <template #top>
-      <div class="font-bold flex justify-center items-center h-full">{{ t('setting') }}</div>
+      <div class="font-bold flex justify-center items-center h-full leading-8">{{ t('setting') }}</div>
     </template>
     <div class="min-w-[9rem] px-2 py-1 overflow-auto w-max"
          :style="[`width: ${settingStore.columnWidth}rem`,contentMaxHeight]">
@@ -157,6 +167,19 @@ onMounted(() => {
         <div class="mb-1">{{ t("customFont") }}</div>
         <n-select :options="fontList" size="small" v-model:value="settingStore.fontFamily"></n-select>
       </div>
+      <div class="py-1">
+        <div class="mb-1">{{ t("themeMode") }}</div>
+        <n-radio-group size="small" v-model:value="settingStore.themeMode">
+          <n-radio-button
+              size="small"
+              v-for="d in themeMode"
+              :key="d.value"
+              :value="d.value"
+              :label="d.label"
+          />
+        </n-radio-group>
+      </div>
+
       <div class="py-1">
         <div class="mb-1">{{ t("settingSmoothScroll") }}</div>
         <div class="flex items-center">
@@ -327,7 +350,4 @@ onMounted(() => {
 </template>
 
 <style>
-.n-input.n-input--textarea .n-input__textarea-el, .n-input.n-input--textarea .n-input__textarea-mirror, .n-input.n-input--textarea .n-input__placeholder {
-  word-break: break-all !important;
-}
 </style>

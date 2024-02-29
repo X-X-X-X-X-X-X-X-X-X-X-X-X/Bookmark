@@ -1,8 +1,9 @@
 import {useSettingStore} from "@/store/settingStore";
 import {storageGet, storageSet} from "@/util/storage";
 import {SETTING_DATA_KEY} from "@/util/constants";
-import {toRefs, watch} from "vue";
+import {computed, toRefs, watch} from "vue";
 import {useI18n} from "vue-i18n";
+import {darkTheme, useOsTheme} from "naive-ui";
 
 function wheelListener(event: WheelEvent) {
     // /*防止两个滚动条互相争抢*/
@@ -47,7 +48,7 @@ export const initStore = () => {
     settingStore.$subscribe((mutation, state) => {
         storageSet(SETTING_DATA_KEY, state);
     })
-    let {displayMode, layoutGap, fontSize, fontFamily, hiddenScrollBar} = toRefs(settingStore);
+    let {displayMode, layoutGap, fontSize, fontFamily, hiddenScrollBar, themeMode} = toRefs(settingStore);
     watch(displayMode, (v: string) => {
         if (v === "h") {
             registerHorizontalScrollEvent();
@@ -75,6 +76,11 @@ export const initStore = () => {
             html.classList.remove("noScrollBar");
         }
     }, {immediate: true});
+
+    watch(themeMode, value => {
+        initTheme();
+    }, {immediate: true})
+
 }
 
 export const resizeWidthContainer = (w?: string, h?: string) => {
@@ -112,3 +118,25 @@ export const initI18n = () => {
 
 export const some = (...args: boolean[]) => args.some(v => v);
 export const every = (...args: boolean[]) => args.every(v => v);
+
+export const getSystemTheme = () => {
+    let settingStore = useSettingStore();
+    let osTheme = useOsTheme();
+    let darkMode = false;
+    if (settingStore.themeMode === "auto" && osTheme.value === "dark") {
+        darkMode = true;
+    }
+    if (settingStore.themeMode === "dark") {
+        darkMode = true;
+    }
+    return darkMode ? "dark" : "light";
+}
+
+export const initTheme = () => {
+    let systemTheme = getSystemTheme();
+    if (systemTheme === "dark") {
+        document.querySelector("html")!.classList.add("dark");
+    } else {
+        document.querySelector("html")!.classList.remove("dark");
+    }
+}
