@@ -74,7 +74,7 @@ const menu = reactive<Menu[]>([
     name: computed(() => t("bookmarkManager")),
     icon: StarOutlined,
     click: () => {
-      createTab("edge://favorites")
+      createTab("chrome://bookmarks")
     }
   }
 ])
