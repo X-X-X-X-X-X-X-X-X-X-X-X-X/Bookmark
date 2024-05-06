@@ -4,7 +4,7 @@ import {createApp} from 'vue'
 import App from './App.vue'
 import {router} from "@/router/router";
 import {createPinia} from 'pinia'
-import {initStore, initTheme, registerMouseRightClickEvent} from "@/util/appUtil";
+import {fixBrowserZoom, initStore, registerMouseRightClickEvent} from "@/util/appUtil";
 import {i18n} from "@/i18n/i18n";
 
 
@@ -13,6 +13,7 @@ async function boot() {
     app.use(router)
     app.use(createPinia())
     app.use(i18n);
+    fixBrowserZoom();
     initStore();
     registerMouseRightClickEvent();
     const meta = document.createElement('meta')

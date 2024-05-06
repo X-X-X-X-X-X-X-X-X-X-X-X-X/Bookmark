@@ -18,18 +18,6 @@
 * 右键菜单（前/后台打开链接、复制链接/名称、 剪切/粘贴/编辑/删除、打开全部（文件夹）、新建文件夹/书签（自动填充为当前页面））
 * 等...
 
-## 开发日程
-* [ ] 换个图标？（恕我审美不行）
-* [ ] 右键替换当前网址（日益庞大的右键菜单。。。）
-* [x] 搜索延迟抉择问题
-
-## 链接
-现已开源：https://github.com/X-X-X-X-X-X-X-X-X-X-X-X-X/Bookmark.git ，欢迎star与提issue
-
-EDGE商店链接：https://microsoftedge.microsoft.com/addons/detail/gedhecaldmggohkefcllkmpnhojmabap
-（EDGE扩展审核真的太慢太慢太慢太慢太慢了）
-
-
 ## 打赏
 
 用爱发电，打赏支持一下？

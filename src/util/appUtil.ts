@@ -140,3 +140,12 @@ export const initTheme = () => {
         document.querySelector("html")!.classList.remove("dark");
     }
 }
+
+export const fixBrowserZoom = async () => {
+    let z = await chrome.tabs.getZoom();
+    let currentZoom = 10 / (z * 10)
+    if (currentZoom !== 1) {
+        //@ts-ignore
+        document.querySelector("html")!.style.zoom = currentZoom;
+    }
+}
