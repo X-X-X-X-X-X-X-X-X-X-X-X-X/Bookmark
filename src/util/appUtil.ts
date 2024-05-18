@@ -142,8 +142,8 @@ export const initTheme = () => {
 }
 
 export const fixBrowserZoom = async () => {
-    let z = await chrome.tabs.getZoom();
-    let currentZoom = 10 / (z * 10)
+    let z = await chrome.tabs.getZoomSettings();
+    let currentZoom = 1 / (z.defaultZoomFactor ?? 1);
     if (currentZoom !== 1) {
         //@ts-ignore
         document.querySelector("html")!.style.zoom = currentZoom;
