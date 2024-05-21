@@ -25,8 +25,8 @@
 </style>
 <script setup lang="ts">
 import ConfirmDialog from "@/view/BookmarkList/components/dialog/ConfirmDialog.vue";
-import {NConfigProvider, NDialogProvider} from "naive-ui";
-import {computed, provide, reactive, ref, watch} from "vue";
+import {NConfigProvider} from "naive-ui";
+import {computed, provide, reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {DEFAULT_START_KEY, PROVIDE_APP_DATA_KEY, PROVIDE_IS_INITIALIZED} from "@/util/constants";
 import type {AppData} from "../types";
@@ -71,5 +71,4 @@ chrome.bookmarks.getTree(all => {
   clickLastNode();
   mounted.value = true;
 })
-
 </script>

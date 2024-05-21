@@ -78,5 +78,9 @@ export default {
     themeMode: "theme mode",
     auto: "auto",
     dark: "dark",
-    light: "light"
+    light: "light",
+    settingOtherIconSet: "set icon",
+    settingOtherIconReset: "reset icon",
+    success: "success",
+    fail: "fail"
 }

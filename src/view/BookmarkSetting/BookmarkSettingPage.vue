@@ -2,17 +2,18 @@
 import DefaultLayout from "@/layout/DefaultLayout.vue";
 import {LeftOutlined} from "@ant-design/icons-vue";
 import {useRouter} from "vue-router";
-import {NButton, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect, NSlider, NSwitch} from "naive-ui";
+import {NButton, NInput, NInputNumber, NRadioButton, NRadioGroup, NSelect, NSlider, NSpace, NSwitch} from "naive-ui";
 import {useSettingStore} from "@/store/settingStore";
-import {FREQUENTLY_USED_BOOKMARKS_KEY, SETTING_DATA_KEY} from "@/util/constants";
+import {FREQUENTLY_USED_BOOKMARKS_KEY} from "@/util/constants";
 import {storageSet} from "@/util/storage";
-import {computed, h, onActivated, onMounted, reactive, ref} from "vue";
+import {computed, h, onMounted, reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {contentMaxHeight} from "@/util/style";
 //@ts-ignore
 import fmt from "json-format"
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
 import pay from "../../../screenshot/pay1.png";
+import {imageToBase64} from "@/util/appUtil";
 
 let {t} = useI18n();
 let router = useRouter();
@@ -101,9 +102,11 @@ const language = reactive([
   }
 ])
 
+const message = (s: string) => layout.value.popMessage(s);
+
 const resetFrequentlyBookmark = () => {
   storageSet(FREQUENTLY_USED_BOOKMARKS_KEY, []);
-  layout.value.popMessage(t("settingFrequentlyEmptyMessage"));
+  message(t("settingFrequentlyEmptyMessage"));
 }
 
 const fontList = ref([
@@ -127,6 +130,37 @@ onMounted(() => {
     })))
   })
 })
+
+const changeIcon = () => {
+  let fileInput = document.createElement("input");
+  fileInput.setAttribute("type", "file");
+  fileInput.setAttribute("accept", ".jpg, .png");
+  fileInput.click();
+  fileInput.onchange = ev => {
+    let file = fileInput.files![0];
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      imageToBase64(e.target!.result).then(r => {
+        chrome.action.setIcon({
+          path: r
+        }).then(() => {
+          message(t("success"))
+        })
+        chrome.storage.local.set({
+          customIcon: r
+        })
+      })
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+const resetIcon = () => {
+  chrome.action.setIcon({path: "bookmark.png"}).then(() => message(t("success")));
+  chrome.storage.local.set({
+    customIcon: ""
+  })
+}
 
 </script>
 
@@ -315,14 +349,22 @@ onMounted(() => {
           />
         </n-radio-group>
       </div>
-      <div class="py-1 whitespace-nowrap">
+      <div class="py-1">
         <div class="mb-1">{{ t("settingOther") }}</div>
-        <n-button @click="settingStore.$reset()" size="small" class="!mr-2" ghost>
-          {{ t("settingOtherReset") }}
-        </n-button>
-        <n-button @click="importSetting" size="small" class="mr-2" ghost>
-          {{ t("importSetting") }}
-        </n-button>
+        <n-space>
+          <n-button @click="settingStore.$reset()" size="small" ghost>
+            {{ t("settingOtherReset") }}
+          </n-button>
+          <n-button @click="importSetting" size="small" ghost>
+            {{ t("importSetting") }}
+          </n-button>
+          <n-button size="small" ghost @click="changeIcon">
+            {{ t("settingOtherIconSet") }}
+          </n-button>
+          <n-button size="small" ghost @click="resetIcon">
+            {{ t("settingOtherIconReset") }}
+          </n-button>
+        </n-space>
       </div>
       <div class="py-1">
         <div class="mb-1">{{ t("currentSettingJson") }}</div>

@@ -157,3 +157,19 @@ export const fixBrowserZoom = async () => {
         document.querySelector("html")!.style.zoom = currentZoom;
     }
 }
+
+export const imageToBase64 = async (src: any): Promise<string> => {
+    return await new Promise(resolve => {
+        let image = new Image();
+        image.src = src;
+        image.onload = ev => {
+            const canvas = document.createElement('canvas');
+            let size = 128;
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d')!;
+            ctx.drawImage(image, 0, 0, size, size);
+            resolve(canvas.toDataURL("image/png"));
+        }
+    })
+}

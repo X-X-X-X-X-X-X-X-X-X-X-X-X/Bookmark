@@ -9,10 +9,15 @@
   "icons": {
     "128": "bookmark.png"
   },
+  "background": {
+    "service_worker": "service-worker.js",
+    "type": "module"
+  },
   "permissions": [
     "activeTab",
     "bookmarks",
     "favicon",
-    "fontSettings"
+    "fontSettings",
+    "storage"
   ]
 }

@@ -22,7 +22,7 @@ export default {
     settingFontSize: "字体大小",
     setDefaultStartMessage: "{msg} 已设为默认目录",
     settingOther: "其他",
-    settingOtherReset: "重置",
+    settingOtherReset: "重置设置",
     settingMiddleMouse: "鼠标中键",
     settingNo: "默认行为",
     frequentlyBookmark: "常用书签",
@@ -78,6 +78,10 @@ export default {
     themeMode: "主题模式",
     auto: "自动",
     dark: "深色",
-    light: "浅色"
+    light: "浅色",
+    settingOtherIconSet: "设置图标",
+    settingOtherIconReset: "重置图标",
+    success: "成功",
+    fail: "失败"
 }
 
