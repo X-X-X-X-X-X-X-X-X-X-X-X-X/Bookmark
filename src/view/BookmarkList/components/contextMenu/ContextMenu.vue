@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {h, nextTick, onMounted, onUnmounted, reactive, ref, type Ref, type StyleValue} from "vue";
 import type {TreeNode} from "../../../../../types";
-import {createTab, some} from "@/util/appUtil";
+import {createTab, resizeMinHeight, resizeWidthContainer, some} from "@/util/appUtil";
 import {useMessage} from "@/util/useMessage";
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
 import {setAsStart, type SpecialTreeNodeKey, useAppData} from "@/util/useAppData";
@@ -49,6 +49,7 @@ onMounted(async () => {
     menu.length = 0;
     menu.push(...specialMenu);
   }
+  resizeMinHeight(Math.ceil(contextMenu()!.scrollHeight));
   await nextTick();
   props.item.active = true;
   updatePosition();
@@ -328,8 +329,10 @@ const menu: ContextMenuType[] = reactive([
   }
 ])
 
+const contextMenu = () => document.getElementById("contextMenu");
+
 const close = () => {
-  document.getElementById("contextMenu")!.blur();
+  contextMenu()!.blur();
 }
 
 let emits = defineEmits();
@@ -340,7 +343,7 @@ const removeContextMenu = () => {
 </script>
 
 <template>
-  <div id="contextMenu" class="fixed max-h-screen overflow-y-auto z-50 text-color border min-w-[100px] p-1 !bg-color"
+  <div id="contextMenu" class="fixed max-h-screen overflow-hidden z-50 text-color border min-w-[100px] p-1 !bg-color"
        tabindex="-1"
        @blur="removeContextMenu">
     <div :style="m.style" v-for="m in menu"

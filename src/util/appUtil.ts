@@ -97,6 +97,14 @@ export const resizeWidthContainer = (w?: string, h?: string) => {
     })
 }
 
+export const resizeMinHeight = (h: number) => {
+    let widthContainer = document.getElementById("widthContainer");
+    let wh = widthContainer?.scrollHeight ?? 0;
+    if (wh < h) {
+        resizeWidthContainer(undefined, h + "px");
+    }
+}
+
 
 export const createTab = async (url: string, active?: boolean) => {
     let settingStore = useSettingStore();
