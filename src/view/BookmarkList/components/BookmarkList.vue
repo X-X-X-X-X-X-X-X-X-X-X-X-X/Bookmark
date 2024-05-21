@@ -2,13 +2,14 @@
 import folderImg from "@/assets/folder.png";
 import {useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
-import {computed, onMounted} from "vue";
+import {computed, inject, onMounted} from "vue";
 import {contentMaxHeight} from "@/util/style";
 import Sortable, {type MoveEvent, type SortableEvent} from "sortablejs";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
 import {every} from "@/util/appUtil";
 import type {TreeNode} from "../../../../types";
+import {PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET} from "@/util/constants";
 
 let {
   data,
@@ -17,7 +18,6 @@ let {
   getLastNode,
   isSpecialTreeNode,
   getSpecialTreeNodeKey,
-  specialTreeNode
 } = useAppData();
 
 function faviconURL(u: string) {
@@ -36,7 +36,6 @@ let {
 
 const minWidthStyle = computed(() => `min-width: ${settingStore.columnWidth}rem`);
 const widthStyle = computed(() => `width: ${settingStore.columnWidth}rem`);
-
 onMounted(() => {
   let list = document.getElementById("sortList");
   let tempHoverTime = 0;
@@ -84,13 +83,18 @@ const createContextMenu = (e: MouseEvent, item: TreeNode) => {
   }
 }
 
+// LAYOUT组件空白右键菜单
+inject<Function>(PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET)?.((ev: MouseEvent) => {
+  contextMenu.createContextMenu(ev, getLastNode(), true)
+})
 </script>
 <template>
   <div
       v-if="data.bookmarkTree.length === 0"
       class=" font-bold flex justify-center items-center"
-      :class="[settingStore.fixedHeight ? 'top-1/2 -translate-y-1/2 absolute' : 'py-8']"
+      :class="[settingStore.fixedHeight ? 'top-1/2 -translate-y-1/2 absolute' : 'h-16']"
       :style="minWidthStyle"
+      @contextmenu="contextMenu.createContextMenu($event, getLastNode(), true)"
   >
     {{ $t("emptyMessage") }}
   </div>
@@ -99,7 +103,7 @@ const createContextMenu = (e: MouseEvent, item: TreeNode) => {
       class="flex-col flex-wrap h-full  w-max"
       :class="[settingStore.displayMode === 'h' ? 'flex' : 'overflow-x-hidden overflow-y-auto']"
       :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeight]"
-      @contextmenu="contextMenu.createContextMenu($event, data.navigator[data.navigator.length - 1], true)"
+      @contextmenu="contextMenu.createContextMenu($event, getLastNode(), true)"
   >
     <TransitionGroup
         name="list" tag="div"

@@ -16,6 +16,10 @@ export let allBookmark: {
     [k: string]: TreeNode
 } = {};
 
+export const getTree = async () => {
+    return await chrome.bookmarks.getTree();
+}
+
 export const setAllBookmark = (bookmarks: TreeNode[]) => {
     const getBookmark = (findBookmarks: TreeNode[]) => {
         findBookmarks.forEach(b => {
@@ -31,7 +35,7 @@ export const setAllBookmark = (bookmarks: TreeNode[]) => {
 }
 
 export const updateAllBookmark = async () => {
-    setAllBookmark(await chrome.bookmarks.getTree());
+    setAllBookmark(await getTree());
 }
 
 export type SpecialTreeNodeKey = "search" | "frequently";
@@ -103,7 +107,12 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
                     return;
                 }
             } else {
-                replaceTree(await chrome.bookmarks.getChildren(node.id))
+                let list = await chrome.bookmarks.getChildren(node.id);
+                // 保留收藏夹与其他收藏夹
+                if (node.id === "0") {
+                    list = list.filter(v => ["1", "2"].some(s => s == v.id));
+                }
+                replaceTree(list);
             }
         }
     }

@@ -8,15 +8,17 @@ import {useSettingStore} from "@/store/settingStore";
 export const useContextMenu = () => {
     let contextMenuInject = inject<ContextMenuInject>(PROVIDE_CONTEXT_MENU)!;
     let {isSpecialTreeNode, getLastNode} = useAppData();
-
     let store = useSettingStore();
-
     const createContextMenu = (e: MouseEvent, item: TreeNode, isBlank?: boolean) => {
         if (!store.rightClickMenu) {
             return;
         }
         //根节点与特殊节点不允许操作
         if (item.id === "0" || isSpecialTreeNode(item.id) || isSpecialTreeNode(getLastNode().id)) {
+            return;
+        }
+        // 如果是根节点下的文件夹只需要收藏夹
+        if (item.parentId === "0" && !["1", "2"].some(v => item.id)) {
             return;
         }
         e.preventDefault();

@@ -1,38 +1,44 @@
 <script setup lang="ts">
-import {provide, reactive} from "vue";
-import {PROVIDE_USE_MESSAGE_KEY} from "@/util/constants";
-import {useSettingStore} from "@/store/settingStore";
+  import {provide, reactive, ref} from "vue";
+  import {PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET, PROVIDE_USE_MESSAGE_KEY} from "@/util/constants";
+  import {useSettingStore} from "@/store/settingStore";
 
-const status = reactive({
-  message: "",
-  messageShow: false
-})
+  const status = reactive({
+    message: "",
+    messageShow: false
+  })
 
 
-let messageCount = 0;
-const popMessage = (msg: string) => {
-  ++messageCount;
-  status.message = msg;
-  status.messageShow = true;
-  setTimeout(() => {
-    --messageCount;
-    if (messageCount <= 0) {
-      status.messageShow = false
-    }
-  }, 1200)
-}
-provide(PROVIDE_USE_MESSAGE_KEY, popMessage);
+  let messageCount = 0;
+  const popMessage = (msg: string) => {
+    ++messageCount;
+    status.message = msg;
+    status.messageShow = true;
+    setTimeout(() => {
+      --messageCount;
+      if (messageCount <= 0) {
+        status.messageShow = false
+      }
+    }, 1200)
+  }
+  provide(PROVIDE_USE_MESSAGE_KEY, popMessage);
+  provide(PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET, (fn: any) => {
+    contextMenuFun.value = fn;
+  });
 
-defineExpose({
-  popMessage
-})
-let settingStore = useSettingStore();
+  defineExpose({
+    popMessage
+  })
+  let settingStore = useSettingStore();
+  let contextMenuFun: any = ref(() => {
+  });
+
 </script>
 
 <template>
   <div id="widthContainer"
        class="overflow-hidden"
-       :class="[settingStore.enableAnimation ? 'transition-all' : '']">
+       :class="[settingStore.enableAnimation ? 'transition-all' : '']" @contextmenu="contextMenuFun($event)">
     <div id="widthContent" class="pt-8 pb-8 text-color w-max">
       <div class="fixed border-b top-0 z-20 h-8 w-full bg-color">
         <div
