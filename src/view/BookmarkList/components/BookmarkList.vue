@@ -126,11 +126,13 @@ inject<Function>(PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET)?.((ev: MouseEvent) =>
         :style="widthStyle"
         :title="item.title + (item.url ? '\n' + item.url : '')"
         v-for="item in data.bookmarkTree" @click="clickBookmark(item), hoverLeaveEvent()" :key="item.id + item.type">
-      <img
-          :src="item.url ? faviconURL(item.url??'') : folderImg"
-          alt=""
-          class="w-4 h-4 mr-1"
-      >
+      <div class="w-4 h-4 flex items-center mr-1">
+        <img
+            :src="item.url ? faviconURL(item.url??'') : folderImg"
+            alt=""
+            class="w-4"
+        >
+      </div>
       <div class="overflow-hidden w-full leading-none py-1 overflow-ellipsis">
         <span class="font-bold" v-if="item.count !== undefined">
           {{ item.count }}

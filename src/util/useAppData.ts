@@ -85,7 +85,7 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
             await createTab(node.url, active);
         } else {
             //不是根目录和搜索结果，PUSH进导航
-            if (node.id !== data.navigator[0].id && data.navigator[data.navigator.length - 1].id !== specialTreeNode.search.id) {
+            if (node.id !== data.navigator[0].id && getLastNode().id !== specialTreeNode.search.id) {
                 data.navigator.push(node);
             }
             //常用书签
