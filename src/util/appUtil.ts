@@ -173,3 +173,17 @@ export const imageToBase64 = async (src: any): Promise<string> => {
         }
     })
 }
+
+
+export const makeLimitFun = <T extends Function>(f: T, ms: number) => {
+    let lastTime = Date.now();
+    let timer: number;
+    return (...args: any[]) => {
+        let curTime = Date.now();
+        if (lastTime + ms > curTime) {
+            clearInterval(timer);
+        }
+        lastTime = curTime;
+        timer = setTimeout(() => f(...args), ms);
+    }
+}

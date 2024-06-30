@@ -82,6 +82,7 @@ export default {
     settingOtherIconSet: "设置图标",
     settingOtherIconReset: "重置图标",
     success: "成功",
-    fail: "失败"
+    fail: "失败",
+    settingBackLastPath: "回到上次位置"
 }
 

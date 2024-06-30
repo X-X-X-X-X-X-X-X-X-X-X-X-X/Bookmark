@@ -114,6 +114,9 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
                 }
                 replaceTree(list);
             }
+            if (settingStore.backLastPath) {
+                setAsStart(data.navigator, data.bookmarkTree);
+            }
         }
     }
     const clickLastNode = async () => {

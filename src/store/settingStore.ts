@@ -19,7 +19,8 @@ export let useSettingStore = defineStore("settingStore", {
             hiddenScrollBar: false,
             rightClickMenu: true,
             delaySearch: 700,
-            themeMode: "auto"
+            themeMode: "auto",
+            backLastPath: false
         }
     }
 });

@@ -8,6 +8,7 @@ import {setAsStart, type SpecialTreeNodeKey, useAppData} from "@/util/useAppData
 import {useI18n} from "vue-i18n";
 import MyInput from "@/view/BookmarkList/components/dialog/MyInput.vue";
 import {updateFrequentlyUsedBookmarks} from "@/util/storage";
+import {useSettingStore} from "@/store/settingStore";
 
 const props = defineProps<{
   x: number,
@@ -72,6 +73,8 @@ let message = useMessage()!;
 let dialog = useConfirmDialog();
 let {t} = useI18n();
 
+let store = useSettingStore();
+
 let isTop = props.item.parentId === "0";
 //剪切node的父节点在导航栏中的索引
 let cutNodeParentNavigatorIdx = data.navigator.findIndex(v => v.id === cutNode.value?.parentId);
@@ -87,17 +90,20 @@ let isPasteParentToChild = !cutNode?.value?.url && [
 const menu: ContextMenuType[] = reactive([
   {
     name: t("menuSetAsStart"),
-    belong: "folder",
+    belong: !store.backLastPath ? "folder" : "none",
     click: async () => {
       let startMenu = [...data.navigator];
       //fix 空白处右键菜单设置启动页会出现双层导航
       if (getLastNode().id !== props.item.id) {
         startMenu.push(props.item);
       }
-      await setAsStart(startMenu, await chrome.bookmarks.getChildren(props.item.id));
-      message?.(t("setDefaultStartMessage", {
-        msg: props.item.title
-      }))
+      await setAsStart(startMenu, await chrome.bookmarks.getChildren(props.item.id)).then(r => {
+        if (r) {
+          message?.(t("setDefaultStartMessage", {
+            msg: props.item.title
+          }))
+        }
+      })
     }
   },
   {
@@ -343,7 +349,8 @@ const removeContextMenu = () => {
 </script>
 
 <template>
-  <div id="contextMenu" class="fixed max-h-screen break-keep whitespace-nowrap overflow-hidden z-50 text-color border min-w-[100px] p-1 !bg-color"
+  <div id="contextMenu"
+       class="fixed max-h-screen break-keep whitespace-nowrap overflow-hidden z-50 text-color border min-w-[100px] p-1 !bg-color"
        tabindex="-1"
        @blur="removeContextMenu">
     <div :style="m.style" v-for="m in menu"

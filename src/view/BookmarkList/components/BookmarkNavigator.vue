@@ -5,14 +5,17 @@ import {useMessage} from "@/util/useMessage";
 import {useI18n} from "vue-i18n";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
+import {useSettingStore} from "@/store/settingStore";
 
 let {data, clickBookmark} = useAppData();
 let message = useMessage();
 let {t} = useI18n();
 
+let store = useSettingStore();
+
 const navigatorTo = (node: TreeNode) => {
   //设为默认目录
-  if (node.id === data.navigator[data.navigator.length - 1].id) {
+  if (!store.backLastPath && node.id === data.navigator[data.navigator.length - 1].id) {
     setAsStart(data.navigator, data.bookmarkTree).then(r => {
       if (r) {
         message?.(t("setDefaultStartMessage", {

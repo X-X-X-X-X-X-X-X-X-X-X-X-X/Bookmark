@@ -309,7 +309,19 @@ const resetIcon = () => {
           </n-switch>
         </div>
       </div>
-
+      <div class="py-1">
+        <div class="mb-1">{{ t("settingBackLastPath") }}</div>
+        <div class="flex items-center">
+          <n-switch class="mr-2" size="large" v-model:value="settingStore.backLastPath">
+            <template #checked>
+              {{ t("enable") }}
+            </template>
+            <template #unchecked>
+              {{ t("disable") }}
+            </template>
+          </n-switch>
+        </div>
+      </div>
       <div class="py-1">
         <div class="mb-1">{{ t("settingDisplayMode") }}</div>
         <n-radio-group size="small"

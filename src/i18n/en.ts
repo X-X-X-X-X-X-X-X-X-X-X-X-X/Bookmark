@@ -82,5 +82,6 @@ export default {
     settingOtherIconSet: "set icon",
     settingOtherIconReset: "reset icon",
     success: "success",
-    fail: "fail"
+    fail: "fail",
+    settingBackLastPath: "return to last path",
 }

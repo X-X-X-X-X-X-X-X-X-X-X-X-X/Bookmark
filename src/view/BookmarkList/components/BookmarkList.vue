@@ -2,14 +2,15 @@
 import folderImg from "@/assets/folder.png";
 import {useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
-import {computed, inject, onMounted} from "vue";
+import {computed, inject, nextTick, onActivated, onDeactivated, onMounted} from "vue";
 import {contentMaxHeight} from "@/util/style";
 import Sortable, {type MoveEvent, type SortableEvent} from "sortablejs";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
-import {every} from "@/util/appUtil";
+import {every, makeLimitFun} from "@/util/appUtil";
 import type {TreeNode} from "../../../../types";
-import {PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET} from "@/util/constants";
+import {LAST_POSITION_X, LAST_POSITION_Y, PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET} from "@/util/constants";
+import {storageGet, storageSet} from "@/util/storage";
 
 let {
   data,
@@ -36,10 +37,33 @@ let {
 
 const minWidthStyle = computed(() => `min-width: ${settingStore.columnWidth}rem`);
 const widthStyle = computed(() => `width: ${settingStore.columnWidth}rem`);
+
+const getSortList = () => document.getElementById("sortList");
+
+const registerSavePosition = () => {
+  const limitTime = 100;
+  window.onscroll = makeLimitFun(() => {
+    storageSet(LAST_POSITION_X, window.scrollX);
+  }, limitTime)
+  let sortList = getSortList()!;
+  sortList.onscroll = makeLimitFun(() => {
+    storageSet(LAST_POSITION_Y, sortList.scrollTop);
+  }, limitTime)
+}
+
 onMounted(() => {
-  let list = document.getElementById("sortList");
+  // registerSavePosition();
+  let sortList = getSortList();
+  // todo window.scrollTo不会生效setTimeOut大概125ms左右才会触发...做返回上次滚动位置不会太完美，暂时放弃，无优化方向
+  // if (settingStore.backLastPath) {
+  //   let x = storageGet(LAST_POSITION_X);
+  //   let y = storageGet(LAST_POSITION_Y);
+  //   let sortList = document.querySelector("#sortList");
+  //   sortList?.scrollTo(0, y);
+  //   window.scrollTo(x, 0);
+  // }
   let tempHoverTime = 0;
-  Sortable.create(list!, {
+  Sortable.create(sortList!, {
     animation: 150,
     draggable: ".drag",
     onStart() {
@@ -64,6 +88,7 @@ onMounted(() => {
     }
   });
 })
+
 const backOpen = (e: MouseEvent, item: TreeNode) => {
   if (e.button === 1 && settingStore.middleMouseBackgroundOpen) {
     e.preventDefault();
