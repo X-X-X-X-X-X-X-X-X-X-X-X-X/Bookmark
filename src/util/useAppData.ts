@@ -110,7 +110,7 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
                 let list = await chrome.bookmarks.getChildren(node.id);
                 // 保留收藏夹与其他收藏夹
                 if (node.id === "0") {
-                    list = list.filter(v => ["1", "2"].some(s => s == v.id));
+                    list = list.filter(v => ["1", "2", "3"].some(s => s == v.id));
                 }
                 replaceTree(list);
             }
