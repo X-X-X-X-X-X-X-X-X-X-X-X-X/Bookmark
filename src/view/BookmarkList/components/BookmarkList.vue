@@ -3,7 +3,7 @@ import folderImg from "@/assets/folder.png";
 import {useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
 import {computed, inject, nextTick, onActivated, onDeactivated, onMounted} from "vue";
-import {contentMaxHeight} from "@/util/style";
+import {contentMaxHeightAndWidth} from "@/util/style";
 import Sortable, {type MoveEvent, type SortableEvent} from "sortablejs";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
@@ -125,9 +125,9 @@ inject<Function>(PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET)?.((ev: MouseEvent) =>
   </div>
   <div
       id="sortList"
-      class="flex-col flex-wrap h-full  w-max"
+      class="flex-col flex-wrap h-full w-max content-start"
       :class="[settingStore.displayMode === 'h' ? 'flex' : 'overflow-x-hidden overflow-y-auto']"
-      :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeight]"
+      :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeightAndWidth]"
       @contextmenu="contextMenu.createContextMenu($event, getLastNode(), true)"
   >
     <TransitionGroup

@@ -8,7 +8,7 @@ import {FREQUENTLY_USED_BOOKMARKS_KEY} from "@/util/constants";
 import {storageSet} from "@/util/storage";
 import {computed, h, onMounted, reactive, ref} from "vue";
 import {useI18n} from "vue-i18n";
-import {contentMaxHeight} from "@/util/style";
+import {contentMaxHeightAndWidth} from "@/util/style";
 //@ts-ignore
 import fmt from "json-format"
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
@@ -170,7 +170,7 @@ const resetIcon = () => {
       <div class="font-bold flex justify-center items-center h-full leading-8">{{ t('setting') }}</div>
     </template>
     <div class="min-w-[9rem] px-2 py-1 overflow-auto w-max"
-         :style="[`width: ${settingStore.columnWidth}rem`,contentMaxHeight]">
+         :style="[`width: ${settingStore.columnWidth}rem`,contentMaxHeightAndWidth]">
       <div class="py-1">
         <div class="mb-1">{{ t("settingColumnWidth") }}</div>
         <n-input-number v-model:value="settingStore.columnWidth" :min="2" :max="50"
@@ -244,6 +244,19 @@ const resetIcon = () => {
         <div class="mb-1">{{ t("settingFixedHeight") }}</div>
         <div class="flex items-center">
           <n-switch class="mr-2" size="large" v-model:value="settingStore.fixedHeight">
+            <template #checked>
+              {{ t("enable") }}
+            </template>
+            <template #unchecked>
+              {{ t("disable") }}
+            </template>
+          </n-switch>
+        </div>
+      </div>
+      <div class="py-1">
+        <div class="mb-1">{{ t("settingFixedWidth") }}</div>
+        <div class="flex items-center">
+          <n-switch class="mr-2" size="large" v-model:value="settingStore.fixedWidth">
             <template #checked>
               {{ t("enable") }}
             </template>

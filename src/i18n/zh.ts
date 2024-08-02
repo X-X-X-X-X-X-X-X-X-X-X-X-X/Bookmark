@@ -83,6 +83,7 @@ export default {
     settingOtherIconReset: "重置图标",
     success: "成功",
     fail: "失败",
-    settingBackLastPath: "回到上次位置"
+    settingBackLastPath: "回到上次位置",
+    settingFixedWidth: "固定宽度"
 }
 

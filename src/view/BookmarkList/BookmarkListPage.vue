@@ -63,7 +63,11 @@ const menu = reactive<Menu[]>([
     name: computed(() => t("setting")),
     icon: SettingOutlined,
     click: () => {
-      resizeWidthContainer(settingStore.columnWidth + "rem").then(() => {
+      let restoreWidth;
+      if (!settingStore.fixedWidth) {
+        restoreWidth = settingStore.columnWidth + "rem";
+      }
+      resizeWidthContainer(restoreWidth).then(() => {
         router.push({
           path: "/setting"
         })

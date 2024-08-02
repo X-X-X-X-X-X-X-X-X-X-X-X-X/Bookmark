@@ -84,4 +84,5 @@ export default {
     success: "success",
     fail: "fail",
     settingBackLastPath: "return to last path",
+    settingFixedWidth: "fixed width"
 }

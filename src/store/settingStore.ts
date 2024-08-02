@@ -20,7 +20,8 @@ export let useSettingStore = defineStore("settingStore", {
             rightClickMenu: true,
             delaySearch: 700,
             themeMode: "auto",
-            backLastPath: false
+            backLastPath: false,
+            fixedWidth: false
         }
     }
 });
