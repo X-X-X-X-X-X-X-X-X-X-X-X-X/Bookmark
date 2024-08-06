@@ -84,5 +84,6 @@ export default {
     success: "success",
     fail: "fail",
     settingBackLastPath: "return to last path",
-    settingFixedWidth: "fixed width"
+    settingFixedWidth: "fixed width",
+    positioningBookmarks: "positioning"
 }

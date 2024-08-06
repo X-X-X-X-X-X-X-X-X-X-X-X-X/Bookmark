@@ -84,6 +84,7 @@ export default {
     success: "成功",
     fail: "失败",
     settingBackLastPath: "回到上次位置",
-    settingFixedWidth: "固定宽度"
+    settingFixedWidth: "固定宽度",
+    positioningBookmarks: "定位书签"
 }
 

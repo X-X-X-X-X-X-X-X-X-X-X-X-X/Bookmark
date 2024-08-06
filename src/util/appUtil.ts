@@ -187,3 +187,19 @@ export const makeLimitFun = <T extends Function>(f: T, ms: number) => {
         timer = setTimeout(() => f(...args), ms);
     }
 }
+
+export const myScrollTo = (x: number, y?: number, behavior: ScrollBehavior = "smooth") => {
+    if (x !== undefined) {
+        window.scrollTo({
+            left: x,
+            behavior
+        });
+    }
+    if (y !== undefined) {
+        let sortList = document.querySelector("#sortList")! as HTMLElement;
+        sortList.scrollTo({
+            top: y - sortList.offsetTop,
+            behavior
+        })
+    }
+}

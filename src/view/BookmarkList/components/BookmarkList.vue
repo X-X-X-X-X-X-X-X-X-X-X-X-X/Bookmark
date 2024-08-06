@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import folderImg from "@/assets/folder.png";
-import {useAppData} from "@/util/useAppData";
+import {allBookmark, useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
-import {computed, inject, nextTick, onActivated, onDeactivated, onMounted} from "vue";
+import {computed, inject, onMounted} from "vue";
 import {contentMaxHeightAndWidth} from "@/util/style";
-import Sortable, {type MoveEvent, type SortableEvent} from "sortablejs";
+import Sortable, {type SortableEvent} from "sortablejs";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
 import {every, makeLimitFun} from "@/util/appUtil";
 import type {TreeNode} from "../../../../types";
 import {LAST_POSITION_X, LAST_POSITION_Y, PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET} from "@/util/constants";
-import {storageGet, storageSet} from "@/util/storage";
+import {storageSet} from "@/util/storage";
+import {useI18n} from "vue-i18n";
 
 let {
   data,
@@ -50,6 +51,8 @@ const registerSavePosition = () => {
     storageSet(LAST_POSITION_Y, sortList.scrollTop);
   }, limitTime)
 }
+
+let i18n = useI18n();
 
 onMounted(() => {
   // registerSavePosition();
@@ -112,6 +115,18 @@ const createContextMenu = (e: MouseEvent, item: TreeNode) => {
 inject<Function>(PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET)?.((ev: MouseEvent) => {
   contextMenu.createContextMenu(ev, getLastNode(), true)
 })
+
+const itemTitle = (item: TreeNode) => {
+  let title = [item.title];
+  item.url && title.push(item.url);
+  title.push(allBookmark[item.id].fullPath?.map(v => {
+    if (v.id === "0") {
+      return i18n.t("rootTitle");
+    }
+    return v.title;
+  }).join('-')!);
+  return title.join("\n");
+}
 </script>
 <template>
   <div
@@ -146,10 +161,11 @@ inject<Function>(PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET)?.((ev: MouseEvent) =>
               !isSpecialTreeNode(getLastNode().id)
             ) ? 'drag' : '',
             item.active ? 'hover-active' : '',
-            cutNode?.id === item.id ? 'border-dashed' : '!border-transparent'
+            cutNode?.id === item.id ? 'border-dashed' : '!border-transparent',
+            `_bid_${item.id}`
         ]"
         :style="widthStyle"
-        :title="item.title + (item.url ? '\n' + item.url : '')"
+        :title="itemTitle(item)"
         v-for="item in data.bookmarkTree" @click="clickBookmark(item), hoverLeaveEvent()" :key="item.id + item.type">
       <div class="w-4 h-4 flex items-center mr-1">
         <img

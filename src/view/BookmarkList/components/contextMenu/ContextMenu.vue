@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import {h, nextTick, onMounted, onUnmounted, reactive, ref, type Ref, type StyleValue} from "vue";
 import type {TreeNode} from "../../../../../types";
-import {createTab, resizeMinHeight, resizeWidthContainer, some} from "@/util/appUtil";
+import {createTab, myScrollTo, resizeMinHeight, resizeWidthContainer, some} from "@/util/appUtil";
 import {useMessage} from "@/util/useMessage";
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
-import {setAsStart, type SpecialTreeNodeKey, useAppData} from "@/util/useAppData";
+import {allBookmark, setAsStart, type SpecialTreeNodeKey, updateAllBookmark, useAppData} from "@/util/useAppData";
 import {useI18n} from "vue-i18n";
 import MyInput from "@/view/BookmarkList/components/dialog/MyInput.vue";
 import {updateFrequentlyUsedBookmarks} from "@/util/storage";
@@ -20,7 +20,7 @@ const props = defineProps<{
 
 let {item, isBlank, specialType} = props;
 
-let {clickLastNode, cut, cutNode, paste, data, getLastNode} = useAppData();
+let {clickLastNode, cut, cutNode, paste, data, getLastNode, specialTreeNode} = useAppData();
 const updatePosition = () => {
   let contextMenu = document.getElementById("contextMenu")!;
   let {clientWidth, clientHeight} = document.body;
@@ -50,8 +50,8 @@ onMounted(async () => {
     menu.length = 0;
     menu.push(...specialMenu);
   }
-  resizeMinHeight(Math.ceil(contextMenu()!.scrollHeight));
   await nextTick();
+  resizeMinHeight(Math.ceil(contextMenu()!.scrollHeight));
   props.item.active = true;
   updatePosition();
   document.getElementById("contextMenu")!.focus();
@@ -177,6 +177,7 @@ const menu: ContextMenuType[] = reactive([
             parentId: props.item.id
           }).then(v => {
             message(t("successfullyCreated"));
+            updateAllBookmark();
             clickLastNode();
           }, reason => {
             message(t("failedToCreate"));
@@ -229,6 +230,28 @@ const menu: ContextMenuType[] = reactive([
     }
   },
   {
+    name: t("positioningBookmarks"),
+    belong: ["frequently", "search"].includes(specialType!) ? specialType! : "none",
+    click: () => {
+      data.navigator.splice(1, data.navigator.length - 1,
+          ...allBookmark[item.id]!.fullPath!.slice(1)
+      );
+      clickLastNode()
+      setTimeout(() => {
+        let targetEl = document.querySelector(`._bid_${item.id}`)! as HTMLElement;
+        targetEl.classList.add("positionHighlight");
+        targetEl.addEventListener("animationend", ev => {
+          targetEl.classList.remove("positionHighlight");
+        })
+        if (store.displayMode === "h") {
+          myScrollTo(targetEl.offsetLeft);
+        } else {
+          myScrollTo(0, targetEl.offsetTop);
+        }
+      }, 250)
+    }
+  },
+  {
     name: t("menuShear"),
     belong: some(isBlank, isTop) ? 'none' : "both",
     click() {
@@ -258,7 +281,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuEditor"),
-    belong: some(isBlank, isTop) ? 'none' : "both",
+    belong: specialType ? specialType : some(isBlank, isTop) ? 'none' : "both",
     click() {
       let title = ref(props.item.title);
       let url = ref(props.item.url!);
@@ -285,10 +308,14 @@ const menu: ContextMenuType[] = reactive([
             url: url.value,
           }).then(() => {
             message(t("modificationSucceeded"));
-            clickLastNode();
+            if (getLastNode().id !== specialTreeNode.search.id) {
+              clickLastNode();
+            }
             /*导航栏修改后实时刷新*/
             item.title = title.value;
             item.url = url.value;
+            /*更新信息*/
+            updateAllBookmark();
           }, reason => {
             message(t("modificationFailed"));
           })
@@ -332,7 +359,7 @@ const menu: ContextMenuType[] = reactive([
       message(t("deletedSuccessfully"));
       clickLastNode();
     }
-  }
+  },
 ])
 
 const contextMenu = () => document.getElementById("contextMenu");
@@ -361,5 +388,20 @@ const removeContextMenu = () => {
   </div>
 </template>
 
-<style scoped>
+<style>
+
+.positionHighlight {
+  animation: positionHighlightAnimation reverse 3s;
+}
+
+@keyframes positionHighlightAnimation {
+  from {
+    background: transparent;
+  }
+
+  to {
+    background: #05cd86;
+  }
+}
+
 </style>

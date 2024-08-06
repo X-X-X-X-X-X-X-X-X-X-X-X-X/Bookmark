@@ -1,4 +1,4 @@
-import {computed, inject, nextTick, reactive, ref} from "vue";
+import {computed, inject, reactive, ref} from "vue";
 import {
     DEFAULT_START_DATA_KEY,
     DEFAULT_START_KEY,
@@ -21,12 +21,12 @@ export const getTree = async () => {
 }
 
 export const setAllBookmark = (bookmarks: TreeNode[]) => {
-    const getBookmark = (findBookmarks: TreeNode[]) => {
+    const getBookmark = (findBookmarks: TreeNode[], parentPath: TreeNode[] = []) => {
         findBookmarks.forEach(b => {
+            allBookmark[b.id] = b;
+            allBookmark[b.id].fullPath = parentPath;
             if (b.children) {
-                getBookmark(b.children)
-            } else {
-                allBookmark[b.id] = b;
+                getBookmark(b.children, [...parentPath, {title: b.title, id: b.id}])
             }
         })
     }

@@ -4,7 +4,8 @@ import type {Component, DefineComponent, Ref} from "vue";
 export type TreeNode = chrome.bookmarks.BookmarkTreeNode & {
     count?: number,
     active?: boolean,
-    type?: string
+    type?: string,
+    fullPath?: TreeNode[]
 };
 
 export type ConfirmDialogOptions = Partial<{
