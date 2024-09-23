@@ -107,6 +107,7 @@ body {
     word-break: break-all !important;
 }
 
-.n-input .n-input__suffix, .n-input .n-input__prefix, .n-input .n-input__input-el {
-    line-height: inherit !important;
+
+.n-base-selection, .n-button, .n-input .n-input__suffix, .n-input .n-input__prefix, .n-input .n-input__input-el {
+    line-height: normal !important;
 }
