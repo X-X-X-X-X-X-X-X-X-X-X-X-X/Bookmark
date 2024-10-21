@@ -85,6 +85,8 @@ export default {
     fail: "失败",
     settingBackLastPath: "回到上次位置",
     settingFixedWidth: "固定宽度",
-    positioningBookmarks: "定位书签"
+    positioningBookmarks: "定位书签",
+    menuUpdate: "更新",
+    menuUpdateMsg: "确定要更新 {msg} 为当前打开窗口吗？"
 }
 

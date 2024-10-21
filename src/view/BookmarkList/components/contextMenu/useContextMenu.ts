@@ -17,10 +17,6 @@ export const useContextMenu = () => {
         if (item.id === "0" || isSpecialTreeNode(item.id) || isSpecialTreeNode(getLastNode().id)) {
             return;
         }
-        // 如果是根节点下的文件夹只需要收藏夹
-        if (item.parentId === "0" && !["1", "2"].some(v => item.id)) {
-            return;
-        }
         e.preventDefault();
         e.stopPropagation();
         contextMenuInject.show.value = true;

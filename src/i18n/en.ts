@@ -85,5 +85,7 @@ export default {
     fail: "fail",
     settingBackLastPath: "return to last path",
     settingFixedWidth: "fixed width",
-    positioningBookmarks: "positioning"
+    positioningBookmarks: "positioning",
+    menuUpdate: "update",
+    menuUpdateMsg: "are you sure you want to update {msg} to the current open window?"
 }

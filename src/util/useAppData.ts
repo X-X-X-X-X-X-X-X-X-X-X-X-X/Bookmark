@@ -16,6 +16,8 @@ export let allBookmark: {
     [k: string]: TreeNode
 } = {};
 
+export const rootDirs = ["1", "2", "3"];
+
 export const getTree = async () => {
     return await chrome.bookmarks.getTree();
 }
@@ -111,7 +113,7 @@ export const useAppData = (defaultData?: AppData, initI18n?: ReturnType<typeof u
                 // 保留收藏夹与其他收藏夹
                 // TODO 不显示edge中的已删除收藏夹，但ID并不固定，只能枚举出想要展示的文件夹
                 if (node.id === "0") {
-                    list = list.filter(v => ["1", "2", "3"].some(s => s == v.id));
+                    list = list.filter(v => rootDirs.some(s => s == v.id));
                 }
                 replaceTree(list);
             }

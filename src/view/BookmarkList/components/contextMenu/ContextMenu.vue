@@ -1,14 +1,23 @@
 <script setup lang="ts">
 import {h, nextTick, onMounted, onUnmounted, reactive, ref, type Ref, type StyleValue} from "vue";
 import type {TreeNode} from "../../../../../types";
-import {createTab, myScrollTo, resizeMinHeight, resizeWidthContainer, some} from "@/util/appUtil";
+import {createTab, myScrollTo, resizeMinHeight, some} from "@/util/appUtil";
 import {useMessage} from "@/util/useMessage";
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
-import {allBookmark, setAsStart, type SpecialTreeNodeKey, updateAllBookmark, useAppData} from "@/util/useAppData";
+import {
+  allBookmark,
+  setAllBookmark,
+  setAsStart,
+  type SpecialTreeNodeKey,
+  updateAllBookmark,
+  useAppData
+} from "@/util/useAppData";
 import {useI18n} from "vue-i18n";
-import MyInput from "@/view/BookmarkList/components/dialog/MyInput.vue";
 import {updateFrequentlyUsedBookmarks} from "@/util/storage";
 import {useSettingStore} from "@/store/settingStore";
+import InputDialogContent, {
+  type InputContentValueType
+} from "@/view/BookmarkList/components/dialog/InputDialogContent.vue";
 
 const props = defineProps<{
   x: number,
@@ -126,19 +135,18 @@ const menu: ContextMenuType[] = reactive([
       let v = ref("");
       dialog.create({
         title: t("newFolderTitle"),
-        content: () => h("div", {
-          class: "text-left"
-        }, [
-          h(MyInput, {
-            v,
-            prefix: t("name")
-          })
-        ]),
+        content: h(InputDialogContent, {
+          values: [{
+            value: v,
+            name: t("name")
+          }]
+        }),
         onOk() {
           chrome.bookmarks.create({
             title: v.value,
             parentId: props.item.id
-          }).then(value => {
+          }).then(async value => {
+            await updateAllBookmark();
             message(t("successfullyCreated"));
             clickLastNode();
           }, reason => {
@@ -157,19 +165,15 @@ const menu: ContextMenuType[] = reactive([
       let link = ref(tab.url!);
       dialog.create({
         title: t("newBookmarkTitle"),
-        content: () => h("div", {
-          class: "text-left"
-        }, [
-          h(MyInput, {
-            class: "mb-2",
-            v,
-            prefix: t("name")
-          }),
-          h(MyInput, {
-            v: link,
-            prefix: t("link")
-          }),
-        ]),
+        content: h(InputDialogContent, {
+          values: [{
+            value: v,
+            name: t("name")
+          }, {
+            value: link,
+            name: t("link")
+          }]
+        }),
         onOk() {
           chrome.bookmarks.create({
             title: v.value,
@@ -177,8 +181,9 @@ const menu: ContextMenuType[] = reactive([
             parentId: props.item.id
           }).then(v => {
             message(t("successfullyCreated"));
-            updateAllBookmark();
-            clickLastNode();
+            updateAllBookmark().then(r => {
+              clickLastNode();
+            });
           }, reason => {
             message(t("failedToCreate"));
           })
@@ -252,6 +257,27 @@ const menu: ContextMenuType[] = reactive([
     }
   },
   {
+    name: t("menuUpdate"),
+    belong: specialType ?? "link",
+    click() {
+      dialog.create({
+        content: () => t("menuUpdateMsg", {
+          msg: item.title
+        }),
+        async onOk() {
+          let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+          await chrome.bookmarks.update(item.id, {
+            title: tab?.title,
+            url: tab?.url
+          })
+          clickLastNode();
+          message(t("success"));
+        },
+        title: t("menuUpdate"),
+      })
+    }
+  },
+  {
     name: t("menuShear"),
     belong: some(isBlank, isTop) ? 'none' : "both",
     click() {
@@ -285,23 +311,19 @@ const menu: ContextMenuType[] = reactive([
     click() {
       let title = ref(props.item.title);
       let url = ref(props.item.url!);
+      let values: InputContentValueType[] = [{
+        name: t("name"),
+        value: title,
+      }];
+      if (url.value) {
+        values.push({
+          name: t("link"),
+          value: url,
+        })
+      }
       dialog.create({
         title: t("editBookmark"),
-        content: () => {
-          return h("div", {
-            class: "text-left"
-          }, [
-            h(MyInput, {
-              class: "mb-2",
-              v: title,
-              prefix: t("name"),
-            }),
-            url.value && h(MyInput, {
-              v: url,
-              prefix: t("link"),
-            }),
-          ])
-        },
+        content: h(InputDialogContent, {values}),
         onOk() {
           chrome.bookmarks.update(props.item.id, {
             title: title.value,
