@@ -299,6 +299,7 @@ const menu: ContextMenuType[] = reactive([
         if ([cutNodeParentNavigatorIdx, pasteNodeParentNavigatorIdx].every(v => v >= 0)) {
           data.navigator.splice(pasteNodeParentNavigatorIdx + 2, cutNodeParentNavigatorIdx - pasteNodeParentNavigatorIdx - 1)
         }
+        updateAllBookmark()
         clickLastNode();
       }, reason => {
         message(t("pasteFailed"));
