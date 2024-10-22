@@ -10,6 +10,8 @@ export const useContextMenu = () => {
     let {isSpecialTreeNode, getLastNode} = useAppData();
     let store = useSettingStore();
     const createContextMenu = (e: MouseEvent, item: TreeNode, isBlank?: boolean) => {
+        e.preventDefault();
+        e.stopPropagation();
         if (!store.rightClickMenu) {
             return;
         }
@@ -17,8 +19,6 @@ export const useContextMenu = () => {
         if (item.id === "0" || isSpecialTreeNode(item.id) || isSpecialTreeNode(getLastNode().id)) {
             return;
         }
-        e.preventDefault();
-        e.stopPropagation();
         contextMenuInject.show.value = true;
         contextMenuInject.comp.value = h(ContextMenu, {
             x: e.clientX,
@@ -29,11 +29,11 @@ export const useContextMenu = () => {
     }
 
     const createSpecialContextMenu = (e: MouseEvent, item: TreeNode, specialType: SpecialTreeNodeKey) => {
+        e.preventDefault();
+        e.stopPropagation();
         if (!store.rightClickMenu) {
             return;
         }
-        e.preventDefault();
-        e.stopPropagation();
         contextMenuInject.show.value = true;
         contextMenuInject.comp.value = h(ContextMenu, {
             x: e.clientX,

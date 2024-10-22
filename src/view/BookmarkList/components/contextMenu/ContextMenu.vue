@@ -106,6 +106,11 @@ const menu: ContextMenuType[] = reactive([
       if (getLastNode().id !== props.item.id) {
         startMenu.push(props.item);
       }
+      // fix 设置当前导航之前的目录为启动目录会多重显示
+      let navigatorIndex = startMenu.findIndex(v => v.id === item.id);
+      if (navigatorIndex !== -1) {
+        startMenu.splice(navigatorIndex + 1)
+      }
       await setAsStart(startMenu, await chrome.bookmarks.getChildren(props.item.id)).then(r => {
         if (r) {
           message?.(t("setDefaultStartMessage", {

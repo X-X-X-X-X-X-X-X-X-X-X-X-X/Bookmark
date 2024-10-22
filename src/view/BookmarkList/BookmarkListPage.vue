@@ -17,7 +17,7 @@ import {createTab, resizeWidthContainer} from "@/util/appUtil";
 
 const router = useRouter();
 let {t} = useI18n();
-let {clickBookmark, back, clickLastNode, data, specialTreeNode} = useAppData();
+let {clickBookmark, back, clickLastNode, data, specialTreeNode, getLastNode} = useAppData();
 let init = inject<Ref<boolean>>(PROVIDE_IS_INITIALIZED);
 let settingStore = useSettingStore();
 onMounted(() => {
@@ -54,7 +54,7 @@ const menu = reactive<Menu[]>([
     disable: computed(() => !settingStore.enableFrequentlyUsedBookmarks),
     icon: ClockCircleOutlined,
     click: () => {
-      if (data.navigator[data.navigator.length - 1].id !== specialTreeNode.frequently.id) {
+      if (getLastNode().id !== specialTreeNode.frequently.id) {
         clickBookmark(specialTreeNode.frequently);
       }
     }

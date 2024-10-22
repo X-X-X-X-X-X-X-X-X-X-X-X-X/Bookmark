@@ -25,6 +25,7 @@ let settingJson = computed(() => fmt(settingStore.$state, {
   size: 2
 }))
 const layout = ref();
+const currentVersion = chrome.runtime.getManifest().version;
 
 const importSetting = () => {
   let v = ref('');
@@ -403,6 +404,9 @@ const resetIcon = () => {
       <div class="py-1">
         <div class="mb-1">{{ t("donate") }}</div>
         <img :src="pay" alt="" class="max-w-[200px] w-full">
+      </div>
+      <div class="py-1 text-gray-500 text-center text-xs">
+        version {{currentVersion}}
       </div>
     </div>
     <template #bottom>
