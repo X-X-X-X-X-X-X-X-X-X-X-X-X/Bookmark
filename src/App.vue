@@ -51,6 +51,8 @@ getTree().then(all => {
   all[0] = reactive(Object.assign(all[0], {
     title: computed(() => i18n.t("rootTitle"))
   }))
+  // fix 起始目录包含所有书签，localStorage体积剧增
+  delete all[0].children;
   data.navigator.push(all[0]);
   let defaultStartNode = storageGet(DEFAULT_START_KEY);
   let {clickLastNode, updateNode} = useAppData(data, i18n);
