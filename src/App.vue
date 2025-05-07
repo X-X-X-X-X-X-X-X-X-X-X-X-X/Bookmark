@@ -26,38 +26,31 @@
 <script setup lang="ts">
 import ConfirmDialog from "@/view/BookmarkList/components/dialog/ConfirmDialog.vue";
 import {NConfigProvider} from "naive-ui";
-import {computed, provide, reactive, ref} from "vue";
-import {useI18n} from "vue-i18n";
-import {DEFAULT_START_KEY, PROVIDE_APP_DATA_KEY, PROVIDE_IS_INITIALIZED} from "@/util/constants";
-import type {AppData} from "../types";
+import {computed, reactive} from "vue";
+import {DEFAULT_START_KEY} from "@/util/constants";
 import {storageGet} from "@/util/storage";
 import {getTree, setAllBookmark, useAppData} from "@/util/useAppData";
 import {useNaiveUI} from "@/util/useNaiveUI";
-import {initI18n} from "@/util/appUtil";
+import {i18n} from "@/i18n/i18n";
+import {multipleSelectListener} from "@/util/mutipleSelectEvent";
+import {useWindowKeyEvent} from "@/util/useWindowKeyEvent";
 
 let {themeOverrides, theme, naiveLocale} = useNaiveUI();
-initI18n();
-let i18n = useI18n();
-/*提供应用数据*/
-let data = reactive<AppData>({
-  bookmarkTree: [],
-  navigator: [],
-})
-let mounted = ref(false);
-provide(PROVIDE_IS_INITIALIZED, mounted);
-provide(PROVIDE_APP_DATA_KEY, data);
+let {data, updateNode, clickLastNode} = useAppData();
+// 注册多选事件
+useWindowKeyEvent().addListener(multipleSelectListener())
+
 getTree().then(all => {
   setAllBookmark(all);
   all[0] = reactive(Object.assign(all[0], {
-    title: computed(() => i18n.t("rootTitle"))
+    title: computed(() => i18n.global.t("rootTitle"))
   }))
   // fix 起始目录包含所有书签，localStorage体积剧增
   delete all[0].children;
   data.navigator.push(all[0]);
   let defaultStartNode = storageGet(DEFAULT_START_KEY);
-  let {clickLastNode, updateNode} = useAppData(data, i18n);
   if (defaultStartNode) {
-    //兼容老版本。。。。。
+    //兼容老版本
     if (Array.isArray(defaultStartNode)) {
       data.navigator.splice(1);
       defaultStartNode.splice(0, 1);
@@ -69,8 +62,8 @@ getTree().then(all => {
       data.navigator.push(updateNode(defaultStartNode));
     }
   }
-  //首次点击。确定宽度
+  //首次点击确定宽度
   clickLastNode();
-  mounted.value = true;
+  data.init = true;
 })
 </script>

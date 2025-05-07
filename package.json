@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^6.1.0",
+    "debounce": "^2.2.0",
     "json-format": "^1.0.1",
     "pinia": "^2.1.6",
     "sortablejs": "^1.15.0",

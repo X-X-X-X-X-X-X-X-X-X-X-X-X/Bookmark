@@ -43,16 +43,6 @@ body {
     background: transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-    /*:root {*/
-    /*    --bg-color: #222;*/
-    /*    --scrollbar-thumb-bg: #454545;*/
-    /*    --scrollbar-thumb-hover-bg: #5d5d5d;*/
-    /*}*/
-    /** {*/
-    /*    border-color: var(--dark-border-color);*/
-    /*}*/
-}
 
 .dark {
     --bg-color: #222;
@@ -80,7 +70,12 @@ body {
     .hover-active {
         @apply bg-gray-100 dark:bg-[#333];
     }
+
+    #sortList .can-drop {
+        @apply dark:!border-gray-300 dark:bg-[#333] !border-gray-300 bg-gray-100;
+    }
 }
+
 
 /*fix*/
 .n-radio-group .n-radio-button {

@@ -2,23 +2,26 @@
 import folderImg from "@/assets/folder.png";
 import {allBookmark, useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
-import {computed, inject, onMounted} from "vue";
+import {computed, inject, onMounted, reactive} from "vue";
 import {contentMaxHeightAndWidth} from "@/util/style";
 import Sortable, {type SortableEvent} from "sortablejs";
 import {useTreeNodeHover} from "@/util/useTreeNodeHover";
 import {useContextMenu} from "@/view/BookmarkList/components/contextMenu/useContextMenu";
-import {every, makeLimitFun} from "@/util/appUtil";
+import {every} from "@/util/appUtil";
 import type {TreeNode} from "../../../../types";
-import {LAST_POSITION_X, LAST_POSITION_Y, PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET} from "@/util/constants";
-import {storageSet} from "@/util/storage";
+import {PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET} from "@/util/constants";
 import {useI18n} from "vue-i18n";
+import debounce from "debounce";
 
 let {
   data,
   clickBookmark,
-  cutNode,
+  selectStatus,
+  inSelectNodeIdx,
+  cutNodes,
   getLastNode,
   isSpecialTreeNode,
+  isInSelectNode,
   getSpecialTreeNodeKey,
 } = useAppData();
 
@@ -40,36 +43,68 @@ const minWidthStyle = computed(() => `min-width: ${settingStore.columnWidth}rem`
 const widthStyle = computed(() => `width: ${settingStore.columnWidth}rem`);
 
 const getSortList = () => document.getElementById("sortList");
-
-const registerSavePosition = () => {
-  const limitTime = 100;
-  window.onscroll = makeLimitFun(() => {
-    storageSet(LAST_POSITION_X, window.scrollX);
-  }, limitTime)
-  let sortList = getSortList()!;
-  sortList.onscroll = makeLimitFun(() => {
-    storageSet(LAST_POSITION_Y, sortList.scrollTop);
-  }, limitTime)
-}
-
 let i18n = useI18n();
 
+const itemClick = (item: TreeNode) => {
+  if (selectStatus()) {
+    let idx = inSelectNodeIdx(item);
+    if (idx === -1) {
+      data.selectNodes.push(item);
+    } else {
+      data.selectNodes.splice(idx, 1);
+    }
+  } else {
+    clickBookmark(item);
+  }
+}
+
+let dropFolderData = reactive({
+  inDrag: false,
+  srcDragItem: undefined as TreeNode | undefined,
+  dragEnterItem: undefined as TreeNode | undefined,
+  canDrop: false
+})
+
+const setDropTimer = debounce(() => {
+  if (dropFolderData.srcDragItem?.id === dropFolderData.dragEnterItem?.id) return;
+  if (dropFolderData.dragEnterItem && !dropFolderData.dragEnterItem.url) {
+    dropFolderData.dragEnterItem.canDrop = true;
+    dropFolderData.canDrop = true;
+  }
+}, 300)
+
+
+const clearDropTimer = () => {
+  dropFolderData.canDrop = false;
+  data.bookmarkTree.forEach(v => v.canDrop = false);
+}
+
+
+const dragEnterAndLeave = (e: DragEvent, item: TreeNode, type: "enter" | "leave") => {
+  if (item.id === dropFolderData.srcDragItem?.id) return;
+  if (type === 'enter') {
+    setDropTimer();
+    dropFolderData.dragEnterItem = item;
+  } else {
+    if (item.id === dropFolderData.dragEnterItem?.id) {
+      clearDropTimer();
+      dropFolderData.dragEnterItem = undefined;
+    }
+  }
+}
+
 onMounted(() => {
-  // registerSavePosition();
   let sortList = getSortList();
-  // todo window.scrollTo不会生效setTimeOut大概125ms左右才会触发...做返回上次滚动位置不会太完美，暂时放弃，无优化方向
-  // if (settingStore.backLastPath) {
-  //   let x = storageGet(LAST_POSITION_X);
-  //   let y = storageGet(LAST_POSITION_Y);
-  //   let sortList = document.querySelector("#sortList");
-  //   sortList?.scrollTo(0, y);
-  //   window.scrollTo(x, 0);
-  // }
   let tempHoverTime = 0;
   Sortable.create(sortList!, {
     animation: 150,
     draggable: ".drag",
-    onStart() {
+    swapThreshold: 0.80,
+    //设置拖拽缓冲区
+    invertSwap: true,
+    onStart(evt) {
+      dropFolderData.inDrag = true;
+      dropFolderData.srcDragItem = data.bookmarkTree[evt.oldIndex!]
       tempHoverTime = settingStore.hoverEnterFolderMs;
       settingStore.hoverEnterFolderMs = 0;
     },
@@ -87,7 +122,18 @@ onMounted(() => {
           parentId: treeNode.parentId
         })
       }
+      if (dropFolderData.canDrop) {
+        let idx = data.bookmarkTree.findIndex(v => v.id === dropFolderData.srcDragItem?.id);
+        if (idx !== -1) {
+          let dragFrom = data.bookmarkTree.splice(idx, 1)[0];
+          await chrome.bookmarks.move(dragFrom.id, {
+            parentId: dropFolderData.dragEnterItem?.id
+          })
+        }
+      }
+      clearDropTimer();
       settingStore.hoverEnterFolderMs = tempHoverTime;
+      dropFolderData.inDrag = false;
     }
   });
 })
@@ -147,7 +193,7 @@ const itemTitle = (item: TreeNode) => {
   >
     <TransitionGroup
         name="list" tag="div"
-        class="hover-color w-full flex items-center border h-8 px-2 cursor-pointer whitespace-nowrap"
+        class="w-full flex items-center border h-8 px-2 cursor-pointer whitespace-nowrap"
         @mouseenter="hoverEnterEvent(item)"
         @mouseleave="hoverLeaveEvent"
         @mousedown="backOpen($event, item)"
@@ -158,15 +204,22 @@ const itemTitle = (item: TreeNode) => {
               //不是根节点
               getLastNode().id !== '0',
               //不是特殊节点
-              !isSpecialTreeNode(getLastNode().id)
+              !isSpecialTreeNode(getLastNode().id),
+              // 没有多选
+              !selectStatus()
             ) ? 'drag' : '',
-            item.active ? 'hover-active' : '',
-            cutNode?.id === item.id ? 'border-dashed' : '!border-transparent',
-            `_bid_${item.id}`
+            // 右键/多选当前高亮
+            (item.active || isInSelectNode(item)) ? 'hover-active' : '',
+            cutNodes.find(v => v.id === item.id) ? 'border-dashed opacity-50' : '!border-transparent',
+            `_bid_${item.id}`,
+            dropFolderData.inDrag ? 'drag-cover' : 'hover-color',
+            item.canDrop ? '!can-drop': ''
         ]"
         :style="widthStyle"
         :title="itemTitle(item)"
-        v-for="item in data.bookmarkTree" @click="clickBookmark(item), hoverLeaveEvent()" :key="item.id + item.type">
+        @dragenter="dragEnterAndLeave($event, item, 'enter')"
+        @dragleave="dragEnterAndLeave($event, item, 'leave')"
+        v-for="item in data.bookmarkTree" @click="itemClick(item), hoverLeaveEvent()" :key="item.id + item.type">
       <div class="w-4 h-4 flex items-center mr-1">
         <img
             :src="item.url ? faviconURL(item.url??'') : folderImg"
@@ -202,4 +255,21 @@ const itemTitle = (item: TreeNode) => {
 .list-leave-active {
   position: absolute;
 }
+
+.drag-cover {
+  position: relative;
+}
+
+.drag-cover::before {
+  content: "";
+  display: block;
+  position: absolute;
+  z-index: 10;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
 </style>

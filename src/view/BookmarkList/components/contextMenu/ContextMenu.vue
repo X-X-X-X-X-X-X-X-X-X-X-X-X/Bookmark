@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {h, nextTick, onMounted, onUnmounted, reactive, ref, type Ref, type StyleValue} from "vue";
 import type {TreeNode} from "../../../../../types";
-import {createTab, myScrollTo, resizeMinHeight, some} from "@/util/appUtil";
+import {createTab, every, myScrollTo, resizeMinHeight, resizeWidthContainer, some} from "@/util/appUtil";
 import {useMessage} from "@/util/useMessage";
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
 import {
@@ -18,6 +18,7 @@ import {useSettingStore} from "@/store/settingStore";
 import InputDialogContent, {
   type InputContentValueType
 } from "@/view/BookmarkList/components/dialog/InputDialogContent.vue";
+import {type listenFun, useWindowKeyEvent} from "@/util/useWindowKeyEvent";
 
 const props = defineProps<{
   x: number,
@@ -29,7 +30,17 @@ const props = defineProps<{
 
 let {item, isBlank, specialType} = props;
 
-let {clickLastNode, cut, cutNode, paste, data, getLastNode, specialTreeNode} = useAppData();
+let {
+  clickLastNode,
+  cut,
+  cutNodes,
+  paste,
+  data,
+  selectStatus,
+  getLastNode,
+  isInSelectNode,
+  specialTreeNode
+} = useAppData();
 const updatePosition = () => {
   let contextMenu = document.getElementById("contextMenu")!;
   let {clientWidth, clientHeight} = document.body;
@@ -81,25 +92,37 @@ type ContextMenuType = {
 let message = useMessage()!;
 let dialog = useConfirmDialog();
 let {t} = useI18n();
-
 let store = useSettingStore();
-
 let isTop = props.item.parentId === "0";
+let cutNode = cutNodes[0];
+
 //剪切node的父节点在导航栏中的索引
-let cutNodeParentNavigatorIdx = data.navigator.findIndex(v => v.id === cutNode.value?.parentId);
+let cutNodeParentNavigatorIdx = data.navigator.findIndex(v => v.id === cutNode?.parentId);
 //粘贴到的节点的父节点在导航栏中的索引
 let pasteNodeParentNavigatorIdx = data.navigator.findIndex(v => v.id === item.parentId);
 //如果是文件夹
-let isPasteParentToChild = !cutNode?.value?.url && [
+let isPasteParentToChild = !cutNode?.url && [
   //且自己复制进自己
-  cutNode?.value?.id === item.id,
+  cutNode?.id === item.id,
   //或者自己的父节点复制进子节点
   cutNodeParentNavigatorIdx !== -1 && cutNodeParentNavigatorIdx < pasteNodeParentNavigatorIdx
 ].some(v => v);
+
+const openUrl = (active: boolean) => {
+  if (isInSelectNode(item)) {
+    data.selectNodes.forEach(v => {
+      if (!v.url) return;
+      createTab(v.url!, active);
+    })
+  } else {
+    createTab(props.item.url!, active);
+  }
+}
+
 const menu: ContextMenuType[] = reactive([
   {
     name: t("menuSetAsStart"),
-    belong: !store.backLastPath ? "folder" : "none",
+    belong: every(!store.backLastPath, !selectStatus()) ? "folder" : "none",
     click: async () => {
       let startMenu = [...data.navigator];
       //fix 空白处右键菜单设置启动页会出现双层导航
@@ -122,7 +145,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuAllOpen"),
-    belong: "folder",
+    belong: !selectStatus() ? "folder" : "none",
     click: () => {
       chrome.bookmarks.getChildren(props.item.id).then(value => {
         value.forEach(v => {
@@ -198,7 +221,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("currentPageOpen"),
-    belong: specialType ?? "link",
+    belong: !selectStatus() ? specialType ?? "link" : "none",
     click: async () => {
       let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
       await chrome.tabs.update(tab.id!, {
@@ -209,21 +232,21 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuFrontDeskOpen"),
-    belong: specialType ?? "link",
+    belong: data.selectNodes.every(v => v.url) ? specialType ?? "link" : "none",
     click: () => {
-      createTab(props.item.url!, true);
+      openUrl(true);
     }
   },
   {
     name: t("menuBackgroundOpen"),
-    belong: specialType ?? "link",
+    belong: data.selectNodes.every(v => v.url) ? specialType ?? "link" : "none",
     click: () => {
-      createTab(props.item.url!, false);
+      openUrl(false);
     }
   },
   {
     name: t("menuCopyLink"),
-    belong: specialType ?? "link",
+    belong: selectStatus() ? "none" : specialType ?? "link",
     click: () => {
       navigator.clipboard.writeText(props.item.url!).then(() => {
         message(t("copySuccess"));
@@ -232,7 +255,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuCopyName"),
-    belong: specialType ?? (isBlank ? "none" : "both"),
+    belong: selectStatus() ? "none" : specialType ?? (isBlank ? "none" : "both"),
     click: () => {
       navigator.clipboard.writeText(props.item.title!).then(() => {
         message(t("copySuccess"));
@@ -241,7 +264,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("positioningBookmarks"),
-    belong: ["frequently", "search"].includes(specialType!) ? specialType! : "none",
+    belong: selectStatus() ? "none" : ["frequently", "search"].includes(specialType!) ? specialType! : "none",
     click: () => {
       data.navigator.splice(1, data.navigator.length - 1,
           ...allBookmark[item.id]!.fullPath!.slice(1)
@@ -262,8 +285,22 @@ const menu: ContextMenuType[] = reactive([
     }
   },
   {
+    name: t("menuMultiSelect"),
+    belong: some(selectStatus(), isBlank) ? "none" : specialType ?? "both",
+    click: () => {
+      data.selectNodes = [item];
+    }
+  },
+  {
+    name: t("menuCancelMultiSelect"),
+    belong: selectStatus() ? specialType ?? "both" : "none",
+    click: () => {
+      data.selectNodes.length = 0;
+    }
+  },
+  {
     name: t("menuUpdate"),
-    belong: specialType ?? "link",
+    belong: selectStatus() ? "none" : specialType ?? "link",
     click() {
       dialog.create({
         content: () => t("menuUpdateMsg", {
@@ -293,9 +330,11 @@ const menu: ContextMenuType[] = reactive([
     name: t("menuPaste"),
     belong: some(
         //没有剪切内容
-        cutNode.value === null,
+        !cutNode,
         //不能将父文件夹粘贴到子文件夹，会死循环
-        isPasteParentToChild
+        isPasteParentToChild,
+        //不能自己粘贴进自己
+        !!cutNodes.find(v => v.id === item.id)
     ) ? 'none' : "both",
     style: {},
     click() {
@@ -313,7 +352,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuEditor"),
-    belong: specialType ? specialType : some(isBlank, isTop) ? 'none' : "both",
+    belong: selectStatus() ? "none" : specialType ?? some(isBlank, isTop) ? 'none' : "both",
     click() {
       let title = ref(props.item.title);
       let url = ref(props.item.url!);
@@ -358,24 +397,39 @@ const menu: ContextMenuType[] = reactive([
       color: "#cc0000"
     },
     click() {
+      let msg = t("deletePrompt", {
+        msg: item.title
+      })
+      if (isInSelectNode(item)) {
+        let first = data.selectNodes[0];
+        if(data.selectNodes.length > 1){
+          msg = t("deleteMultiplePrompt", {
+            msg: first.title,
+            num: data.selectNodes.length
+          })
+        }
+      }
       dialog.create({
         type: "warning",
-        onOk() {
-          chrome.bookmarks.removeTree(props.item.id).then(() => {
-            message(t("deletedSuccessfully"));
-            let idx = data.navigator.findIndex(v => v.id === props.item.id);
-            if (idx !== -1) {
-              data.navigator.splice(idx);
+        async onOk() {
+          try {
+            if (isInSelectNode(item)) {
+              for (let selectNode of data.selectNodes) {
+                await chrome.bookmarks.removeTree(selectNode.id)
+              }
+            } else {
+              await chrome.bookmarks.removeTree(props.item.id)
             }
             clickLastNode();
-          }, reason => {
+            message(t("deletedSuccessfully"));
+          } catch (e) {
             message(t("deleteFailed"));
-          })
+            console.error(e);
+          }
+          data.selectNodes.length = 0;
         },
         title: t("deleteBookmark"),
-        content: () => t("deletePrompt", {
-          msg: item.title
-        }),
+        content: () => msg,
       })
     }
   },
@@ -383,9 +437,14 @@ const menu: ContextMenuType[] = reactive([
     name: t("menuDelete"),
     belong: "frequently",
     click: () => {
-      updateFrequentlyUsedBookmarks(props.item, "del");
+      if (isInSelectNode(item)) {
+        data.selectNodes.forEach(v => updateFrequentlyUsedBookmarks(v, "del"));
+      } else {
+        updateFrequentlyUsedBookmarks(props.item, "del");
+      }
       message(t("deletedSuccessfully"));
       clickLastNode();
+      data.selectNodes.length = 0;
     }
   },
 ])

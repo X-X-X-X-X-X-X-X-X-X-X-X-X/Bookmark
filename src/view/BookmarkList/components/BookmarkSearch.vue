@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onMounted, onUnmounted, reactive} from "vue";
+import {nextTick, onMounted, onUnmounted, reactive} from "vue";
 import {useAppData} from "@/util/useAppData";
 import {useSettingStore} from "@/store/settingStore";
 
@@ -10,7 +10,6 @@ const status = reactive({
 let {data, clickBookmark, replaceTree, getLastNode, specialTreeNode} = useAppData();
 
 let queue: number[] = [];
-
 let settingStore = useSettingStore();
 
 const search = (() => {

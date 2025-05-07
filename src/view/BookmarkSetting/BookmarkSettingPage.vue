@@ -13,7 +13,7 @@ import {contentMaxHeightAndWidth} from "@/util/style";
 import fmt from "json-format"
 import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
 import pay from "../../../screenshot/pay1.png";
-import {imageToBase64} from "@/util/appUtil";
+import {createTab, imageToBase64} from "@/util/appUtil";
 
 let {t} = useI18n();
 let router = useRouter();
@@ -162,6 +162,18 @@ const resetIcon = () => {
     customIcon: ""
   })
 }
+
+
+const links = reactive([
+  {
+    title: "Github",
+    url: "https://github.com/X-X-X-X-X-X-X-X-X-X-X-X-X/Bookmark"
+  },
+  {
+    title: "Blog",
+    url: "https://xuexc.cn"
+  },
+])
 
 </script>
 
@@ -402,11 +414,20 @@ const resetIcon = () => {
         />
       </div>
       <div class="py-1">
+        <div class="mb-1">{{ t("links") }}</div>
+        <div class="flex gap-2">
+          <a class="cursor-pointer border-b-2  border-black dark:border-white hover:opacity-100 opacity-50"
+             v-for="link in links" @click="createTab(link.url, true)">{{
+              link.title
+            }}</a>
+        </div>
+      </div>
+      <div class="py-1">
         <div class="mb-1">{{ t("donate") }}</div>
         <img :src="pay" alt="" class="max-w-[200px] w-full">
       </div>
       <div class="py-1 text-gray-500 text-center text-xs">
-        version {{currentVersion}}
+        version {{ currentVersion }}
       </div>
     </div>
     <template #bottom>

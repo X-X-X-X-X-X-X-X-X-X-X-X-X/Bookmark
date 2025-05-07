@@ -4,6 +4,8 @@ import {CloseOutlined} from '@ant-design/icons-vue';
 import type {Menu} from "../../../../types";
 import {useI18n} from "vue-i18n";
 import BookmarkSearch from "@/view/BookmarkList/components/BookmarkSearch.vue";
+import {useAppData} from "@/util/useAppData";
+import {useWindowKeyEvent} from "@/util/useWindowKeyEvent";
 
 let props = defineProps<{
   menu: Menu[]
@@ -14,7 +16,10 @@ const status = reactive({
 });
 let contentComponent: Component | undefined;
 
+let {selectStatus} = useAppData();
+
 const iconClick = (f: Menu['click']) => {
+  if (selectStatus()) return;
   let {contentShow} = toRefs(status);
   let comp = f?.(contentShow);
   if (comp) {
@@ -22,12 +27,17 @@ const iconClick = (f: Menu['click']) => {
   }
 }
 let {t} = useI18n();
-window.onkeyup = (e: KeyboardEvent) => {
-  if (e.target === document.body) {
+let {addListener} = useWindowKeyEvent();
+
+addListener((codes, type, e) => {
+  if (type === "keyup") {
+    if (selectStatus()) return;
+    // 防止设置界面输入也会触发
+    if (e.target !== document.body) return;
     let searchMenu = props.menu.find(v => v.name === t("search"))!;
     iconClick(searchMenu.click);
   }
-}
+})
 
 </script>
 
