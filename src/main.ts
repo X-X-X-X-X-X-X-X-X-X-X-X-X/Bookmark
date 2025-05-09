@@ -14,7 +14,8 @@ async function boot() {
   app.use(router)
   app.use(createPinia())
   app.use(i18n);
-  await fixBrowserZoom();
+  // ...
+  fixBrowserZoom();
   initStore();
   initAppData(app);
   initI18n();

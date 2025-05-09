@@ -59,6 +59,7 @@ onMounted(() => {
 <template>
   <input id="search" v-model="status.searchInput"
          :onkeyup="search"
+         :disabled="data.selectNodes.length > 0"
          class="box-border bg-transparent outline-0 px-1 h-full w-full" type="text">
 </template>
 

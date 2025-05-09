@@ -20,7 +20,6 @@ let {t} = useI18n();
 let {clickBookmark, back, clickLastNode, data, specialTreeNode, getLastNode} = useAppData();
 let settingStore = useSettingStore();
 onMounted(() => {
-  /*防止闪烁*/
   data.bookmarkTree.length = 0;
   data.bookmarkTree.push(...(storageGet(DEFAULT_START_DATA_KEY) || []))
   setTimeout(() => {
@@ -97,7 +96,7 @@ provide(PROVIDE_CONTEXT_MENU, {
     <template #top>
       <BookmarkNavigator/>
     </template>
-    <BookmarkList v-if="data.init"/>
+    <BookmarkList/>
     <template #bottom>
       <BookmarkBottom :menu="menu"></BookmarkBottom>
     </template>
