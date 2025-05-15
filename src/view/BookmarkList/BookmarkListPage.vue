@@ -96,7 +96,8 @@ provide(PROVIDE_CONTEXT_MENU, {
     <template #top>
       <BookmarkNavigator/>
     </template>
-    <BookmarkList/>
+    <!--确保初始化完成，否则会读取不到数据导致错误...-->
+    <BookmarkList v-if="data.init"/>
     <template #bottom>
       <BookmarkBottom :menu="menu"></BookmarkBottom>
     </template>
