@@ -91,5 +91,6 @@ export default {
   menuMultiSelect: "multi select",
   menuCancelMultiSelect: "cancel multi select",
   deleteMultiplePrompt: "Are you sure you want to delete {msg} (...more {num} bookmarks)?",
-  links: "links"
+  links: "links",
+  updateTips: "You have updated to version {v}"
 }

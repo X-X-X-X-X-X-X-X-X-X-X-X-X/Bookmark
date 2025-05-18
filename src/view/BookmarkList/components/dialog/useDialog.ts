@@ -13,6 +13,7 @@ export const useConfirmDialog = () => {
     const create = (options: ConfirmDialogOptions) => {
         Object.assign(dialog!.props, {
             type: null,
+            hiddenCancel: false,
             ...options
         });
         dialog?.open();

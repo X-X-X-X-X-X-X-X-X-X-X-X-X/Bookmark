@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import {type Component, h, reactive, toRef, toRefs, unref} from "vue";
+import {type Component, reactive, toRefs, unref} from "vue";
 import {CloseOutlined} from '@ant-design/icons-vue';
 import type {Menu} from "../../../../types";
 import {useI18n} from "vue-i18n";
-import BookmarkSearch from "@/view/BookmarkList/components/BookmarkSearch.vue";
 import {useAppData} from "@/util/useAppData";
 import {useWindowKeyEvent} from "@/util/useWindowKeyEvent";
 
@@ -39,6 +38,13 @@ addListener((codes, type, e) => {
   }
 })
 
+const close = () => {
+  if (!selectStatus()){
+    status.contentShow = false
+    contentComponent = undefined
+  }
+}
+
 </script>
 
 <template>
@@ -47,7 +53,7 @@ addListener((codes, type, e) => {
       <div class="flex-1">
         <Component :is="contentComponent"></Component>
       </div>
-      <div @click="status.contentShow = false, contentComponent = undefined"
+      <div @click="close"
            title="关闭"
            class="flex-none w-8 h-8 flex items-center justify-center hover-color cursor-pointer ">
         <CloseOutlined/>

@@ -21,7 +21,8 @@ export let useSettingStore = defineStore("settingStore", {
             delaySearch: 700,
             themeMode: "auto",
             backLastPath: false,
-            fixedWidth: false
+            fixedWidth: false,
+            version: ""
         }
     }
 });

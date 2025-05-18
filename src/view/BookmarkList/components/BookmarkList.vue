@@ -12,6 +12,7 @@ import type {TreeNode} from "../../../../types";
 import {PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET} from "@/util/constants";
 import {useI18n} from "vue-i18n";
 import debounce from "debounce";
+import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
 
 let {
   data,
@@ -136,6 +137,17 @@ onMounted(() => {
       dropFolderData.inDrag = false;
     }
   });
+
+  let currentVersion = chrome.runtime.getManifest().version;
+  if (settingStore.version !== currentVersion && settingStore.version !== "") {
+    dialog.create({
+      hiddenCancel: true,
+      content: (props, ctx) => i18n.t("updateTips", {
+        v: currentVersion
+      }),
+    })
+  }
+  settingStore.version = currentVersion;
 })
 
 const backOpen = (e: MouseEvent, item: TreeNode) => {
@@ -146,6 +158,7 @@ const backOpen = (e: MouseEvent, item: TreeNode) => {
 }
 
 let contextMenu = useContextMenu();
+let dialog = useConfirmDialog();
 
 const createContextMenu = (e: MouseEvent, item: TreeNode) => {
   let lastNode = getLastNode();

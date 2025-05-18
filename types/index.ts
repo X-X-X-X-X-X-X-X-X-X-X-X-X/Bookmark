@@ -11,6 +11,7 @@ export type TreeNode = chrome.bookmarks.BookmarkTreeNode & {
 
 export type ConfirmDialogOptions = Partial<{
   title: string | Ref<string>,
+  hiddenCancel?: boolean
   content: Component,
   type: "info" | "warning",
   onOk: () => void,

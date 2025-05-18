@@ -91,6 +91,7 @@ export default {
   positioningBookmarks: "定位书签",
   menuUpdate: "更新",
   menuUpdateMsg: "确定要更新 {msg} 为当前打开窗口吗？",
-  links: "相关链接"
+  links: "相关链接",
+  updateTips: "您已更新到 {v} 版本"
 }
 

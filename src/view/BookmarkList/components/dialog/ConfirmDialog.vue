@@ -42,7 +42,7 @@ let {t} = useI18n();
       <component :is="content"></component>
     </div>
     <div class="border-t p-2">
-      <n-button size="small" class="!mr-2" @click="dialog!.close">{{ t("cancel") }}</n-button>
+      <n-button v-if="!hiddenCancel" size="small" class="!mr-2" @click="dialog!.close">{{ t("cancel") }}</n-button>
       <n-button size="small" @click="onOk?.(), dialog!.close()" ghost>{{ t("confirm") }}</n-button>
     </div>
   </Dialog>
