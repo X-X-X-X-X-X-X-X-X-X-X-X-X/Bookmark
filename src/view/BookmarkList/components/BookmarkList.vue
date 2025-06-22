@@ -113,7 +113,6 @@ onMounted(() => {
     },
     onEnd: async function (/**Event*/evt: SortableEvent) {
       if (evt.oldDraggableIndex !== undefined && evt.newDraggableIndex !== undefined && evt.newDraggableIndex !== evt.oldDraggableIndex) {
-        dropFolderData.srcDragItem!.active = false;
         let treeNode = data.bookmarkTree[evt.oldDraggableIndex];
         let offsetIdx = 0;
         let old = data.bookmarkTree.splice(evt.oldDraggableIndex, 1);
@@ -135,6 +134,7 @@ onMounted(() => {
           })
         }
       }
+      dropFolderData.srcDragItem!.active = false;
       clearDropTimer();
       settingStore.hoverEnterFolderMs = tempHoverTime;
       dropFolderData.inDrag = false;
