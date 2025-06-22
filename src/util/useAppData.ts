@@ -15,7 +15,7 @@ import {i18n} from "@/i18n/i18n";
 const cutNodes = reactive<TreeNode[]>([]);
 export let allBookmark: {
   [k: string]: TreeNode
-} = {};
+} = reactive({});
 
 export const rootDirs = ["1", "2", "3"];
 

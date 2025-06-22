@@ -61,7 +61,11 @@ chrome.bookmarks.getChildren("0").then(bookmarks => {
   //首次点击确定宽度
   clickLastNode().then(() => {
     nextTick(() => {
-      chrome.bookmarks.getTree().then(setAllBookmark)
+      chrome.bookmarks.getTree().then(data => {
+        setAllBookmark(data)
+        // 刷新首次进入fullPath信息
+        clickLastNode()
+      })
     })
   });
   data.init = true;
