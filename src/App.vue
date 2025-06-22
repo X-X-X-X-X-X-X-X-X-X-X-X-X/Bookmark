@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import ConfirmDialog from "@/view/BookmarkList/components/dialog/ConfirmDialog.vue";
 import {NConfigProvider} from "naive-ui";
-import {computed, reactive} from "vue";
+import {computed, nextTick, reactive} from "vue";
 import {DEFAULT_START_KEY} from "@/util/constants";
 import {storageGet} from "@/util/storage";
 import {setAllBookmark, useAppData} from "@/util/useAppData";
@@ -57,12 +57,13 @@ chrome.bookmarks.getChildren("0").then(bookmarks => {
     } else {
       data.navigator.push(updateNode(defaultStartNode));
     }
-    //首次点击确定宽度
-    clickLastNode();
-    data.init = true;
   }
+  //首次点击确定宽度
+  clickLastNode().then(() => {
+    nextTick(() => {
+      chrome.bookmarks.getTree().then(setAllBookmark)
+    })
+  });
+  data.init = true;
 })
-
-// 初始化所有信息
-chrome.bookmarks.getTree().then(setAllBookmark)
 </script>

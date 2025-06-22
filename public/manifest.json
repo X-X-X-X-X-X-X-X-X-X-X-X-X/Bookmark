@@ -1,6 +1,6 @@
 {
   "name": "Bookmarks书签管理-疯子的天空",
-  "version": "2.0.4",
+  "version": "2.0.4.1",
   "manifest_version": 3,
   "description": "支持横向显示更多书签(收藏夹)，让书签再次变得好用！make bookmarks great again!",
   "action": {
