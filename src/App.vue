@@ -29,7 +29,7 @@ import {NConfigProvider} from "naive-ui";
 import {computed, reactive} from "vue";
 import {DEFAULT_START_KEY} from "@/util/constants";
 import {storageGet} from "@/util/storage";
-import {getTree, setAllBookmark, useAppData} from "@/util/useAppData";
+import {setAllBookmark, useAppData} from "@/util/useAppData";
 import {useNaiveUI} from "@/util/useNaiveUI";
 import {i18n} from "@/i18n/i18n";
 import {multipleSelectListener} from "@/util/mutipleSelectEvent";
@@ -39,15 +39,11 @@ let {themeOverrides, theme, naiveLocale} = useNaiveUI();
 let {data, updateNode, clickLastNode} = useAppData();
 // 注册多选事件
 useWindowKeyEvent().addListener(multipleSelectListener())
-
-getTree().then(all => {
-  setAllBookmark(all);
-  all[0] = reactive(Object.assign(all[0], {
+chrome.bookmarks.getChildren("0").then(bookmarks => {
+  data.navigator.push(reactive({
+    id: "0",
     title: computed(() => i18n.global.t("rootTitle"))
-  }))
-  // fix 起始目录包含所有书签，localStorage体积剧增
-  delete all[0].children;
-  data.navigator.push(all[0]);
+  }));
   let defaultStartNode = storageGet(DEFAULT_START_KEY);
   if (defaultStartNode) {
     //兼容老版本
@@ -61,9 +57,12 @@ getTree().then(all => {
     } else {
       data.navigator.push(updateNode(defaultStartNode));
     }
+    //首次点击确定宽度
+    clickLastNode();
+    data.init = true;
   }
-  //首次点击确定宽度
-  clickLastNode();
-  data.init = true;
 })
+
+// 初始化所有信息
+chrome.bookmarks.getTree().then(setAllBookmark)
 </script>

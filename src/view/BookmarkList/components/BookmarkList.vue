@@ -67,6 +67,7 @@ let dropFolderData = reactive({
 })
 
 const setDropTimer = debounce(() => {
+  if (!dropFolderData.inDrag) return;
   if (dropFolderData.srcDragItem?.id === dropFolderData.dragEnterItem?.id) return;
   if (dropFolderData.dragEnterItem && !dropFolderData.dragEnterItem.url) {
     dropFolderData.dragEnterItem.canDrop = true;
@@ -98,7 +99,7 @@ onMounted(() => {
   let sortList = getSortList();
   let tempHoverTime = 0;
   Sortable.create(sortList!, {
-    animation: 150,
+    // animation: 50,
     draggable: ".drag",
     swapThreshold: 0.80,
     //设置拖拽缓冲区
@@ -106,11 +107,13 @@ onMounted(() => {
     onStart(evt) {
       dropFolderData.inDrag = true;
       dropFolderData.srcDragItem = data.bookmarkTree[evt.oldIndex!]
+      dropFolderData.srcDragItem.active = true;
       tempHoverTime = settingStore.hoverEnterFolderMs;
       settingStore.hoverEnterFolderMs = 0;
     },
     onEnd: async function (/**Event*/evt: SortableEvent) {
       if (evt.oldDraggableIndex !== undefined && evt.newDraggableIndex !== undefined && evt.newDraggableIndex !== evt.oldDraggableIndex) {
+        dropFolderData.srcDragItem!.active = false;
         let treeNode = data.bookmarkTree[evt.oldDraggableIndex];
         let offsetIdx = 0;
         let old = data.bookmarkTree.splice(evt.oldDraggableIndex, 1);
@@ -178,7 +181,7 @@ inject<Function>(PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET)?.((ev: MouseEvent) =>
 const itemTitle = (item: TreeNode) => {
   let title = [item.title];
   item.url && title.push(item.url);
-  title.push(allBookmark[item.id].fullPath?.map(v => {
+  title.push(allBookmark[item.id]?.fullPath?.map(v => {
     if (v.id === "0") {
       return i18n.t("rootTitle");
     }
@@ -204,8 +207,7 @@ const itemTitle = (item: TreeNode) => {
       :style="[settingStore.displayMode === 'h' ? minWidthStyle : widthStyle , contentMaxHeightAndWidth]"
       @contextmenu="contextMenu.createContextMenu($event, getLastNode(), true)"
   >
-    <TransitionGroup
-        name="list" tag="div"
+    <div
         class="w-full flex items-center border h-8 px-2 cursor-pointer whitespace-nowrap"
         @mouseenter="hoverEnterEvent(item)"
         @mouseleave="hoverLeaveEvent"
@@ -235,6 +237,7 @@ const itemTitle = (item: TreeNode) => {
         v-for="item in data.bookmarkTree" @click="itemClick(item), hoverLeaveEvent()" :key="item.id + item.type">
       <div class="w-4 h-4 flex items-center mr-1">
         <img
+            loading="lazy"
             :src="item.url ? faviconURL(item.url??'') : folderImg"
             alt=""
             class="w-4"
@@ -246,7 +249,7 @@ const itemTitle = (item: TreeNode) => {
         </span>
         {{ item.title }}
       </div>
-    </TransitionGroup>
+    </div>
   </div>
 </template>
 
