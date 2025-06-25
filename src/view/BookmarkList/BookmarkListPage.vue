@@ -3,29 +3,21 @@ import BookmarkNavigator from "@/view/BookmarkList/components/BookmarkNavigator.
 import BookmarkList from "@/view/BookmarkList/components/BookmarkList.vue";
 import BookmarkBottom from "@/view/BookmarkList/components/BookmarkBottom.vue";
 import DefaultLayout from "@/layout/DefaultLayout.vue";
-import {computed, onActivated, onMounted, provide, reactive, ref} from "vue";
+import {computed, onActivated, provide, reactive, ref} from "vue";
 import type {Menu} from "../../../types";
-import {DEFAULT_START_DATA_KEY, PROVIDE_CONTEXT_MENU} from "@/util/constants";
+import {PROVIDE_CONTEXT_MENU} from "@/util/constants";
 import {useAppData} from "@/util/useAppData";
 import {ClockCircleOutlined, LeftOutlined, SearchOutlined, SettingOutlined, StarOutlined} from "@ant-design/icons-vue";
 import BookmarkSearch from "@/view/BookmarkList/components/BookmarkSearch.vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useSettingStore} from "@/store/settingStore";
-import {storageGet, storageSet} from "@/util/storage";
 import {createTab, resizeWidthContainer} from "@/util/appUtil";
 
 const router = useRouter();
 let {t} = useI18n();
 let {clickBookmark, back, clickLastNode, data, specialTreeNode, getLastNode} = useAppData();
 let settingStore = useSettingStore();
-onMounted(() => {
-  data.bookmarkTree.length = 0;
-  data.bookmarkTree.push(...(storageGet(DEFAULT_START_DATA_KEY) || []))
-  setTimeout(() => {
-    storageSet(DEFAULT_START_DATA_KEY, data.bookmarkTree);
-  }, 150)
-})
 
 onActivated(() => {
   if (data.init) {
