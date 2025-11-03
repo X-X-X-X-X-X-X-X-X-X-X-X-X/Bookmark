@@ -109,9 +109,10 @@ export const useAppData = () => {
         let list = await chrome.bookmarks.getChildren(node.id);
         // 保留收藏夹与其他收藏夹
         // TODO 不显示edge中的已删除收藏夹，但ID并不固定，只能枚举出想要展示的文件夹
-        if (node.id === "0") {
-          list = list.filter(v => rootDirs.some(s => s == v.id));
-        }
+        // 新版EDGE浏览器已删除收藏夹已消失
+        // if (node.id === "0") {
+        //   list = list.filter(v => rootDirs.some(s => s == v.id));
+        // }
         replaceTree(list);
       }
       if (settingStore.backLastPath) {
