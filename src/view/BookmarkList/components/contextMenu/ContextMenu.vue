@@ -102,6 +102,8 @@ let store = useSettingStore();
 let isTop = props.item.parentId === "0";
 let cutNode = cutNodes[0];
 
+console.log(props, "pro");
+
 //剪切node的父节点在导航栏中的索引
 let cutNodeParentNavigatorIdx = data.navigator.findIndex(v => v.id === cutNode?.parentId);
 //粘贴到的节点的父节点在导航栏中的索引
@@ -179,7 +181,7 @@ const menu: ContextMenuType[] = reactive([
     }
   },
   {
-    belong: isTop ? "none" : isBlank ? "blank" : "both",
+    belong: isBlank ? "blank" : isTop ? "none" : "both",
     name: t("menuNewFolder"),
     click() {
       let v = ref("");
@@ -198,7 +200,7 @@ const menu: ContextMenuType[] = reactive([
     },
   },
   {
-    belong: isTop ? "none" : isBlank ? "blank" : "both",
+    belong: isBlank ? "blank" : isTop ? "none" : "both",
     name: t("menuNewBookmark"),
     async click() {
       let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
