@@ -1,5 +1,5 @@
 import {inject, h} from "vue";
-import {PROVIDE_CONTEXT_MENU} from "@/util/constants";
+import {PROVIDE_CONTEXT_MENU, SEPARATOR} from "@/util/constants";
 import type {ContextMenuInject, TreeNode} from "../../../../../types";
 import ContextMenu from "@/view/BookmarkList/components/contextMenu/ContextMenu.vue";
 import {type SpecialTreeNodeKey, useAppData} from "@/util/useAppData";
@@ -24,7 +24,8 @@ export const useContextMenu = () => {
             x: e.clientX,
             y: e.clientY,
             item,
-            isBlank
+            isBlank,
+            isSeparator: !item.url && item.title === SEPARATOR
         })
     }
 

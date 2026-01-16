@@ -1,11 +1,12 @@
-import {type FunctionalComponent} from "@vue/runtime-core";
-import type {Component, DefineComponent, Ref} from "vue";
+import { type FunctionalComponent } from "@vue/runtime-core";
+import type { Component, DefineComponent, Ref } from "vue";
 
 export type TreeNode = chrome.bookmarks.BookmarkTreeNode & {
   count?: number,
   active?: boolean,
   type?: string,
   canDrop?: boolean
+  isSeparator?: boolean
   fullPath?: TreeNode[]
 };
 

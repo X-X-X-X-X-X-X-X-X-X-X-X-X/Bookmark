@@ -21,7 +21,7 @@ async function boot() {
   initI18n();
   // 注册全局键盘事件
   registerWindowKeyEvent();
-//   registerMouseRightClickEvent();
+  registerMouseRightClickEvent();
   const meta = document.createElement('meta')
   meta.name = 'naive-ui-style'
   document.head.appendChild(meta)

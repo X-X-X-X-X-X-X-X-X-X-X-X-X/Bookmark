@@ -94,5 +94,6 @@ export default {
   links: "相关链接",
   updateTips: "您已更新到 {v} 版本",
   menuCreateSeparator: "新建分隔线",
+  separator: "分隔线"
 }
 

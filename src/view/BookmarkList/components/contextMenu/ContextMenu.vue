@@ -18,6 +18,7 @@ import { useSettingStore } from "@/store/settingStore";
 import InputDialogContent, {
   type InputContentValueType
 } from "@/view/BookmarkList/components/dialog/InputDialogContent.vue";
+import { SEPARATOR } from "@/util/constants";
 
 const props = defineProps<{
   x: number,
@@ -25,6 +26,7 @@ const props = defineProps<{
   item: TreeNode,
   isBlank?: boolean,
   specialType?: SpecialTreeNodeKey
+  isSeparator?: boolean
 }>()
 
 let { item, isBlank, specialType } = props;
@@ -63,8 +65,13 @@ const updatePosition = () => {
 }
 
 onMounted(async () => {
+  if (props.isSeparator) {
+    let separatorMenu = menu.filter(v => v.belong === "separator");
+    menu.length = 0;
+    menu.push(...separatorMenu);
+  }
   //特殊节点菜单
-  if (specialType) {
+  else if (specialType) {
     let specialMenu = menu.filter(v => v.belong === specialType);
     menu.length = 0;
     menu.push(...specialMenu);
@@ -84,7 +91,7 @@ onUnmounted(() => {
 type ContextMenuType = {
   name: string | Ref<string>,
   style?: StyleValue
-  belong: "link" | "folder" | "both" | "none" | "blank" | SpecialTreeNodeKey,
+  belong: "link" | "folder" | "both" | "none" | "blank" | "separator" | SpecialTreeNodeKey,
   click?: () => void | Promise<void>
 }
 
@@ -116,6 +123,22 @@ const openUrl = (active: boolean) => {
   } else {
     createTab(props.item.url!, active);
   }
+}
+
+const createBookmark = async (title: string, url?: string) => {
+  chrome.bookmarks.create({
+    title: title,
+    url: url,
+    parentId: isBlank ? props.item.id : item.parentId,
+    index: isBlank ? undefined : (item.index! + 1 || undefined)
+  }).then(async value => {
+    await updateAllBookmark();
+    message(t("successfullyCreated"));
+    clickLastNode();
+  }, reason => {
+    console.error(reason);
+    message(t("failedToCreate"));
+  })
 }
 
 const menu: ContextMenuType[] = reactive([
@@ -169,18 +192,7 @@ const menu: ContextMenuType[] = reactive([
           }]
         }),
         onOk() {
-          chrome.bookmarks.create({
-            title: v.value,
-            parentId: isBlank ? props.item.id : item.parentId,
-            index: isBlank ? undefined : (item.index! + 1 || undefined)
-          }).then(async value => {
-            await updateAllBookmark();
-            message(t("successfullyCreated"));
-            clickLastNode();
-          }, reason => {
-            console.error(reason);
-            message(t("failedToCreate"));
-          })
+          createBookmark(v.value);
         }
       })
     },
@@ -204,22 +216,16 @@ const menu: ContextMenuType[] = reactive([
           }]
         }),
         onOk() {
-          chrome.bookmarks.create({
-            title: v.value,
-            url: link.value,
-            parentId: isBlank ? props.item.id : item.parentId,
-            index: isBlank ? undefined : (item.index! + 1 || undefined)
-          }).then(v => {
-            message(t("successfullyCreated"));
-            updateAllBookmark().then(r => {
-              clickLastNode();
-            });
-          }, reason => {
-            console.error(reason);
-            message(t("failedToCreate"));
-          })
+          createBookmark(v.value, link.value);
         }
       })
+    },
+  },
+  {
+    belong: some(isTop, isBlank) ? "none" : "both",
+    name: t("menuCreateSeparator"),
+    async click() {
+      createBookmark(SEPARATOR);
     },
   },
   {
@@ -395,13 +401,13 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("menuDelete"),
-    belong: some(isBlank, isTop) ? 'none' : "both",
+    belong: some(isBlank, isTop) ? 'none' : props.isSeparator ? "separator" : "both",
     style: {
       color: "#cc0000"
     },
     click() {
       let msg = t("deletePrompt", {
-        msg: item.title
+        msg: props.isSeparator ? t("separator") : item.title
       })
       if (isInSelectNode(item)) {
         let first = data.selectNodes[0];
@@ -470,7 +476,7 @@ const removeContextMenu = () => {
     class="fixed max-h-screen break-keep whitespace-nowrap overflow-hidden z-50 text-color border min-w-[100px] p-1 !bg-color"
     tabindex="-1" @blur="removeContextMenu">
     <div :style="m.style" v-for="m in menu" @click="m.click?.(), close()"
-      v-show="m.belong === 'both' || item.url && m.belong === 'link' || !item.url && m.belong === 'folder' || isBlank && m.belong === 'blank' || m.belong === specialType"
+      v-show="m.belong === 'both' || item.url && m.belong === 'link' || !item.url && m.belong === 'folder' || isBlank && m.belong === 'blank' || m.belong === specialType || isSeparator && m.belong === 'separator'"
       class="py-1 hover-color px-2">{{ m.name }}
     </div>
   </div>

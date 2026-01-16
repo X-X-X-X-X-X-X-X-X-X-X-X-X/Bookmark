@@ -1,16 +1,17 @@
-import {computed, inject, reactive, ref} from "vue";
+import { computed, inject, reactive, ref } from "vue";
 import {
   DEFAULT_START_DATA_KEY,
   DEFAULT_START_KEY,
   FREQUENTLY_USED_BOOKMARKS_KEY,
-  PROVIDE_APP_DATA_KEY
+  PROVIDE_APP_DATA_KEY,
+  SEPARATOR
 } from "@/util/constants";
-import type {AppData, TreeNode} from "../../types";
-import {useSettingStore} from "@/store/settingStore";
-import {storageGet, storageSet, updateFrequentlyUsedBookmarks} from "@/util/storage";
-import {createTab, resizeWidthContainer} from "@/util/appUtil";
-import {useI18n} from "vue-i18n";
-import {i18n} from "@/i18n/i18n";
+import type { AppData, TreeNode } from "../../types";
+import { useSettingStore } from "@/store/settingStore";
+import { storageGet, storageSet, updateFrequentlyUsedBookmarks } from "@/util/storage";
+import { createTab, resizeWidthContainer } from "@/util/appUtil";
+import { useI18n } from "vue-i18n";
+import { i18n } from "@/i18n/i18n";
 
 const cutNodes = reactive<TreeNode[]>([]);
 export let allBookmark: {
@@ -29,7 +30,7 @@ export const setAllBookmark = (bookmarks: TreeNode[]) => {
       allBookmark[b.id] = b;
       allBookmark[b.id].fullPath = parentPath;
       if (b.children) {
-        getBookmark(b.children, [...parentPath, {title: b.title, id: b.id}])
+        getBookmark(b.children, [...parentPath, { title: b.title, id: b.id }])
       }
     })
   }
@@ -71,11 +72,17 @@ export const useAppData = () => {
   }
 
   const replaceTree = (treeNodes: TreeNode[], type?: string) => {
-    treeNodes.forEach(v => v.type = type ?? "");
+    treeNodes.forEach(v => {
+      v.type = type ?? ""
+      if (!v.url && v.title === SEPARATOR) {
+        v.isSeparator = true;
+      }
+    });
     data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
     resizeWidthContainer();
   }
   const clickBookmark = async (node: TreeNode, active?: boolean) => {
+    if(node.isSeparator) return
     if (node.url) {
       //如果启用常用书签，进行记录
       if (settingStore.enableFrequentlyUsedBookmarks) {

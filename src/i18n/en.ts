@@ -93,5 +93,6 @@ export default {
   menuCreateSeparator: "new separator",
   deleteMultiplePrompt: "Are you sure you want to delete {msg} (...more {num} bookmarks)?",
   links: "links",
-  updateTips: "You have updated to version {v}"
+  updateTips: "You have updated to version {v}",
+  separator: "Separator"
 }
