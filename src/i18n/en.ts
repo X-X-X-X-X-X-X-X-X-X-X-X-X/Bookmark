@@ -90,6 +90,7 @@ export default {
   menuUpdateMsg: "are you sure you want to update {msg} to the current open window?",
   menuMultiSelect: "multi select",
   menuCancelMultiSelect: "cancel multi select",
+  menuCreateSeparator: "new separator",
   deleteMultiplePrompt: "Are you sure you want to delete {msg} (...more {num} bookmarks)?",
   links: "links",
   updateTips: "You have updated to version {v}"

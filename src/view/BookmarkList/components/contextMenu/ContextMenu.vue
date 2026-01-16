@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import {h, nextTick, onMounted, onUnmounted, reactive, ref, type Ref, type StyleValue} from "vue";
-import type {TreeNode} from "../../../../../types";
-import {createTab, every, myScrollTo, resizeMinHeight, resizeWidthContainer, some} from "@/util/appUtil";
-import {useMessage} from "@/util/useMessage";
-import {useConfirmDialog} from "@/view/BookmarkList/components/dialog/useDialog";
+import { h, nextTick, onMounted, onUnmounted, reactive, ref, type Ref, type StyleValue } from "vue";
+import type { TreeNode } from "../../../../../types";
+import { createTab, every, myScrollTo, resizeMinHeight, resizeWidthContainer, some } from "@/util/appUtil";
+import { useMessage } from "@/util/useMessage";
+import { useConfirmDialog } from "@/view/BookmarkList/components/dialog/useDialog";
 import {
   allBookmark,
   setAllBookmark,
@@ -12,13 +12,12 @@ import {
   updateAllBookmark,
   useAppData
 } from "@/util/useAppData";
-import {useI18n} from "vue-i18n";
-import {updateFrequentlyUsedBookmarks} from "@/util/storage";
-import {useSettingStore} from "@/store/settingStore";
+import { useI18n } from "vue-i18n";
+import { updateFrequentlyUsedBookmarks } from "@/util/storage";
+import { useSettingStore } from "@/store/settingStore";
 import InputDialogContent, {
   type InputContentValueType
 } from "@/view/BookmarkList/components/dialog/InputDialogContent.vue";
-import {type listenFun, useWindowKeyEvent} from "@/util/useWindowKeyEvent";
 
 const props = defineProps<{
   x: number,
@@ -28,7 +27,7 @@ const props = defineProps<{
   specialType?: SpecialTreeNodeKey
 }>()
 
-let {item, isBlank, specialType} = props;
+let { item, isBlank, specialType } = props;
 
 let {
   clickLastNode,
@@ -43,8 +42,8 @@ let {
 } = useAppData();
 const updatePosition = () => {
   let contextMenu = document.getElementById("contextMenu")!;
-  let {clientWidth, clientHeight} = document.body;
-  let {offsetWidth, offsetHeight} = contextMenu;
+  let { clientWidth, clientHeight } = document.body;
+  let { offsetWidth, offsetHeight } = contextMenu;
   let x = props.x;
   let y = props.y;
   if (props.x + offsetWidth > clientWidth) {
@@ -91,7 +90,7 @@ type ContextMenuType = {
 
 let message = useMessage()!;
 let dialog = useConfirmDialog();
-let {t} = useI18n();
+let { t } = useI18n();
 let store = useSettingStore();
 let isTop = props.item.parentId === "0";
 let cutNode = cutNodes[0];
@@ -157,7 +156,7 @@ const menu: ContextMenuType[] = reactive([
     }
   },
   {
-    belong: "blank",
+    belong: isTop ? "none" : "both",
     name: t("menuNewFolder"),
     click() {
       let v = ref("");
@@ -172,12 +171,14 @@ const menu: ContextMenuType[] = reactive([
         onOk() {
           chrome.bookmarks.create({
             title: v.value,
-            parentId: props.item.id
+            parentId: isBlank ? props.item.id : item.parentId,
+            index: isBlank ? undefined : (item.index! + 1 || undefined)
           }).then(async value => {
             await updateAllBookmark();
             message(t("successfullyCreated"));
             clickLastNode();
           }, reason => {
+            console.error(reason);
             message(t("failedToCreate"));
           })
         }
@@ -185,10 +186,10 @@ const menu: ContextMenuType[] = reactive([
     },
   },
   {
-    belong: "blank",
+    belong: isTop ? "none" : "both",
     name: t("menuNewBookmark"),
     async click() {
-      let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+      let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       let v = ref(tab.title!);
       let link = ref(tab.url!);
       dialog.create({
@@ -206,13 +207,15 @@ const menu: ContextMenuType[] = reactive([
           chrome.bookmarks.create({
             title: v.value,
             url: link.value,
-            parentId: props.item.id
+            parentId: isBlank ? props.item.id : item.parentId,
+            index: isBlank ? undefined : (item.index! + 1 || undefined)
           }).then(v => {
             message(t("successfullyCreated"));
             updateAllBookmark().then(r => {
               clickLastNode();
             });
           }, reason => {
+            console.error(reason);
             message(t("failedToCreate"));
           })
         }
@@ -223,7 +226,7 @@ const menu: ContextMenuType[] = reactive([
     name: t("currentPageOpen"),
     belong: !selectStatus() ? specialType ?? "link" : "none",
     click: async () => {
-      let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+      let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       await chrome.tabs.update(tab.id!, {
         active: true,
         url: props.item.url
@@ -267,7 +270,7 @@ const menu: ContextMenuType[] = reactive([
     belong: selectStatus() ? "none" : ["frequently", "search"].includes(specialType!) ? specialType! : "none",
     click: () => {
       data.navigator.splice(1, data.navigator.length - 1,
-          ...allBookmark[item.id]!.fullPath!.slice(1)
+        ...allBookmark[item.id]!.fullPath!.slice(1)
       );
       clickLastNode()
       setTimeout(() => {
@@ -307,7 +310,7 @@ const menu: ContextMenuType[] = reactive([
           msg: item.title
         }),
         async onOk() {
-          let [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+          let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
           await chrome.bookmarks.update(item.id, {
             title: tab?.title,
             url: tab?.url
@@ -329,12 +332,12 @@ const menu: ContextMenuType[] = reactive([
   {
     name: t("menuPaste"),
     belong: some(
-        //没有剪切内容
-        !cutNode,
-        //不能将父文件夹粘贴到子文件夹，会死循环
-        isPasteParentToChild,
-        //不能自己粘贴进自己
-        !!cutNodes.find(v => v.id === item.id)
+      //没有剪切内容
+      !cutNode,
+      //不能将父文件夹粘贴到子文件夹，会死循环
+      isPasteParentToChild,
+      //不能自己粘贴进自己
+      !!cutNodes.find(v => v.id === item.id)
     ) ? 'none' : "both",
     style: {},
     click() {
@@ -368,7 +371,7 @@ const menu: ContextMenuType[] = reactive([
       }
       dialog.create({
         title: t("editBookmark"),
-        content: h(InputDialogContent, {values}),
+        content: h(InputDialogContent, { values }),
         onOk() {
           chrome.bookmarks.update(props.item.id, {
             title: title.value,
@@ -402,7 +405,7 @@ const menu: ContextMenuType[] = reactive([
       })
       if (isInSelectNode(item)) {
         let first = data.selectNodes[0];
-        if(data.selectNodes.length > 1){
+        if (data.selectNodes.length > 1) {
           msg = t("deleteMultiplePrompt", {
             msg: first.title,
             num: data.selectNodes.length
@@ -464,19 +467,16 @@ const removeContextMenu = () => {
 
 <template>
   <div id="contextMenu"
-       class="fixed max-h-screen break-keep whitespace-nowrap overflow-hidden z-50 text-color border min-w-[100px] p-1 !bg-color"
-       tabindex="-1"
-       @blur="removeContextMenu">
-    <div :style="m.style" v-for="m in menu"
-         @click="m.click?.(), close()"
-         v-show="m.belong === 'both' || item.url && m.belong === 'link' || !item.url && m.belong === 'folder' || isBlank && m.belong === 'blank' || m.belong === specialType"
-         class="py-1 hover-color px-2">{{ m.name }}
+    class="fixed max-h-screen break-keep whitespace-nowrap overflow-hidden z-50 text-color border min-w-[100px] p-1 !bg-color"
+    tabindex="-1" @blur="removeContextMenu">
+    <div :style="m.style" v-for="m in menu" @click="m.click?.(), close()"
+      v-show="m.belong === 'both' || item.url && m.belong === 'link' || !item.url && m.belong === 'folder' || isBlank && m.belong === 'blank' || m.belong === specialType"
+      class="py-1 hover-color px-2">{{ m.name }}
     </div>
   </div>
 </template>
 
 <style>
-
 .positionHighlight {
   animation: positionHighlightAnimation reverse 3s;
 }
@@ -490,5 +490,4 @@ const removeContextMenu = () => {
     background: #05cd86;
   }
 }
-
 </style>
