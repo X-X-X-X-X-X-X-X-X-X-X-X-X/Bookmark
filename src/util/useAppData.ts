@@ -1,4 +1,4 @@
-import { computed, inject, reactive, ref } from "vue";
+import { computed, inject, nextTick, reactive, ref } from "vue";
 import {
   DEFAULT_START_DATA_KEY,
   DEFAULT_START_KEY,
@@ -71,7 +71,7 @@ export const useAppData = () => {
     return Object.keys(specialTreeNode).find((v) => specialTreeNode[v as SpecialTreeNodeKey].id === id) as SpecialTreeNodeKey;
   }
 
-  const replaceTree = (treeNodes: TreeNode[], type?: string) => {
+  const replaceTree = async (treeNodes: TreeNode[], type?: string) => {
     treeNodes.forEach(v => {
       v.type = type ?? ""
       if (!v.url && v.title === SEPARATOR) {
@@ -79,10 +79,11 @@ export const useAppData = () => {
       }
     });
     data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
-    resizeWidthContainer();
+    await resizeWidthContainer();
+    await nextTick()
   }
   const clickBookmark = async (node: TreeNode, active?: boolean) => {
-    if(node.isSeparator) return
+    if (node.isSeparator) return
     if (node.url) {
       //如果启用常用书签，进行记录
       if (settingStore.enableFrequentlyUsedBookmarks) {
@@ -107,7 +108,7 @@ export const useAppData = () => {
             }
           })
           storageSet(FREQUENTLY_USED_BOOKMARKS_KEY, refreshFrequentlyUsedBookmarks);
-          replaceTree(refreshFrequentlyUsedBookmarks, "frequently");
+          await replaceTree(refreshFrequentlyUsedBookmarks, "frequently");
         } else {
           await clickLastNode();
           return;
@@ -120,7 +121,7 @@ export const useAppData = () => {
         // if (node.id === "0") {
         //   list = list.filter(v => rootDirs.some(s => s == v.id));
         // }
-        replaceTree(list);
+        await replaceTree(list);
       }
       if (settingStore.backLastPath) {
         setAsStart(data.navigator, data.bookmarkTree);
@@ -138,7 +139,7 @@ export const useAppData = () => {
       console.error(e)
       //一般来讲为启动目录已被删除会触发
       data.navigator.splice(1);
-      clickLastNode();
+      await clickLastNode();
     }
   }
   const back = async () => {

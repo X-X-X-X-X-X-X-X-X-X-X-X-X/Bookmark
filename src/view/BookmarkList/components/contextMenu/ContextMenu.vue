@@ -273,13 +273,12 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("positioningBookmarks"),
-    belong: selectStatus() ? "none" : ["frequently", "search"].includes(specialType!) ? specialType! : "none",
+    belong: selectStatus() ? "none" : ["frequently", "search"].includes(specialType!) ? props.isSeparator ? "separator" : specialType! : "none",
     click: () => {
       data.navigator.splice(1, data.navigator.length - 1,
         ...allBookmark[item.id]!.fullPath!.slice(1)
       );
-      clickLastNode()
-      setTimeout(() => {
+      clickLastNode().then(() => {
         let targetEl = document.querySelector(`._bid_${item.id}`)! as HTMLElement;
         targetEl.classList.add("positionHighlight");
         targetEl.addEventListener("animationend", ev => {
@@ -290,7 +289,7 @@ const menu: ContextMenuType[] = reactive([
         } else {
           myScrollTo(0, targetEl.offsetTop);
         }
-      }, 250)
+      })
     }
   },
   {
