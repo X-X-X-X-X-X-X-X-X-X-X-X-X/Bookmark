@@ -179,7 +179,7 @@ const menu: ContextMenuType[] = reactive([
     }
   },
   {
-    belong: isTop ? "none" : "both",
+    belong: isTop ? "none" : isBlank ? "blank" : "both",
     name: t("menuNewFolder"),
     click() {
       let v = ref("");
@@ -198,7 +198,7 @@ const menu: ContextMenuType[] = reactive([
     },
   },
   {
-    belong: isTop ? "none" : "both",
+    belong: isTop ? "none" : isBlank ? "blank" : "both",
     name: t("menuNewBookmark"),
     async click() {
       let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
