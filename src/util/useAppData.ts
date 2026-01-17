@@ -18,8 +18,6 @@ export let allBookmark: {
   [k: string]: TreeNode
 } = reactive({});
 
-export const rootDirs = ["1", "2", "3"];
-
 export const getTree = async () => {
   return await chrome.bookmarks.getTree();
 }
