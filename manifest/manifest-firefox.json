@@ -9,11 +9,14 @@
   "icons": {
     "128": "bookmark.png"
   },
+  "background": {
+    "scripts": [
+      "service-worker.js"
+    ]
+  },
   "permissions": [
     "activeTab",
     "bookmarks",
-    "favicon",
-    "fontSettings",
     "storage"
   ],
   "browser_specific_settings": {

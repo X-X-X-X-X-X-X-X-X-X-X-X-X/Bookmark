@@ -121,7 +121,7 @@ const fontList = ref([
 ]);
 
 onMounted(() => {
-  chrome.fontSettings.getFontList((list) => {
+  chrome.fontSettings?.getFontList((list) => {
     fontList.value.push(...list.map(v => ({
       label: v.displayName + " - " + v.fontId,
       value: v.fontId,

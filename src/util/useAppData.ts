@@ -77,8 +77,8 @@ export const useAppData = () => {
       }
     });
     data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
-    await resizeWidthContainer();
     await nextTick()
+    await resizeWidthContainer();
   }
   const clickBookmark = async (node: TreeNode, active?: boolean) => {
     if (node.isSeparator) return
@@ -112,7 +112,17 @@ export const useAppData = () => {
           return;
         }
       } else {
-        let list = await chrome.bookmarks.getChildren(node.id);
+        let nodeId = node.id;
+        // 兼容firfox
+        if (nodeId === "0") {
+          //@ts-ignore
+          let browserInfo = await chrome.runtime.getBrowserInfo?.()
+          if (browserInfo?.name === "Firefox") {
+            nodeId = "root________"
+            data.isFirefox = true;
+          }
+        }
+        let list = await chrome.bookmarks.getChildren(nodeId);
         // 保留收藏夹与其他收藏夹
         // TODO 不显示edge中的已删除收藏夹，但ID并不固定，只能枚举出想要展示的文件夹
         // 新版EDGE浏览器已删除收藏夹已消失

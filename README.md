@@ -33,6 +33,13 @@
 **禁止在未经允许的情况下擅自修改后打包发布。
 It is prohibited to package and publish after modification without permission**
 
+## RUN
+
+```shell
+npm install
+npm run build
+```
+
 ## 打赏
 
 用爱发电，打赏支持一下？

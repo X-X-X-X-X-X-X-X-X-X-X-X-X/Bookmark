@@ -13,7 +13,7 @@ import { PROVIDE_LAYOUT_CONTEXT_MENU_FUNCTION_SET, SEPARATOR } from "@/util/cons
 import { useI18n } from "vue-i18n";
 import debounce from "debounce";
 import { useConfirmDialog } from "@/view/BookmarkList/components/dialog/useDialog";
-
+import { LinkOutlined } from "@ant-design/icons-vue";
 let {
   data,
   clickBookmark,
@@ -233,7 +233,8 @@ const itemTitle = (item: TreeNode) => {
             </svg>
           </template>
           <template v-else>
-            <img loading="lazy" :src="faviconURL(item.url ?? '')" alt="" class="w-4">
+            <img v-if="!data.isFirefox" loading="lazy" :src="faviconURL(item.url ?? '')" alt="" class="w-4">
+            <LinkOutlined v-else />
           </template>
         </div>
         <div class="overflow-hidden w-full leading-none py-1 overflow-ellipsis">

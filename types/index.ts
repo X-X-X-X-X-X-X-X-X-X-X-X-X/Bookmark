@@ -31,6 +31,7 @@ export interface AppData {
   navigator: TreeNode[],
   selectNodes: TreeNode[],
   init: boolean
+  isFirefox?: boolean
 }
 
 export type ContextMenuInject = {
