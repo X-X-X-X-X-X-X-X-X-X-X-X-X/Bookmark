@@ -9,7 +9,7 @@ import {
 import type { AppData, TreeNode } from "../../types";
 import { useSettingStore } from "@/store/settingStore";
 import { storageGet, storageSet, updateFrequentlyUsedBookmarks } from "@/util/storage";
-import { createTab, resizeWidthContainer } from "@/util/appUtil";
+import { createTab, isFirefox, resizeWidthContainer } from "@/util/appUtil";
 import { useI18n } from "vue-i18n";
 import { i18n } from "@/i18n/i18n";
 
@@ -115,9 +115,7 @@ export const useAppData = () => {
         let nodeId = node.id;
         // 兼容firfox
         if (nodeId === "0") {
-          //@ts-ignore
-          let browserInfo = await chrome.runtime.getBrowserInfo?.()
-          if (browserInfo?.name === "Firefox") {
+          if (await isFirefox()) {
             nodeId = "root________"
             data.isFirefox = true;
           }

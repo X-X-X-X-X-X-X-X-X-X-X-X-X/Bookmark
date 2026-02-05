@@ -1,10 +1,10 @@
-import {useSettingStore} from "@/store/settingStore";
-import {storageGet, storageSet} from "@/util/storage";
-import {PROVIDE_APP_DATA_KEY, SETTING_DATA_KEY} from "@/util/constants";
-import {type App, reactive, toRefs, watch} from "vue";
-import {useOsTheme} from "naive-ui";
-import {i18n} from "@/i18n/i18n";
-import type {AppData} from "../../types";
+import { useSettingStore } from "@/store/settingStore";
+import { storageGet, storageSet } from "@/util/storage";
+import { PROVIDE_APP_DATA_KEY, SETTING_DATA_KEY } from "@/util/constants";
+import { type App, reactive, toRefs, watch } from "vue";
+import { useOsTheme } from "naive-ui";
+import { i18n } from "@/i18n/i18n";
+import type { AppData } from "../../types";
 
 function wheelListener(event: WheelEvent) {
   // /*防止两个滚动条互相争抢*/
@@ -13,7 +13,7 @@ function wheelListener(event: WheelEvent) {
     // 误差为1可能为系统缩放导致字体大小出现精度问题，当然这个解决办法并不是很好
     document.documentElement.scrollHeight - document.documentElement.clientHeight <= 1
   ) {
-    let {enableSmoothScroll} = useSettingStore();
+    let { enableSmoothScroll } = useSettingStore();
     window.scrollTo({
       behavior: enableSmoothScroll ? "smooth" : "auto",
       top: window.scrollY,
@@ -27,6 +27,12 @@ export const registerHorizontalScrollEvent = () => {
   window.addEventListener('wheel', wheelListener, {
     passive: false
   });
+}
+
+export const isFirefox = async () => {
+  //@ts-ignore
+  let browserInfo = await chrome.runtime.getBrowserInfo?.()
+  return browserInfo?.name?.toLowerCase?.() === "firefox"
 }
 
 export const unRegisterHorizontalScrollEvent = () => {
@@ -49,7 +55,7 @@ export const initStore = () => {
   settingStore.$subscribe((mutation, state) => {
     storageSet(SETTING_DATA_KEY, state);
   })
-  let {displayMode, layoutGap, fontSize, fontFamily, hiddenScrollBar, themeMode} = toRefs(settingStore);
+  let { displayMode, layoutGap, fontSize, fontFamily, hiddenScrollBar, themeMode } = toRefs(settingStore);
   watch(displayMode, (v: string) => {
     if (v === "h") {
       registerHorizontalScrollEvent();
@@ -62,30 +68,39 @@ export const initStore = () => {
   let html = document.querySelector("html")!;
   watch(layoutGap, value => {
     html.style.fontSize = value + "px";
-  }, {immediate: true})
+  }, { immediate: true })
   watch(fontSize, value => {
     document.body.style.fontSize = value + "px";
-  }, {immediate: true})
+  }, { immediate: true })
 
   watch(fontFamily, value => {
     document.body.style.fontFamily = value || "initial";
-  }, {immediate: true})
+  }, { immediate: true })
   watch(hiddenScrollBar, value => {
     if (value) {
       html.classList.add("noScrollBar");
     } else {
       html.classList.remove("noScrollBar");
     }
-  }, {immediate: true});
+  }, { immediate: true });
 
   watch(themeMode, value => {
     initTheme();
-  }, {immediate: true})
+  }, { immediate: true })
+
+  if (settingStore.version === "") {
+    isFirefox().then(res => {
+      if (res) {
+        // 首次安装禁用动画
+        settingStore.enableAnimation = false
+      }
+    })
+  }
 }
 
 export const resizeWidthContainer = (w?: string, h?: string) => {
   return new Promise((resolve, reject) => {
-    let {enableAnimation, displayMode} = useSettingStore();
+    let { enableAnimation, displayMode } = useSettingStore();
     let useDuration = enableAnimation && displayMode === "h";
     setTimeout(() => {
       let widthContainer = document.getElementById("widthContainer");
@@ -115,7 +130,7 @@ export const createTab = async (url: string, active?: boolean) => {
 }
 export const initI18n = () => {
   let settingStore = useSettingStore();
-  let {language} = toRefs(settingStore);
+  let { language } = toRefs(settingStore);
   watch(language, (i: any) => {
     i18n.global.locale.value = i;
   }, {
