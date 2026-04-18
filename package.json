@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.0",
-    "@types/chrome": "*",
+    "@types/chrome": "0.0.268",
     "@types/node": "^18.17.5",
     "@types/sortablejs": "^1.15.2",
     "@vitejs/plugin-vue": "^5.0.0",
