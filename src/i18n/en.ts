@@ -94,5 +94,6 @@ export default {
   deleteMultiplePrompt: "Are you sure you want to delete {msg} (...more {num} bookmarks)?",
   links: "links",
   updateTips: "You have updated to version {v}",
-  separator: "Separator"
+  separator: "Separator",
+  recentlyBookmark: "Recently added",
 }

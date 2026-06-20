@@ -275,7 +275,7 @@ const menu: ContextMenuType[] = reactive([
   },
   {
     name: t("positioningBookmarks"),
-    belong: selectStatus() ? "none" : ["frequently", "search"].includes(specialType!) ? props.isSeparator ? "separator" : specialType! : "none",
+    belong: selectStatus() ? "none" : ["frequently", "search", "recently"].includes(specialType!) ? props.isSeparator ? "separator" : specialType! : "none",
     click: () => {
       data.navigator.splice(1, data.navigator.length - 1,
         ...allBookmark[item.id]!.fullPath!.slice(1)

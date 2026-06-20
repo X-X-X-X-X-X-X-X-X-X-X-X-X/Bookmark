@@ -20,7 +20,7 @@ export type ConfirmDialogOptions = Partial<{
 export interface Menu {
   name?: string | Ref<string>
   disable?: boolean | Ref<boolean>
-  icon?: FunctionalComponent,
+  icon?: Component,
   click?: (contentShow: Ref<boolean>) => FunctionalComponent | DefineComponent | Component | void,
   contentCloseEvent?: () => void
 }

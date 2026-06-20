@@ -16,6 +16,7 @@
     "debounce": "^2.2.0",
     "json-format": "^1.0.1",
     "pinia": "^2.1.6",
+    "radash": "^12.1.1",
     "sortablejs": "^1.15.0",
     "vue": "^3.3.4",
     "vue-i18n": "^9.4.1",

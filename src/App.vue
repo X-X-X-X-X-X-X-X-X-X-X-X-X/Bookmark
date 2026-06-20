@@ -4,7 +4,7 @@
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <keep-alive>
-            <component :is="Component"/>
+            <component :is="Component" />
           </keep-alive>
         </transition>
       </router-view>
@@ -14,7 +14,8 @@
 
 
 <style scoped>
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 150ms ease;
 }
 
@@ -25,18 +26,18 @@
 </style>
 <script setup lang="ts">
 import ConfirmDialog from "@/view/BookmarkList/components/dialog/ConfirmDialog.vue";
-import {NConfigProvider} from "naive-ui";
-import {computed, nextTick, reactive} from "vue";
-import {DEFAULT_START_DATA_KEY, DEFAULT_START_KEY} from "@/util/constants";
-import {storageGet, storageSet} from "@/util/storage";
-import {setAllBookmark, useAppData} from "@/util/useAppData";
-import {useNaiveUI} from "@/util/useNaiveUI";
-import {i18n} from "@/i18n/i18n";
-import {multipleSelectListener} from "@/util/mutipleSelectEvent";
-import {useWindowKeyEvent} from "@/util/useWindowKeyEvent";
+import { NConfigProvider } from "naive-ui";
+import { computed, nextTick, reactive } from "vue";
+import { DEFAULT_START_DATA_KEY, DEFAULT_START_KEY } from "@/util/constants";
+import { storageGet, storageSet } from "@/util/storage";
+import { setAllBookmark, useAppData } from "@/util/useAppData";
+import { useNaiveUI } from "@/util/useNaiveUI";
+import { i18n } from "@/i18n/i18n";
+import { multipleSelectListener } from "@/util/mutipleSelectEvent";
+import { useWindowKeyEvent } from "@/util/useWindowKeyEvent";
 
-let {themeOverrides, theme, naiveLocale} = useNaiveUI();
-let {data, updateNode, clickLastNode} = useAppData();
+let { themeOverrides, theme, naiveLocale } = useNaiveUI();
+let { data, updateNode, clickLastNode } = useAppData();
 // 注册多选事件
 useWindowKeyEvent().addListener(multipleSelectListener())
 
@@ -64,13 +65,13 @@ if (defaultStartNode) {
 }
 data.init = true;
 
-// 获取最新数据
-clickLastNode().then(() => {
-  storageSet(DEFAULT_START_DATA_KEY, data.bookmarkTree);
-})
 
 // 获取最新数据
-chrome.bookmarks.getTree().then(data => {
-  setAllBookmark(data)
+chrome.bookmarks.getTree().then(all => {
+  setAllBookmark(all)
+  // 获取最新数据
+  clickLastNode().then(() => {
+    storageSet(DEFAULT_START_DATA_KEY, data.bookmarkTree);
+  })
 })
 </script>

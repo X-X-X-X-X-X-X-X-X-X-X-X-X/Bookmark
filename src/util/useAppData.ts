@@ -12,6 +12,7 @@ import { storageGet, storageSet, updateFrequentlyUsedBookmarks } from "@/util/st
 import { createTab, isFirefox, resizeWidthContainer } from "@/util/appUtil";
 import { useI18n } from "vue-i18n";
 import { i18n } from "@/i18n/i18n";
+import { all, sort } from "radash";
 
 const cutNodes = reactive<TreeNode[]>([]);
 export let allBookmark: {
@@ -40,7 +41,7 @@ export const updateAllBookmark = async () => {
   setAllBookmark(await getTree());
 }
 
-export type SpecialTreeNodeKey = "search" | "frequently";
+export type SpecialTreeNodeKey = "search" | "frequently" | "recently";
 
 export type SpecialTreeNode = {
   [k in SpecialTreeNodeKey]: TreeNode
@@ -58,6 +59,10 @@ export const useAppData = () => {
     frequently: {
       id: "-2",
       title: computed(() => i18n.global.t("frequentlyBookmark")),
+    },
+    recently: {
+      id: "-3",
+      title: computed(() => i18n.global.t("recentlyBookmark")),
     }
   })
 
@@ -108,9 +113,17 @@ export const useAppData = () => {
           storageSet(FREQUENTLY_USED_BOOKMARKS_KEY, refreshFrequentlyUsedBookmarks);
           await replaceTree(refreshFrequentlyUsedBookmarks, "frequently");
         } else {
+          const index = data.navigator.findIndex(v => v.id === specialTreeNode.frequently.id)
+          if (index !== -1) {
+            data.navigator.splice(index, 1);
+          }
           await clickLastNode();
           return;
         }
+      } else if (node.id === specialTreeNode.recently.id) {
+        let list = sort(Object.values(allBookmark).filter(v => v.url), a => a.dateAdded || 0, true)
+        replaceTree(list.slice(0, 100), "recently")
+        await nextTick()
       } else {
         let nodeId = node.id;
         // 兼容firfox
@@ -121,12 +134,6 @@ export const useAppData = () => {
           }
         }
         let list = await chrome.bookmarks.getChildren(nodeId);
-        // 保留收藏夹与其他收藏夹
-        // TODO 不显示edge中的已删除收藏夹，但ID并不固定，只能枚举出想要展示的文件夹
-        // 新版EDGE浏览器已删除收藏夹已消失
-        // if (node.id === "0") {
-        //   list = list.filter(v => rootDirs.some(s => s == v.id));
-        // }
         await replaceTree(list);
       }
       if (settingStore.backLastPath) {
@@ -203,6 +210,7 @@ export const useAppData = () => {
   const inSelectNodeIdx = (item: TreeNode) => data.selectNodes.findIndex(v => v.id === item.id);
   const isInSelectNode = (item: TreeNode) => inSelectNodeIdx(item) !== -1;
   const selectStatus = () => data.selectNodes.length > 0;
+  const isInNavigator = (id: string) => data.navigator.some(v => v.id === id);
 
   return {
     updateNode,
@@ -212,6 +220,7 @@ export const useAppData = () => {
     getSpecialTreeNodeKey,
     specialTreeNode,
     isSpecialTreeNode,
+    isInNavigator,
     back,
     navigatorTo,
     replaceTree,
