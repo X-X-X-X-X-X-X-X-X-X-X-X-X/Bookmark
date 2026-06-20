@@ -90,10 +90,6 @@ export const useAppData = () => {
       let sy = storageGet(RESTORE_POSITION_Y_KEY) ?? 0;
       myScrollTo(sx, sy, sx > 0 ? 'smooth' : "instant")
     }
-    if (resotreStatus) {
-      myScrollTo(0, 0, "instant")
-    }
-    resotreStatus = true;
   }
   const clickBookmark = async (node: TreeNode, active?: boolean) => {
     if (node.isSeparator) return
