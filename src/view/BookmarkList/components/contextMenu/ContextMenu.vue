@@ -102,8 +102,6 @@ let store = useSettingStore();
 let isTop = props.item.parentId === "0";
 let cutNode = cutNodes[0];
 
-console.log(props, "pro");
-
 //剪切node的父节点在导航栏中的索引
 let cutNodeParentNavigatorIdx = data.navigator.findIndex(v => v.id === cutNode?.parentId);
 //粘贴到的节点的父节点在导航栏中的索引

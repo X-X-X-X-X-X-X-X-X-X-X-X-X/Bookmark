@@ -28,7 +28,12 @@ let { clickBookmark, back, clickLastNode, data, specialTreeNode, isInNavigator, 
   useAppData();
 let settingStore = useSettingStore();
 
+let isFirstActive = true;
 onActivated(() => {
+  if (isFirstActive) {
+    isFirstActive = false;
+    return;
+  }
   if (data.init) {
     setTimeout(clickLastNode, 150);
   }

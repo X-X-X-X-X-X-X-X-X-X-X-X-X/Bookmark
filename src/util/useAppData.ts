@@ -1,19 +1,20 @@
-import { computed, inject, nextTick, reactive, ref } from "vue";
+import { i18n } from "@/i18n/i18n";
+import { useSettingStore } from "@/store/settingStore";
+import { createTab, isFirefox, myScrollTo, resizeWidthContainer } from "@/util/appUtil";
 import {
   DEFAULT_START_DATA_KEY,
   DEFAULT_START_KEY,
   FREQUENTLY_USED_BOOKMARKS_KEY,
   PROVIDE_APP_DATA_KEY,
+  RESTORE_POSITION_X_KEY,
+  RESTORE_POSITION_Y_KEY,
   SEPARATOR
 } from "@/util/constants";
-import type { AppData, TreeNode } from "../../types";
-import { useSettingStore } from "@/store/settingStore";
 import { storageGet, storageSet, updateFrequentlyUsedBookmarks } from "@/util/storage";
-import { createTab, isFirefox, resizeWidthContainer } from "@/util/appUtil";
-import { useI18n } from "vue-i18n";
-import { i18n } from "@/i18n/i18n";
-import { all, sort } from "radash";
-
+import { sort } from "radash";
+import { computed, inject, nextTick, reactive } from "vue";
+import type { AppData, TreeNode } from "../../types";
+let resotreStatus = false;
 const cutNodes = reactive<TreeNode[]>([]);
 export let allBookmark: {
   [k: string]: TreeNode
@@ -84,6 +85,15 @@ export const useAppData = () => {
     data.bookmarkTree.splice(0, data.bookmarkTree.length, ...treeNodes);
     await nextTick()
     await resizeWidthContainer();
+    if (settingStore.backLastPath && !resotreStatus) {
+      let sx = storageGet(RESTORE_POSITION_X_KEY) ?? 0;
+      let sy = storageGet(RESTORE_POSITION_Y_KEY) ?? 0;
+      myScrollTo(sx, sy, sx > 0 ? 'smooth' : "instant")
+    }
+    if (resotreStatus) {
+      myScrollTo(0, 0, "instant")
+    }
+    resotreStatus = true;
   }
   const clickBookmark = async (node: TreeNode, active?: boolean) => {
     if (node.isSeparator) return

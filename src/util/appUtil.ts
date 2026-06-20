@@ -1,9 +1,10 @@
-import { useSettingStore } from "@/store/settingStore";
-import { storageGet, storageSet } from "@/util/storage";
-import { PROVIDE_APP_DATA_KEY, SETTING_DATA_KEY } from "@/util/constants";
-import { type App, reactive, toRefs, watch } from "vue";
-import { useOsTheme } from "naive-ui";
 import { i18n } from "@/i18n/i18n";
+import { useSettingStore } from "@/store/settingStore";
+import { PROVIDE_APP_DATA_KEY, RESTORE_POSITION_X_KEY, RESTORE_POSITION_Y_KEY, SETTING_DATA_KEY } from "@/util/constants";
+import { storageGet, storageSet } from "@/util/storage";
+import debounce from "debounce";
+import { useOsTheme } from "naive-ui";
+import { type App, onScopeDispose, reactive, toRefs, watch } from "vue";
 import type { AppData } from "../../types";
 
 function wheelListener(event: WheelEvent) {
@@ -55,7 +56,7 @@ export const initStore = () => {
   settingStore.$subscribe((mutation, state) => {
     storageSet(SETTING_DATA_KEY, state);
   })
-  let { displayMode, layoutGap, fontSize, fontFamily, hiddenScrollBar, themeMode } = toRefs(settingStore);
+  let { displayMode, layoutGap, fontSize, fontFamily, hiddenScrollBar, themeMode, backLastPath } = toRefs(settingStore);
   watch(displayMode, (v: string) => {
     if (v === "h") {
       registerHorizontalScrollEvent();
@@ -86,6 +87,42 @@ export const initStore = () => {
 
   watch(themeMode, value => {
     initTheme();
+  }, { immediate: true })
+
+  const observer = new MutationObserver((mutationsList, observerInstance) => {
+    const targetElement = document.getElementById('sortList');
+    if (targetElement) {
+      targetElement.onscroll = debounce(() => {
+        storageSet(RESTORE_POSITION_Y_KEY, targetElement.scrollTop)
+      }, 100)
+      observerInstance.disconnect()
+    }
+  });
+  const disroty = () => {
+    window.onscroll = null;
+    observer.disconnect();
+    const targetElement = document.getElementById('sortList')
+    if (targetElement) {
+      targetElement.onscroll = null;
+    }
+    storageSet(RESTORE_POSITION_X_KEY, 0)
+    storageSet(RESTORE_POSITION_Y_KEY, 0)
+  }
+  watch(backLastPath, value => {
+    if (value) {
+      window.onscroll = debounce(() => {
+        storageSet(RESTORE_POSITION_X_KEY, window.scrollX)
+      }, 100)
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    } else {
+      disroty()
+    }
+    onScopeDispose(() => {
+      disroty()
+    })
   }, { immediate: true })
 
   if (settingStore.version === "") {

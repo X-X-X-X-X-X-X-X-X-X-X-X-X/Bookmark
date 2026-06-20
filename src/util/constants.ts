@@ -9,3 +9,6 @@ export const SETTING_DATA_KEY = "SETTING_DATA";
 export const FREQUENTLY_USED_BOOKMARKS_KEY = "FREQUENTLY_USED_BOOKMARKS";
 
 export const SEPARATOR = "-------------------";
+
+export const RESTORE_POSITION_X_KEY = "RESTORE_POSITION_X";
+export const RESTORE_POSITION_Y_KEY = "RESTORE_POSITION_Y";
