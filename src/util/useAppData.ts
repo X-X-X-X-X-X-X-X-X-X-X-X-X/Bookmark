@@ -86,6 +86,7 @@ export const useAppData = () => {
     await nextTick()
     await resizeWidthContainer();
     if (settingStore.backLastPath && !resotreStatus) {
+      resotreStatus = true;
       let sx = storageGet(RESTORE_POSITION_X_KEY) ?? 0;
       let sy = storageGet(RESTORE_POSITION_Y_KEY) ?? 0;
       myScrollTo(sx, sy, sx > 0 ? 'smooth' : "instant")
