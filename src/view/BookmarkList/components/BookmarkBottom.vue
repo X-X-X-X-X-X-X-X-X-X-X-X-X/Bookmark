@@ -30,7 +30,7 @@ let {addListener} = useWindowKeyEvent();
 
 addListener((codes, type, e) => {
   if (type === "keyup") {
-    if (selectStatus()) return;
+    if (selectStatus() || e.code.toUpperCase() === 'ENTER') return;
     // 防止设置界面输入也会触发
     if (e.target !== document.body) return;
     let searchMenu = props.menu.find(v => v.name === t("search"))!;
