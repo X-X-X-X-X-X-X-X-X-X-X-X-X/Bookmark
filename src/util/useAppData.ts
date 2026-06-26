@@ -154,7 +154,7 @@ export const useAppData = () => {
       }
       // 搜索结果
       else if (node.id === specialTreeNode.search.id) {
-
+        onSearch()
       } else {
         let nodeId = node.id;
         // 兼容firfox

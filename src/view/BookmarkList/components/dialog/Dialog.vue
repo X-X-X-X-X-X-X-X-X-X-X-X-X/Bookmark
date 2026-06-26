@@ -2,12 +2,16 @@
 import {nextTick, onMounted, ref} from "vue";
 import {resizeMinHeight} from "@/util/appUtil";
 
+const emit = defineEmits(["close", "open"]);
+
 const show = ref(false);
 const close = () => {
   show.value = false;
+  emit("close");
 }
 const open = () => {
   show.value = true;
+  emit("open");
   nextTick(() => {
     let element = document.querySelector("#dialog")!;
     resizeMinHeight(element.scrollHeight + 30);

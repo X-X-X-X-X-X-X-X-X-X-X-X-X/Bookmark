@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Dialog from "@/view/BookmarkList/components/dialog/Dialog.vue";
 import {NButton} from "naive-ui";
-import {computed, provide, ref} from "vue";
+import {computed, provide, ref, nextTick, onUnmounted} from "vue";
 import {InfoCircleOutlined, WarningOutlined} from "@ant-design/icons-vue";
 import {PROVIDE_CONFIRM_DIALOG} from "@/util/constants";
 import type {ConfirmDialogOptions} from "../../../../../types";
@@ -26,10 +26,37 @@ provide(PROVIDE_CONFIRM_DIALOG, {
 });
 
 let {t} = useI18n();
+
+const handleKeyDown = (e: KeyboardEvent) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    props.onOk?.();
+    dialog.value?.close();
+  }
+}
+
+const onOpen = () => {
+  window.addEventListener("keydown", handleKeyDown);
+  nextTick(() => {
+    const input = document.querySelector("#dialog input") as HTMLInputElement | null;
+    if (input) {
+      input.focus();
+      input.select();
+    }
+  });
+}
+
+const onClose = () => {
+  window.removeEventListener("keydown", handleKeyDown);
+}
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeyDown);
+});
 </script>
 
 <template>
-  <Dialog ref="dialog">
+  <Dialog ref="dialog" @open="onOpen" @close="onClose">
     <div class="pt-2 pb-1 px-2 font-bold text-[1.2em] ">
         <span class="relative">
           <component :is="titleIcon" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[130%]" :class="[
