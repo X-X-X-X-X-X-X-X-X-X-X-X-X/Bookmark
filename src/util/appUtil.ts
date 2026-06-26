@@ -246,7 +246,8 @@ export const initAppData = (app: App) => {
     bookmarkTree: [],
     navigator: [],
     selectNodes: [],
-    init: false
+    init: false,
+    search: ""
   })
   app.provide(PROVIDE_APP_DATA_KEY, data);
 }

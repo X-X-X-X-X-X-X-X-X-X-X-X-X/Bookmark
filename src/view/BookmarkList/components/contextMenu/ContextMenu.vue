@@ -320,6 +320,8 @@ const menu: ContextMenuType[] = reactive([
             title: tab?.title,
             url: tab?.url
           })
+          // 最近添加列表更新不加不会自动刷新
+          await updateAllBookmark()
           clickLastNode();
           message(t("success"));
         },
@@ -383,9 +385,6 @@ const menu: ContextMenuType[] = reactive([
             url: url.value,
           }).then(() => {
             message(t("modificationSucceeded"));
-            if (getLastNode().id !== specialTreeNode.search.id) {
-              clickLastNode();
-            }
             /*导航栏修改后实时刷新*/
             item.title = title.value;
             item.url = url.value;

@@ -1,52 +1,12 @@
 <script setup lang="ts">
-import {nextTick, onMounted, onUnmounted, reactive} from "vue";
-import {useAppData} from "@/util/useAppData";
-import {useSettingStore} from "@/store/settingStore";
+import { useAppData } from "@/util/useAppData";
+import { onMounted, onUnmounted } from "vue";
 
-const status = reactive({
-  searchInput: ""
-})
 
-let {data, clickBookmark, replaceTree, getLastNode, specialTreeNode} = useAppData();
-
-let queue: number[] = [];
-let settingStore = useSettingStore();
-
-const search = (() => {
-  return async function (this: HTMLInputElement) {
-    const toSearch = async () => {
-      if (data) {
-        if (this.value !== '') {
-          replaceTree(await chrome.bookmarks.search(this.value), "search");
-          if (getLastNode().id !== specialTreeNode.search.id) {
-            data.navigator.push(specialTreeNode.search)
-          }
-        }
-      }
-    }
-    let timeout = setTimeout(toSearch, settingStore.delaySearch);
-    queue.push(timeout);
-    if (queue.length > 1) {
-      clearTimeout(queue.shift());
-    }
-  }
-})();
-
+let {data, closeSearch, onSearch} = useAppData();
 
 onUnmounted(async () => {
-  status.searchInput = '';
-  if (data) {
-    let idx = data.navigator.findIndex(v => v.id === specialTreeNode.search.id);
-    if (idx !== -1) {
-      let lastNode = data.navigator[idx - 1];
-      if (idx > 1) {
-        --idx;
-      }
-      data.navigator.splice(idx);
-      await clickBookmark(lastNode);
-    }
-  }
-  queue.forEach(clearTimeout);
+  closeSearch()
 })
 
 onMounted(() => {
@@ -57,8 +17,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <input id="search" v-model="status.searchInput"
-         :onkeyup="search"
+  <input id="search" v-model="data.search"
+         :onkeyup="onSearch"
          :disabled="data.selectNodes.length > 0"
          class="box-border bg-transparent outline-0 px-1 h-full w-full" type="text">
 </template>

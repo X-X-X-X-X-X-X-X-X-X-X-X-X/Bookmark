@@ -12,8 +12,9 @@ import {
 } from "@/util/constants";
 import { storageGet, storageSet, updateFrequentlyUsedBookmarks } from "@/util/storage";
 import { sort } from "radash";
-import { computed, inject, nextTick, reactive } from "vue";
+import { computed, inject, nextTick, reactive, toRefs, watch } from "vue";
 import type { AppData, TreeNode } from "../../types";
+import debounce from "debounce";
 let resotreStatus = false;
 const cutNodes = reactive<TreeNode[]>([]);
 export let allBookmark: {
@@ -51,6 +52,25 @@ export type SpecialTreeNode = {
 export const useAppData = () => {
   let data = inject<AppData>(PROVIDE_APP_DATA_KEY)!;
   let settingStore = useSettingStore();
+
+  const onSearch = debounce(async () => {
+    if (!data.search) {
+      return;
+    };
+    replaceTree(await chrome.bookmarks.search(data.search), "search");
+    if (getLastNode().id !== specialTreeNode.search.id) {
+      data.navigator.push(specialTreeNode.search)
+    }
+  }, settingStore.delaySearch)
+
+  const closeSearch = () => {
+    data.search = '';
+    if (getLastNode().id === specialTreeNode.search.id) {
+      data.navigator.pop();
+      clickLastNode()
+    }
+  }
+
   /*特殊节点*/
   const specialTreeNode: SpecialTreeNode = reactive({
     search: {
@@ -131,6 +151,10 @@ export const useAppData = () => {
         let list = sort(Object.values(allBookmark).filter(v => v.url), a => a.dateAdded || 0, true)
         replaceTree(list.slice(0, 100), "recently")
         await nextTick()
+      }
+      // 搜索结果
+      else if (node.id === specialTreeNode.search.id) {
+
       } else {
         let nodeId = node.id;
         // 兼容firfox
@@ -237,7 +261,9 @@ export const useAppData = () => {
     cut,
     paste,
     inSelectNodeIdx,
-    selectStatus
+    selectStatus,
+    onSearch,
+    closeSearch
   }
 }
 
