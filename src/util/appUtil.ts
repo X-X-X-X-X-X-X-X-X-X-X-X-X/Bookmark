@@ -143,6 +143,8 @@ export const resizeWidthContainer = (w?: string, h?: string) => {
       let widthContainer = document.getElementById("widthContainer");
       let widthContent = document.getElementById("widthContent");
       widthContainer!.style.width = w || widthContent!.scrollWidth + "px";
+      // fix 260803 edge浏览器宽度居不会收缩
+      document.querySelector("html")!.style.width =  w || widthContent!.scrollWidth + "px";
       widthContainer!.style.height = h || widthContent!.scrollHeight + "px";
       setTimeout(resolve, useDuration ? 150 : 0);
     }, useDuration ? 100 : 0)
