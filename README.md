@@ -1,3 +1,5 @@
+
+
 ## 概述
 
 模拟书签栏，让浏览器(edge/chrome)可以显示更多的书签。
@@ -22,6 +24,7 @@
 ```shell
 npm install
 npm run build
+npm run build:firfox
 ```
 
 ## Star History
